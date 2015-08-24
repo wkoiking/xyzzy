@@ -1,0 +1,317 @@
+=======================================================================
+     UNARJ32.DLL Ver 1.10a  EnumMembersProc 関係 API 説明ファイル
+=======================================================================
+
+                                               Ｍｉｃｃｏ (Nov.10,2007)
+
+
+はじめに
+
+　UNARJ32.DLL のドキュメント構成は以下のようになっています。
+
+    API.TXT      : 基幹を成す Unarj() 系及び OpenArchive() 系 API の説明
+    COMMAND.TXT  : Unarj() に渡すコマンド文字列についての説明
+    WINMES.TXT   : SetOwnerWindow() 系 API の説明
+    ENUMAPI.TXT  : SetEnumMembersProc() 系 API の説明
+    STRTABLE.TXT : 言語設定用 API についての説明
+    HEADER.TXT   : ARJ の書庫仕様 (ただし，UNARJ32.DLL が扱うもの)
+    HISTORY.TXT  : 修正履歴
+
+　このドキュメントでは， コールバック関数の設定を行う  EnumMembersProc()
+系 API について説明されています。API.TXT には API 全体に関する記述が存在
+しますので，そちらも参照したほうが良いでしょう。
+
+
+-----------------------------------------------------------------------
+%1. 各 API の説明。
+%2. UNLHA_ENUM_MEMBER_INFO の構造
+%3. UNLHA_ENUM_MEMBER_INFO64 の構造
+%4. コマンドによる処理の違い。
+-----------------------------------------------------------------------
+
+　Ver 0.70 からは， コールバック・ルーチンにより処理の有無を指定するため
+の API が用意されています。 まだ仕様が決定していないのでテスト以外の使用
+は控えてください。今のところは『個別の格納ファイル名変更』くらいにしか使
+えません。 UNARJ.DLL の頃のまま進んでいれば，OpenArchive 系 API で，すべ
+て実装されるはずだったのですが…。
+
+
+-----------------------------------------------------------------------
+%1. 各 API の説明。
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjSetEnumMembersProc(
+                UNLHA_WND_ENUMMEMBPROC  _lpEnumProc
+            )
+-----------------------------------------------------------------------
+順序数   99 : UnarjSetEnumMembersProc
+        399 : UnarjSetEnumMembersProcA
+        699 : UnarjSetEnumMembersProcW
+要求版  UnarjSetEnumMembersProc  : 0.70
+        UnarjSetEnumMembersProcA : 0.99
+        UnarjSetEnumMembersProcW : 0.99
+機能
+        UNARJ32.DLL が呼び出すコールバック関数の登録を行います。
+
+引数
+        _lpEnumProc     UNARJ32.DLL が呼び出すコールバック関数へのポイン
+                        タ。詳細は後述の Unlha_EnumMembers_Proc の項目を
+                        参照してください。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中など登録に失敗した場合には FALSE を返します。
+                        実際のエラーコードを得るには UnarjGetLastError()
+                        API を使用してください。
+
+Unicode
+        Ver 0.99 以降では Unicode 版と ANSI 版が実装されていますが，UNARJ-
+        32.DLL は内部動作が Unicode に対応していないため，常に ANSI へ変換
+        されて処理が行われる点に注意が必要となります。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjClearEnumMembersProc(
+                VOID
+            )
+-----------------------------------------------------------------------
+順序数  100
+要求版  0.70
+機能
+        UnarjSetEnumMembersProc() で行った関数の登録を解除します。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中など解除に失敗した場合には FALSE を返します。
+                        実際のエラーコードを得るには UnarjGetLastError()
+                        API を使用してください。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjSetEnumMembersProc64(
+                UNLHA_WND_ENUMMEMBPROC  _lpEnumProc,
+                DWORD                   _dwStructSize
+            )
+-----------------------------------------------------------------------
+順序数  110
+要求版  0.70
+機能
+        UNARJ32.DLL が呼び出すコールバック関数の登録を行います。
+
+引数
+        _lpEnumProc     UNARJ32.DLL が呼び出すコールバック関数へのポイン
+                        タ。詳細は後述の Unlha_EnumMembers_Proc の項目を
+                        参照してください。
+        _dwStructSize   使用する構造体のモード。実際には UNLHA_ENUM_MEM-
+                        BER_INFO， UNLHA_ENUM_MEMBER_INFO64 のどちらかで
+                        使用するものを決定し，そのサイズを指定する必要が
+                        あります。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中など登録に失敗した場合には FALSE を返します。
+                        実際のエラーコードを得るには UnarjGetLastError()
+                        API を使用してください。
+
+注意
+        通常，API で使用する構造体については，仕様変更等が発生した場合に
+        は，構造体のサイズ情報等を利用してアプリ側で対応することになりま
+        すが， 使用 DLL の改版という比較的軽微な変更のために既存のアプリ
+        が一時的にしろ利用できなくなるのは不便です。
+        そのような状況を回避し，アプリ側で対応時期を決定できるようにする
+        ため， この API については，API としての見通しが悪くなるデメリッ
+        トを無視して，モード指定を行うようになっています。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjClearEnumMembersProc64(
+                VOID
+            )
+-----------------------------------------------------------------------
+順序数  111
+要求版  0.70
+機能
+        UnarjSetEnumMembersProc64() で行った関数の登録を解除します。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中など解除に失敗した場合には FALSE を返します。
+                        実際のエラーコードを得るには UnarjGetLastError()
+                        API を使用してください。
+
+-----------------------------------------------------------------------
+BOOL CALLBACK Unlha_EnumMembers_Proc(
+                  LPVOID  _lpInfo
+              )
+-----------------------------------------------------------------------
+要求版  0.70
+機能
+        書庫の情報を受け取るための，アプリケーションで定義されたコールバッ
+        ク関数です。
+        格納ファイル名等の指定を細かく行いたい場合などでの使用を本来の目
+        的としているため，Unarj() で指定されたスイッチ等を反映して検索を
+        行った結果，マッチしたものについてのみここで指定したコールバック
+        関数が呼ばれる仕様となっています。
+
+引数
+        _lpInfo     書庫のメンバの情報を格納した構造体へのポインタ。この
+                    構造体の情報を書き換えた上で TRUE を返すことで UNARJ-
+                    32.DLL に各種の処理を行わせることができます。実際には，
+                    次のどちらかになります。
+
+                LPUNLHA_ENUM_MEMBER_INFO _lpInfo
+                        UnarjSetEnumMembersProc() か  sizeof(UNLHA_ENUM_
+                        MEMBER_INFO) を指定して UnarjSetEnumMembersProc-
+                        64() を使用した場合。
+                LPUNLHA_ENUM_MEMBER_INFO64 _lpInfo
+                        sizeof(UNLHA_ENUM_MEMBER_INFO64)  を指定して Un-
+                        arjSetEnumMembersProc64() を使用した場合。
+
+戻り値
+        TRUE        _lpInfo  の情報に従って UNARJ32.DLL に処理を行わせま
+                    す。
+        FALSE       UNARJ32.DLL に当該メンバの処理をスキップさせます。
+
+
+-----------------------------------------------------------------------
+%2. UNLHA_ENUM_MEMBER_INFO の構造
+-----------------------------------------------------------------------
+構造体定義
+    struct {
+        DWORD           dwStructSize;
+        UINT            uCommand;
+        DWORD           dwOriginalSize;
+        DWORD           dwCompressedSize;
+        DWORD           dwAttributes;
+        DWORD           dwCRC;
+        UINT            uOSType;
+        WORD            wRatio;
+        FILETIME        ftCreateTime;
+        FILETIME        ftAccessTime;
+        FILETIME        ftWriteTime;
+        TCHAR           szFileName[FNAME_MAX32 + 1];
+        TCHAR           dummy1[3];
+        TCHAR           szAddFileName[FNAME_MAX32 + 1];
+        TCHAR           dummy2[3];
+    } UNLHA_ENUM_MEMBER_INFO, *LPUNLHA_ENUM_MEMBER_INFO;
+
+メンバの説明
+    dwStructSize        この構造体のサイズが格納されています。値を書き換
+                        えないようにお願いします。
+    uCommand            Unarj() がどの命令を処理中かを示します。
+                        UNLHA_LIST_COMMAND      l，v 命令
+                        UNLHA_EXTRACT_COMMAND   e，x 命令
+                        UNLHA_PRINT_COMMAND     p 命令
+                        UNLHA_TEST_COMMAND      t 命令
+    dwOriginalSize      メンバのファイルサイズ。
+    dwCompressedSize    メンバの圧縮後のファイルサイズ。
+    dwAttributes        メンバの属性。
+    dwCRC               メンバのチェックサム。
+    uOSType             メンバが作成された際に使用された OS。
+                                 0      MS-DOS
+                                 1      PRIMOS
+                                 2      UNIX
+                                 3      AMIGA
+                                 4      MAC-OS
+                                 5      OS/2
+                                 6      APPLE GS
+                                 7      ATARI ST
+                                 8      NEXT
+                                 9      VAX VMS
+                                10      その他 (Windows95)
+    wRatio              メンバのパーミル (千分率) による圧縮率。
+    ftCreateFile        FILETIME 形式によるファイルの作成日時。FILETIME 形
+                        式とは， Jan.1,1601 00:00:00 からの 100ns 単位の経
+                        過時間を 64 ビットの数値で表したものです。詳しくは
+                        Win32 API のヘルプ等を参照してください。
+    ftAccessTime        FILETIME 形式によるファイルの参照日時。
+    ftWriteTime         FILETIME 形式によるファイルの更新日時。
+    szFileName          メンバのパスを含めた名前。
+    szAddFileName       e 命令等の場合にはここで示されているディレクトリと
+                        名前で展開が行われます。
+
+
+-----------------------------------------------------------------------
+%3. UNLHA_ENUM_MEMBER_INFO64 の構造
+-----------------------------------------------------------------------
+構造体定義
+    struct {
+        DWORD           dwStructSize;
+        UINT            uCommand;
+        ULHA_INT64      llOriginalSize;
+        ULHA_INT64      llCompressedSize;
+        DWORD           dwAttributes;
+        DWORD           dwCRC;
+        UINT            uOSType;
+        WORD            wRatio;
+        FILETIME        ftCreateTime;
+        FILETIME        ftAccessTime;
+        FILETIME        ftWriteTime;
+        TCHAR           szFileName[FNAME_MAX32 + 1];
+        TCHAR           dummy1[3];
+        TCHAR           szAddFileName[FNAME_MAX32 + 1];
+        TCHAR           dummy2[3];
+    } UNLHA_ENUM_MEMBER_INFO, *LPUNLHA_ENUM_MEMBER_INFO;
+
+メンバの説明
+    dwStructSize        この構造体のサイズが格納されています。値を書き換
+                        えないようにお願いします。
+    uCommand            Unarj() がどの命令を処理中かを示します。
+                        UNLHA_LIST_COMMAND      l，v 命令
+                        UNLHA_EXTRACT_COMMAND   e，x 命令
+                        UNLHA_PRINT_COMMAND     p 命令
+                        UNLHA_TEST_COMMAND      t 命令
+    llOriginalSize      メンバのファイルサイズ。
+    llCompressedSize    メンバの圧縮後のファイルサイズ。
+    dwAttributes        メンバの属性。
+    dwCRC               メンバのチェックサム。
+    uOSType             メンバが作成された際に使用された OS。
+                                 0      MS-DOS
+                                 1      PRIMOS
+                                 2      UNIX
+                                 3      AMIGA
+                                 4      MAC-OS
+                                 5      OS/2
+                                 6      APPLE GS
+                                 7      ATARI ST
+                                 8      NEXT
+                                 9      VAX VMS
+                                10      その他 (Windows95)
+    wRatio              メンバのパーミル (千分率) による圧縮率。
+    ftCreateFile        FILETIME 形式によるファイルの作成日時。FILETIME 形
+                        式とは， Jan.1,1601 00:00:00 からの 100ns 単位の経
+                        過時間を 64 ビットの数値で表したものです。詳しくは
+                        Win32 API のヘルプ等を参照してください。
+    ftAccessTime        FILETIME 形式によるファイルの参照日時。
+    ftWriteTime         FILETIME 形式によるファイルの更新日時。
+    szFileName          メンバのパスを含めた名前。
+    szAddFileName       e 命令等の場合にはここで示されているディレクトリと
+                        名前で展開が行われます。
+
+
+-----------------------------------------------------------------------
+%4. コマンドによる処理の違い。
+-----------------------------------------------------------------------
+
+　現在のバージョンでは UNLHA_ENUM_MEMBER_INFO 構造体のうち，実際に利用さ
+れるのは szFileName と szAddFileName のみです。(^^;;
+
+   (1)  UNLHA_LIST_COMMAND      l，v 命令
+
+        構造体の情報は無視され，TRUE が返されたものについてリストを表示。
+
+   (2)  UNLHA_EXTRACT_COMMAND   e，x 命令
+
+        次の情報を利用してメンバを展開。
+            szAddFileName       ここで指定されたディレクトリと名前でファ
+                                イルを展開。
+
+   (3)  UNLHA_PRINT_COMMAND     p 命令
+
+        構造体の情報は無視され， TRUE が返されたものについてバッファへの
+        出力が行われます。
+
+   (4)  UNLHA_TEST_COMMAND      t 命令
+
+        構造体の情報は無視され， TRUE が返されたものについてテストが行わ
+        れます。
+
+=======================================================================

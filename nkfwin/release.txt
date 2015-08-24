@@ -1,0 +1,206 @@
+nkf.exe nkf32.dll Windows用 ネットワーク用漢字コード変換フィルタ  v2.1.1
+
+--------------------------------------------------------------------------
+From: ichikawa@flab.fujitsu.JUNET (Itaru Ichikawa)
+Newsgroups: fj.sources,fj.kanji
+Subject: Network Kanji Filter
+Date: 18 Aug 87 11:14:21 GMT
+ＰＤＳとして、Network Kanji Filter (NKF)のソースを投稿します。
+--------------------------------------------------------------------------
+http://sourceforge.jp/projects/nkf/
+プロジェクト: nkf Network Kanji Filter 
+ものすごく古い漢字コード変換プログラムであるnkfを、メンテナンスするプロジェクトです。
+--------------------------------------------------------------------------
+http://sourceforge.jp/projects/nkf/releases/48945/
+リリースノート
+
+Ruby 1.9.2 がリリースされたので、nkf 2.1.1 をリリースします。
+
+基本的にバグ修正しかしていません。具体的には以下の通りです。
+
+* Shift_JIS の alias に MS_Kanji を追加
+* eucJP-ms と eucJP-ascii がいわゆる半角カナを全角に変換していたのを修正
+* CP50220 がいわゆる半角カナを全角に変換していなかったのを修正
+* その他のバグ修正
+
+詳細は Git のコミットログを見てください。
+http://git.sourceforge.jp/view?p=nkf/nkf.git
+--------------------------------------------------------------------------
+
+これはnkfの2.1.1の2010/9/15版をVA007219がWindows用にコンパイルし、配布
+しているものです。
+
+UTF-8, UTF-16の対応はv2.0からです。
+
+
+nkfwin.zip                               配布ファイルです。
+
+nkf.txt                                  マニュアルです。
+release.txt                              このファイルです。
+dll(developer)\api.txt                   開発者向けの技術資料です。
+dll(developer)\nkf32.h                   開発者向けのファイルです。
+dll(developer)\nkf32.lib                 開発者向けのファイルです。
+vc2005\dll(98,Me)\nkf32.dll              Windows 98,Me用のnkf32.dllです。
+vc2005\dll(NT,2000,XP,Vista,7)\nkf32.dll Windows NT,2000,XP,Vista,7用のnkf32.dllです。
+win32(98,Me,NT,2000,XP,Vista,7)ISO-2022-JP\nkf.exe nkf本体です。
+                                         Default output encodingはISO-2022-JPです。
+win32(98,Me,NT,2000,XP,Vista,7)ISO-2022-JP\nkfwin.exe
+                                         上記のコマンドラインを使用しないものです。
+vc2005\win32(98,Me,NT,2000,XP,Vista,7)Windows-31J\nkf32.exe nkf本体です。
+                                         Default output encodingはWindows-31Jです。
+vc2005\win32(98,Me,NT,2000,XP,Vista,7)Windows-31J\nkfwin32.exe
+                                         上記のコマンドラインを使用しないものです。
+
+vc2005の下のプログラムはWindows 95は動作対象外です。
+
+nkf.exeは「nkf Win32版」として配布されているnkf 1.7(nkf3217.lzh)に誤変換の
+不具合があるためnkf v2.1をWindowsに移植したものです。
+nkf.exeの名称は必要に応じてnkf32.exe等に変更してください。
+nkf.exeの省略時の出力コードはJISです。
+nkf 1.7(nkf3217.lzh)と同様に省略時の出力コードがShift_JISとなるものはnkf32.exe
+です。
+
+nkf.exe, nkf32.exeはコマンドラインを使用するコンソールプログラムです。
+
+nkfwin.exe, nkfwin32.exeはコマンドラインを使用しないウインドウプログラムです。
+出力は-Oで指定してください。--overwriteでファイルを上書きする方法もあります。
+-g --guess -v --help -V --versionはMessageBoxで表示します。
+
+nkf.exe, nkfwin.exe, nkf32.exe, nkfwin32.exeインストール方法
+適当なディレクトリにおいてください。
+nkf.exe, nkfwin.exe, nkf32.exe, nkfwin32.exeにはnkf32.dllは不要です。
+実行時にセキュリティの警告が表示される場合は「このファイル…常に警告する」の
+チェックを外すかプロパティの[全般]の「ブロックの解除」を行ってください。
+http://hp.vector.co.jp/authors/VA007219/nkfwin3.gif
+http://hp.vector.co.jp/authors/VA007219/nkfwin4.gif
+
+nkf.exe, nkfwin.exe, nkf32.exe, nkfwin32.exeアンインストール方法
+ファイルを削除してください。レジストリは使用していません。
+
+使用例1
+1. コマンドプロンプトを開きます。
+2. nkf.exe のあるディレクトリへ移ります。
+   cd "D:\TEMP\nkfwin\win32(ISO-2022-JP)"
+   e:
+3. nkf オプション 入力ファイル名 >出力ファイル名 とします。
+  nkf -Sw "C:\Documents andSettings\xxx\My Documents\yyy\index.html" >"D:\ftp\index.html"
+  この例ではオプションのSにより入力ファイル形式がShift_JISとみなします。
+  オプションのwにより出力形式をUTF-8にします。>により出力先を指定します。
+使用例2
+1. コマンドプロンプトを開きます。
+2. 変換したいファイルのあるディレクトリへ移ります。
+   cd "D:\TEMP"
+   d:
+3. nkf オプション ファイル名 とします。
+   "D:\TEMP\nkfwin\win32(98,Me,NT,2000,XP,Vista,7)ISO-2022-JP\nkf32.exe" --overwrite *.*
+   オプションの--overwriteによりファイルを上書きします。
+   *.*により現在のディレクトリの全ファイルを対象にします(サブディレクトリは
+   Permission deniedのエラーになりますが害はありません)。
+使用例3
+1. 「ファイル名を指定して実行」を開きます。
+2. nkfwin.exeファイルをドラッグします。
+3. オプションを入れます。
+4. 対象ファイルをドラッグします。
+5. OKをクリックします。
+nkfwin起動画面
+  http://hp.vector.co.jp/authors/VA007219/nkfwin0.gif
+nkfwin実行画面(MessageBox表示)
+  http://hp.vector.co.jp/authors/VA007219/nkfwin1.gif
+
+nkf32.dllは「NKF32.DLL 漢字コード変換を行うDLL」として配布されているnkf32.dll 
+1.03a(nkf32103a.lzh)がUTF-8, UTF-16に未対応のためnkf v2.1を移植したものです。
+
+nkf32.dllインストール方法
+たとえアプリケーションの作者がC:\WINDOWS\SYSTEM、C:\WINNT\SYSTEM32、
+C:\WINDOWS\SYSTEM32などにコピーするように指示している場合であっても、特に支障
+がないかぎりアプリケーションと同一ディレクトリにコピーしてください。
+
+Windows 98,Meの場合のインストール方法
+"dll(98,Me)\nkf32.dll"を使いたいアプリケーションと同一ディレクトリか、
+WindowsのSYSTEMフォルダー(C:\WINDOWS\SYSTEMなど)にコピーします。
+上書きが出来ない場合はMS-DOS起動ディスクなどでMS-DOSを起動してからコピーして
+ください。削除できないファイルを削除するツールを使う方法もあります。
+
+Windows NT,2000,XP,Vista,7の場合のインストール方法
+"dll(NT,2000,XP,Vista,7)\nkf32.dll"を使いたいアプリケーションと同一ディレクトリ
+か、WindowsのSYSTEM32フォルダー(C:\WINDOWS\SYSTEM32、C:\WINNT\SYSTEM32など)に
+コピーします。
+上書きが出来ない場合はすでにあるファイルの名前を変更してください(nkf32.dll → 
+nkf32old.dll など)。再起動が必要です。削除できないファイルを削除するツール
+を使う方法もあります。
+配布ファイルを展開してもエクスプローラでnkf32.dllファイルが見つからない場合は
+エクスプローラの設定の「フォルダオプション」の「表示」ですべてのファイルを表示
+する設定に変更してください。
+
+nkf32.dllアンインストール方法
+ファイルを削除してください。レジストリは使用していません。
+
+
+連絡先
+MS-DOS, Win32のnkf.exe, nkf32.dll, nkfwin.exe, nkf32.exe, nkfwin32.exe に固有
+の問い合わせはVA007219 http://hp.vector.co.jp/authors/VA007219/#contact へ
+お願いします。
+一般的な問い合わせは「プロジェクト: nkf Network Kanji Filter」(以下
+nkfプロジェクトと表記) https://sourceforge.jp/projects/nkf/ へお願いします。
+フォーラム
+http://sourceforge.jp/forum/forum.php?forum_id=1007
+
+作者
+http://www.vector.co.jp/soft/win95/util/se295331.html
+で表示されている作者について(敬称略・表示順)
+VA007219 nkfプロジェクト・メンバー MS-DOS, Win32版nkf.exe移植者(v1.9より), Win32版nkf32.dll移植者(v2.4.1より)
+こうの しんじ nkfプロジェクト・メンバー
+兼頭 武 Win32版nkf32.dll移植者(v2.0.2より)
+古川 令 nkfプロジェクト・メンバー
+市川 至 UNIX版原作者
+森 和彦 MS-DOS, Win16, Win32, OS/2版nkf.exe移植者(v1.7まで)
+成瀬 nkfプロジェクト・メンバー
+
+
+再配布
+本ソフトウェアの一部(nkf32.dll等)を取り出して再配布する時は、入手方法として
+下記のURLを明記してください。
+http://hp.vector.co.jp/authors/VA007219/
+ただし、本ソフトウェアの全ファイルを無変更で再配布する時と、nkfプロジェクト
+からの配布物のみを再配布する時は、上記のURLを明記する必要はありません。
+nkfプロジェクトからの配布物とは https://sourceforge.jp/projects/nkf/ より入手
+できる次のファイルをいいます。 
+nkf32.h
+nkf.txt (nkf.doc)
+
+
+権利表示 (nkf -v実行結果より)
+Network Kanji Filter Version 2.1.1 (2010-08-08)
+Copyright (C) 1987, FUJITSU LTD. (I.Ichikawa).
+Copyright (C) 1996-2010, The nkf Project.
+
+nkfプロジェクトからの配布物の配布条件等は2.0.9よりzlib/libpng Licenseに変更
+になりました。
+オリジナルのnkf.cに記載されている内容について転記しておきます。
+/*
+ * Copyright (c) 1987, Fujitsu LTD. (Itaru ICHIKAWA).
+ * Copyright (c) 1996-2010, The nkf Project.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ * claim that you wrote the original software. If you use this software
+ * in a product, an acknowledgment in the product documentation would be
+ * appreciated but is not required.
+ *
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ * misrepresented as being the original software.
+ *
+ * 3. This notice may not be removed or altered from any source distribution.
+ */
+#define NKF_VERSION "2.1.1"
+#define NKF_RELEASE_DATE "2010-08-08"
+#define COPY_RIGHT \
+    "Copyright (C) 1987, FUJITSU LTD. (I.Ichikawa).\n" \
+    "Copyright (C) 1996-2010, The nkf Project."

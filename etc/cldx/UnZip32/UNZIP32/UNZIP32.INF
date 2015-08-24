@@ -1,0 +1,86 @@
+;
+; UnZIP32.DLL installation configuration.
+;
+; Copyright 1996-2006 CSD,inc. and shoda T.
+;
+[version]
+signature="$CHICAGO$"
+SetupClass=BASE
+
+[DefaultInstall]
+CopyFiles = UnZip32.copy.Dll, UnZip32.copy.Win, UnZip32.Files.Inf
+AddReg    = UnZip32.Reg
+
+[DefaultUnInstall]
+DelFiles  = UnZip32.copy.Dll, UnZip32.copy.Win, UnZip32.Files.Inf
+DelReg    = UnZip32.Reg
+
+[Optional Components]
+UnZip32Install
+
+[UnZip32Install]
+CopyFiles = UnZip32.copy.Dll, UnZip32.copy.Win, UnZip32.Files.Inf
+AddReg    = UnZip32.Reg
+
+OptionDesc = %UNZIP32%
+Tip = %UNZIP32TIP%
+InstallType = 10 ;Typical, Custom.
+Uninstall = DefaultUnInstall
+
+[SourceDisksNames]
+55="UNZIP32","",1
+
+[SourceDisksFiles]
+UNZIP32.INF=55
+
+[DestinationDirs]
+UnZip32.copy.Dll=11
+UnZip32.copy.Win=10
+UnZip32.Files.Inf = 17
+UnZip32.Files.Hlp = 18
+
+[UnZip32.copy.Dll]
+UNZIP32.DLL
+
+[UnZip32.copy.Win]
+;UNZIPFL.ICO
+
+[UnZip32.Files.Inf]
+UNZIP32.INF
+
+[UnZip32.Files.Hlp]
+
+[UnZip32.Reg]
+HKLM,%UDHERE%,DisplayName,,%UNZIP32%
+HKLM,%UDHERE%,UninstallString,,"%10%\rundll.exe setupx.dll,InstallHinfSection DefaultUninstall 132 %17%\UNZIP32.INF"
+
+;;HKCR,.zip,,,"ZipFile"
+;;HKCR,.zip,"Content Type",,"application/x-zip"
+
+;;HKCR,ZipFile,,,"ZIP File"
+;;HKCR,ZipFile\DefaultIcon,,,"%11%\UNZIP32.DLL,1"
+;;HKCR,ZipFile\Shell\ExtractHere,,,"%UnZip32Accel%"
+;;HKCR,ZipFile\Shell\ExtractHere\command,,,"rundll32.exe UNZIP32.DLL,UnZipCommandLine ""%1"""
+
+HKCU,Software\ArchiverDll\Archiver,"UNZIP32",,"%11%\UNZIP32.DLL"
+
+HKCU,Software\ArchiverDll\UNZIP32
+HKCU,Software\ArchiverDll\UNZIP32,"Copyright",,"InfoZip and (c)1993-2006 by shoda T."
+HKCU,Software\ArchiverDll\UNZIP32,"Sufix",,"ZIP|EXE|"
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"Version",,"542"
+HKCU,Software\ArchiverDll\UNZIP32\Settings,"List",,"-l"
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"Archive",,""
+HKCU,Software\ArchiverDll\UNZIP32\Settings,"UnArchive",,"-x"
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"directory",,"\"
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"ShowComment",1,1
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"ConvertLinefeed",1,0
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"AllowSpace",1,1
+;HKCU,Software\ArchiverDll\UNZIP32\Settings,"VMSVersionNumber",1,0
+
+
+[Strings]
+UNZIP32="UnZip32.DLL Common Archivers Library"
+UNZIP32TIP="Tip of UnZip32"
+UnZip32Name="UNZIP32:Extract here"
+UnZip32Accel="UNZIP32:Extract here(&Z)..."
+UDHERE="Software\Microsoft\Windows\CurrentVersion\Uninstall\UnZip32"

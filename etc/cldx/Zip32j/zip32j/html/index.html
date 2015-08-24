@@ -1,0 +1,124 @@
+<html>
+<head><title>ZIP32J.DLL @OpenLab</title></head>
+<body>
+<a href="http://openlab.ring.gr.jp/tsuneo/index-j.html">Tsuneo's OpenLab[Japanese]</a>
+<a href="http://openlab.ring.gr.jp/tsuneo/zip32j/">(ZIP32J.DLL)</a>
+<hr>
+<h1>ZIP32J.DLL
+<a href="http://www.csdinc.co.jp/archiver/"><img src="http://www.csdinc.co.jp/archiver/images/archivers.gif" border="0" width="88" height="31"></a width=88 height=31>
+</h1>
+
+<h2>はじめに</h2>
+<ul>
+ZIP32J.DLLはZIP形式の圧縮ライブラリです。<br>
+Info-ZIPのZIP32.DLLを統合アーカイバプロジェクトAPI風に使えるようにラップしたものです。
+</ul>
+
+<h2>ダウンロード</h2>
+<ul>
+別途、Info-ZIPのZIP32.DLL(Ver2.3以降)をインストールしてください。<br>
+なお、ZIP32J.DLLに対応したアプリケーションプログラムによっては、IZIP32J.DLLやZCRYPT32.DLLが存在するかどうかチェックしている場合があります。<br>
+ZIP形式の圧縮ができない場合は、IZIP32J.DLLもインストールしてみてください。<br>
+圧縮時にパスワードを付加できない場合は、ZCRYPT32.DLLもインストールしてみてください。<br>
+ZIP32J.DLL自体はIZIP32J.DLLもZCRYPT32.DLLも必要としません。Info-ZIPのZIP32.DLL(Ver2.3以降)のみを必要とします。<br>
+Info-ZIPのZIP32.DLL(Ver2.3以降)が存在しない場合は、IZIP32J.DLLやZCRYPT32.DLLを使用します。ただし一部の機能をサポートしません。
+	<ul>
+	<li><a href="http://www.csdinc.co.jp/archiver/lib/zip32j.html">統合アーカイバプロジェクト(ZIP32J)</a>
+	<li><a href=ftp://ftp.icce.rug.nl/infozip/WIN32/>ftp://ftp.icce.rug.nl/infozip/WIN32/</a><a href=ftp://ftp.icce.rug.nl/infozip/WIN32/zcr23dN.zip>(zcr23dN.zip)</a>
+	</ul>
+<h3>最新版ダウンロード</h3>
+1時間おきにCVSが更新されているかチェックして、更新されていればパッケージを作成しています。<br>
+(注:パッケージ全体の入手方法を提供しないDLL単体の再配布は、なるべく避けた方がいいと思います)
+	<ul>
+	<li>ZIP32J.DLL Latest Version:
+		<ul>
+		<a href="http://openlab.ring.gr.jp/tsuneo/soft/zip32j/">Package with DLL and Source code</a><br>
+		<a href="http://openlab.ring.gr.jp/tsuneo/soft/zip32j/zip32j/ZIP32J.DLL">DLL Unit</a><br>
+		<a href="http://openlab.ring.gr.jp/tsuneo/soft/zip32j/zip32j/CHANGES.TXT">更新履歴</a>
+		</ul>
+	<li>UNZIPSFX for WIN32/GUI V0.01(SFX header of Windows GUI)
+		<ul>
+		<a href="http://www.csdinc.co.jp/archiver/lib/zips3001.lzh">Package with binary and Source code(patch)</a><br>
+		<a href="http://openlab.ring.gr.jp/tsuneo/soft/zipsfx/sfx32gui.dat">DLL Unit(sfx32gui.dat)</a>
+		</ul>
+	</ul>
+<h3>正規公開版ダウンロード</h3>
+	<ul>
+	<li><a href="http://www.csdinc.co.jp/archiver/lib/zip32j.html">統合アーカイバプロジェクト(ZIP32J)</a>
+	<li><a href="http://www.vector.co.jp/soft/win95/util/se062163.html">VECTOR(ZIP32J)</a>
+	</ul>
+</ul>
+
+<h2>機能</h2>
+<ul>
+<li>.zip形式の圧縮/展開が行えます。
+<li>統合アーカイバプロジェクトのAPI仕様に準拠。ZIP32J.DLLのAPIに対応した多数のアプリケーションで利用できます。
+</ul>
+
+<h2>動作環境</h2>
+<ul>
+<li>Windows 95/NT 4.0以上(一般的なWIN32APIが使えるプラットホーム)
+</ul>
+
+<h2>使い方</h2>
+<ul>
+<h3>アプリケーション利用者</h3>
+	<ul>
+	<li>エクスプローラの設定によってはZIP32J.DLLが見えない場合があります。その場合はエクスプローラのメニューバーの表示/オプションでオプションダイアログを出し、「全てのファイルを表示」をチェックし、「登録されているファイルの拡張子は表示しない」のチェックを外してください。
+	<li>ZIP32J.DLLをWindowsのSYSTEMフォルダにコピーしてください。<br>
+	Windows95/98の場合は普通C:\Windows\Systemとなります。<br>
+	WindowsNTの場合は普通C:\WINNT\SYSTEM32となります。
+	<li>Info-ZIPのZIP32.DLLもSYSTEMフォルダにコピーしてください。
+	<li>UNZIPSFX for WIN32/GUI(sfx32gui.dat)もSYSTEMフォルダにコピーしてください。
+	<li>ZIP32J.DLLに対応したアプリケーションプログラムをお使いください。
+	</ul>
+<h3>アプリケーション開発者</h3>
+	<ul>
+	<li>基本的なAPIの使い方はUNLHA32.DLLとほぼ同じです。UNLHA32.DLLのドキュメントを参考にしてください。
+	<li>いくつかドキュメントが付属していますので、そちらもご覧ください。
+	</ul>
+</ul>
+
+<h2>バージョンについて</h2>
+<ul>
+Ver 0.32以降、オープン開発体制に移行。
+</ul>
+
+<h2>開発に参加するには?</h2>
+<ul>
+CVSによる最新版の取得、開発も行っています。利用方法、書き込み権の申請は<a href="../tar32/">tar32のページ</a>を参照してください。
+<h3>CVSの設定</h3>
+設定は以下の通りです。
+但し、ゲスト用アカウントではファイルの変更、追加はできません。
+<table border=1>
+<tr><td>通信プロトコル</td>					<td>pserver</td></tr>
+<tr><td>サーバ名</td>						<td>openlab.ring.gr.jp</td></tr>
+<tr><td>CVSパス名</td>						<td>/circus/cvsroot</td></tr>
+<tr><td>モジュール名</td>					<td>zip32j</td></tr>
+<tr><td>ゲスト用ユーザ名(read only)</td>			<td>guest</td></tr>
+<tr><td>ゲスト用パスワード(read only)</td>			<td>guest</td></tr>
+<tr><td>CVSレボジトリ名(ゲストユーザ)</td>			<td>:pserver:guest@openlab.ring.gr.jp:/circus/cvsroot</td></tr>
+</table>
+</ul>
+
+<h2>関連サイト</h2>
+<ul>
+<li>
+	<a href="http://www.csdinc.co.jp/archiver/">統合アーカイバプロジェクト</a>
+<li>
+	<a href="http://www.info-zip.org/pub/infozip/Info-ZIP.html">Info-ZIP</a>
+</ul>
+
+<h2>問い合わせ先</h2>
+このプログラムについての問い合わせはなるべく統合アーカイバメーリングリスト又は開発系メーリングリストにお願いします。私(吉岡)宛に出されてもすぐには返事ができない場合があります。
+<ul>
+<li><a href="http://www.csdinc.co.jp/archiver/docs/ml.html">統合アーカイバプロジェクトメーリングリスト</a><br>
+主にアプリケーションユーザ向け
+<li><a href="http://www.csdinc.co.jp/archiver/dev/ml.html">統合アーカイバプロジェクト開発系メーリングリスト</a><br>
+主にアプリケーション開発、DLL開発にかかわっている、又は興味がある方向け
+</ul>
+
+<hr>
+<a href="mailto:tsuneo@rr.iij4u.or.jp">吉岡 恒夫(Yoshioka Tsuneo/tsuneo@rr.iij4u.or.jp</a>,tsuneo@ring.gr.jp,tsuneo@rr.iij4u.or.jp,QWF00133@nifty.ne.jp)
+</body>
+</html>

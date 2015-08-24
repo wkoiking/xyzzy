@@ -1,0 +1,23 @@
+***************************************************************************
+	ZIP32J.DLL SDK(Sotware Developers Kit)
+	Developer's document(simple)
+***************************************************************************
+
+[First]
+
+This library have COMMON ARCHIVER Interface.
+You need ZIP32.DLL or IZIP32J.DLL too.
+ZIP32.DLL is Info-ZIP's ZIP library.
+IZIP32J.DLL is Japanese localization (and little change) of ZIP32.DLL.
+This libarary can only pack(not unpack).for unpack please use UNZIP32.DLL.
+If you use out of Japanese Windows. You may need to compile perhaps.
+
+[API]
+
+API is written in api_zip.txt
+usage is the same as unlha32.dll.
+
+[Command]
+
+Command is written in cmd_zip.txt.
+usage is nearly the same as zip.exe's command/option.

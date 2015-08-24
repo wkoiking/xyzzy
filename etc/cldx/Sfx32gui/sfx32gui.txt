@@ -1,0 +1,108 @@
+===========================================================================
+【ソ フ ト名】  UNZIPSFX for WIN32/GUI Ver 0.04
+    (ZIPの自己解凍書庫作成部/WIN32用/GUI)
+【登  録  名】　ZIPS3004.ZIP
+【バイト  数】  **.*** Byte 
+【検索  キー】　1:UNZIPSFX 2:圧縮解凍 3:$WIN32 4:#PACK 5:#DLL
+【著作権  者】　吉岡　恒夫(tsuneo@rr.iij4u.or.jp), Info-ZIP
+【移　植　者】　吉岡　恒夫      QWF00133
+【移　植　元】  http://www.info-zip.org/
+【改　変　者】　新山(へろぱ)(heropa@dream.com)
+【対応  環境】　Windows 95(IE4 later), 9x, Me, NT4(IE4 later), 2000, xp
+【開発  言語】　VISUAL C++ Ver6.0(SP6)
+【掲  載  日】　2004/06/xx
+【作成  方法】　UnZipで展開
+【ｿﾌﾄｳｪｱ種別】　フリーウェア
+【ｻﾎﾟｰﾄ   先】  電子メール
+【転載  条件】  (付属文書参照)
+===========================================================================
+【ソフト紹介】
+　ZIPのWIN32/GUI用の自己解凍部です。このファイルを用いて以下のようにするこ
+とで、WIN32用のZIPの自己解凍書庫を作成することができます。
+    copy /b sfx32gui.dat + arcfile.zip arcfile.exe
+以下の作業をして、位置調整(?)を行ったほうがいいようです。
+    zip -A arcfile.exe
+
+　なお、zip32j.dllではsfx32gui.datをWINDOWS\SYSTEMに置いて以下のようにする
+ことで自己解凍書庫が作成できます。
+    "--sfx=sfx32gui.dat arcfile.zip" (又は "--sfx arcfile.zip")
+
+　なお、暗号化書庫にも対応しています。(ZCRYPT27を用いてます)
+　Windows xpのビジュアルスタイルに対応しています。
+　Deflate64形式の書庫に対応しています。(PKZIPか7-zipで作成できる...かも)
+
+【インストール】
+　特に必要ありませんが、展開後WINDOWSのSYSTEMディレクトリにsfx32gui.datをコ
+ピーしておくと、対応アーカイバプログラムが対応してくれるかもしれません。
+
+●ファイル構成
+sfx32gui.txt    説明ファイル(これ)
+sfx32gui.dat    自己解凍部
+sfx32gui.dif    Info-ZIPによるUNZIP Ver5.50のソースプログラムとの差分
+                (GNU diff形式)
+pack.cmd    パッケージ作成 Windows NT コマンド スクリプト
+buildenv.cmd    コンパイル環境作成 Windows NT コマンド スクリプト
+sfx32gui.ico    ビルドに必要なアイコンファイル
+
+●プログラムのコンパイル方法
+　Info-ZIPのホームページ等からUNZIP5.51のソースを入手し、適当なディレクトリ
+にコピーします。その後、このパッケージに付属のzipsfx32.dif, sfx32gui.ico,
+buildenv.cmd, pack.cmd をそのディレクトリにコピーし、コピーしたディレクトリ
+に移動してから buildenv.cmd を実行します。
+その後は、src\unzipsfx.dswを開いてコンパイルできると思います。
+　OSは、Windows NT/2000/xpで、GNU patch, GNU diff, unzip.exe, zip.exeが必要
+です。
+　プロジェクトが読めない場合、改行コードがCRLFになっているか確認してくださ
+い。Visual C++ Ver6.0のプロジェクト関連ファイルは、改行コードがLFだけのも
+のは読み込めないようです。
+
+●関係資料リンク集(?)
+「Info-ZIPホームページ」
+http://www.info-zip.org/
+「UNZIPSFX for WIN32/GUI」
+NIFTYServe FWINNT LIB#11    ZIPS3???.LZH
+「GNU diff/GNU patch」
+ftp://ftp.iij.ad.jp/pub/simtelnet/gnu/djgpp/v1gnu/dif26bn.zip (Binary)
+ftp://ftp.iij.ad.jp/pub/simtelnet/gnu/djgpp/v1gnu/dif26dc.zip (Document)
+
+●著作権関係
+　このプログラムはInfo-ZIPによるZIPのソース(UNZIP5.51)を元に作成されました。
+　ZIP及びUNZIPのオリジナルのソース/バイナリは無料(もしくは少しの手数料のみ)
+で手に入れることができます。
+　ZIP及びUNZIPのオリジナルのソースは無料(もしくは少しの手数料のみ)で手に入
+れることができることはInfo-ZIPのソースを利用したソフトで明示する必要があり
+ます。詳しくはオリジナルを参照してください。
+　なお、私(吉岡)が改造した部分については自由に使ってもらって結構です。
+　改変者(新山(へろぱ))が改造した部分も同様です。
+　このプログラムはUPXを使用して圧縮されています。
+     The Ultimate Packer for eXecutables 1.24w
+     Copyright (C) 1996-2002 Markus F.X.J. Oberhumer & Laszlo Molnar
+
+●変更点
+        ●●1998/10/11 Ver0.01●●
+・初公開
+        ●●2003/05/08 Ver0.02●●  新山(へろぱ)
+・出力先ディレクトリのダイアログに「参照」ボタンを追加。
+・ダイアログのフォントを「MS UI Gothic」に変更。(この為に、IE4以降必須)
+・ログ表示ダイアログのテキストボックスをReadOnlyに変更。
+・ログ表示ダイアログの使われていない「OK」ボタンを削除。
+・バージョンリソースを追加。
+・UPX Ver1.24wにて圧縮。
+・このドキュメントを修正・変更・追加。
+        ●●2003/06/24 Ver0.03●●  新山(へろぱ)
+・オリジナルのソースをUNZIP5.50に変更。
+・Deflate64形式対応。
+・アイコン追加。
+・Windows xp ビジュアルスタイル対応。
+・フォルダの選択ダイアログの新スタイル対応。(フォルダ作成・サイズ可変)
+・入力されている出力先ディレクトリを、フォルダの選択ダイアログのカレント
+  ディレクトリに反映するようにした。
+        ●●2004/06/xx Ver0.04●●  新山(へろぱ)
+・オリジナルのソースをUNZIP5.51に変更。
+・メッセージを日本語化。
+・キャンセルボタン押下時、「中断しますか？」のようなメッセージに「キャン
+　セル」するとそのまま終了するのを、終了しないようにした。
+・Visual C++ Ver6.0(SP6)にてビルド。
+・このドキュメントを修正・変更・追加。
+===========================================================================
+　ダウンロードファイル名を『ZIPS3004.ZIP』としてください。

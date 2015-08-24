@@ -1,0 +1,17 @@
+[ 名    称 ] AISH32.DLL と AISHMV32.DLL
+[バージョン] 0.04
+[ファイル名] AISHD004.lzh
+[ 制作者名 ] 島田博幸（shimaden@annie.ne.jp）
+[ 掲載者名 ] 島田博幸（shimaden@annie.ne.jp）
+[ 動作環境 ] Windows 95、Windows 98、Windows NT（のはず）
+[ 動作確認 ] FMV-450SD2 + Pentium ODP 83MHz + 36MB RAM + Windows 95
+[ 動作確認 ] 自作 Celeron 300A-333MHz + 128MB RAM + Windows 98
+[ 作成方法 ] LHA32 X -A AISHD004.lzh
+[ソフト種別] フリー・ソフトウェア
+[ 転載条件 ] 改変しない限り自由。詳しくは付属文書を読んでください。
+[ 概    要 ] 小笠原博之氏の aish ならびに aishmv コマンドを DLL 化しま
+             した。
+             MS-DOS の ISH.COM のように、分割 ISH ファイルを作ったり復
+             元したりできます。
+             DLL ですので、これに対応しているアプリケーションを使う必要
+             があります。

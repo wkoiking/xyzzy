@@ -1,0 +1,79 @@
+;
+;  エクスプローラのコンテキストメニューから『インストール』を選ぶこと
+;  によりインストールが行えます。通常，オリジナル配布の自己解凍書庫を
+;  実行した場合には，自動的にこのファイルを適用してインストールが終了
+;  しています。
+;
+
+[Version]
+signature="$CHICAGO$"
+SetupClass=BASE
+
+[DefaultInstall.NT]
+CopyFiles = Yz1.copy.Dll, Yz1.copy.Win, Yz1.Files.Inf
+AddReg    = Yz1.Reg
+
+[DefaultInstall]
+CopyFiles = Yz1.copy.Dll, Yz1.copy.Win, Yz1.Files.Inf
+AddReg    = Yz1.Reg
+
+[DefaultUnInstall.NT]
+DelFiles  = Yz1.copy.Dll, Yz1.copy.Win, Yz1.Files.Inf
+DelReg    = Yz1.Reg
+
+[DefaultUnInstall]
+DelFiles  = Yz1.copy.Dll, Yz1.copy.Win, Yz1.Files.Inf
+DelReg    = Yz1.Reg
+
+[Optional Components]
+Yz1Install
+
+[Yz1Install]
+CopyFiles = Yz1.copy.Dll, Yz1.copy.Win, Yz1.Files.Inf
+AddReg    = Yz1.Reg
+
+OptionDesc = %YZ1%
+Tip = %YZ1TIP%
+InstallType = 10 ;Typical, Custom.
+Uninstall = DefaultUnInstall
+
+[SourceDisksNames]
+1="YZ1.DLL",,1
+
+[SourceDisksFiles]
+YZ1DLL.INF=1
+
+[DestinationDirs]
+Yz1.copy.Dll=11
+Yz1.copy.Win=10
+Yz1.Files.Inf = 17
+
+[Yz1.copy.Dll]
+YZ1.DLL
+UNYZ1.DLL
+YZDEC.EXE
+
+[Yz1.copy.Win]
+uinstyzd.exe
+
+[Yz1.Files.Inf]
+YZ1DLL.INF
+
+[Yz1.Reg]
+HKCU,%DLLREG%,,,
+HKCU,%DLLREG%,"YZ1",,"%11%\YZ1.DLL"
+HKCU,%YZ1REG%,,,
+HKCU,%YZ1REG%,"Copyright",,"YAMAZAKI@BinaryTechnology, K.INABA & (c)2000-2009."
+HKCU,%YZ1REG%,"Suffix",,"YZ1|EXE|"
+HKCU,%UYZREG%,,,
+HKLM,%UDHERE%,,,
+HKLM,%UDHERE%,DisplayName,,%YZ1%
+HKLM,%UDHERE%,UninstallString,,"%10%\uinstyzd.exe -u"
+
+[Strings]
+YZ1="YZ1 Common Archivers Library DLL"
+YZ1TIP="Tip of Yz1"
+DLLREG="Software\ArchiverDll\Archiver"
+YZ1REG="Software\ArchiverDll\YZ1"
+UYZREG="Software\ArchiverDll\UNYZ1"
+UDHERE="Software\Microsoft\Windows\CurrentVersion\Uninstall\Yz1.dll"

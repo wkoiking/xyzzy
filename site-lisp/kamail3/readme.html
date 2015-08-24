@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <link rel="stylesheet" href="readme.css" type="text/css" media="screen,print" />
+    <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>KaMailV3</title>
+  </head>
+  <body>
+    <h1>KaMailV3</h1>
+    <p class="copyright">
+      $Id: readme.html 758 2007-12-11 16:29:33Z torihat $
+    </p>
+    <h2 id=notice>注意</h2>
+    <p class="notice">
+      ・このソフトウェアはまだ実験段階にあります。<br>
+      ・実装されていない機能があったりします。<br>
+      ・ちゃんと動かない機能があったりします。<br>
+      ・予告なく仕様が変わる場合があります。<br>
+      ・将来的に実用レベルまで達するかどうかはわかりません。<br>
+      ・アップグレード時には<a href="#upgrade">注意事項</a>を参照してください。</a><br>
+    </p>
+    <h2>目次</h2>
+    <p>
+      <ul>
+	<li><a href="#summary">概要</a></li>
+	<li><a href="#spec">主な特徴</a></li>
+	<li><a href="#license">利用条件等</a></li>
+	<li><a href="#enviroment">動作環境</a></li>
+	<li><a href="#install">インストール</a></li>
+	<li><a href="#settings">設定</a></li>
+	<li><a href="#start">起動</a></li>
+	<li><a href="#usage">使い方</a></li>
+	<li><a href="#search">検索</a></li>
+	<li><a href="#keybind">キーバインド</a></li>
+	<li><a href="#admin">管理用コマンド</a></li>
+	<li><a href="#others">その他</a>
+	  <ul>
+	    <li><a href="#import">KaMailからメールをインポート</a></li>
+	    <li><a href="#mhtml">browser.dll、browserex を利用したHTML表示</a></li>
+	    <li><a href="#popfile">POPFileとの連携</a></li>
+	    <li><a href="#upgrade">アップグレード時の注意事項</a></li>
+	    <li><a href="#pindex">疑似インデックス</a></li>
+	  </ul>
+	</li>
+	<li><a href="#thanks">謝辞</a></li>
+	<li><a href="#changelog">ChangeLog</a></li>
+	<li><a href="#todo">ToDo</a></li>
+      </ul>
+    </p>
+    <h2 id=summary>概要</h2>
+    <p>
+      KamailV3は<a href="http://www.jsdlab.co.jp/~kamei/">xyzzy</a>上で<a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>を利用する検索ベースのメールリーダーです。
+      <a href="http://gmail.google.com/">GMail</a>や、<a href="http://projects.netlab.jp/rast/?manual.ja#l52">morq</a>を参考にさせて頂いて作成しています。
+    </p>
+    <h2 id=spec>主な特徴</h2>
+    <p>
+      <ul>
+	<li>
+	  フォルダによる分類を行わずに、検索によってメールをリストアップします。<br>
+	  検索はメール本文の全文検索の他にヘッダーの各項目での検索を行うことが出来ます。<br>
+	  また、検索条件を「検索フォルダ」として保存しておくことができます。
+	</li>
+	<li>
+	  メールにタグを付けることができ、そのタグを元にメールをリストアップすることができます。<br>
+	  タグは1通のメールに複数付けることができます。
+	</li>
+      </ul>
+    </p>
+    <h2 id=license>利用条件等</h2>
+    <p>
+      <a href="LICENSE.txt">LICENSE.txt</a>をご覧下さい。
+    </p>
+    <h2 id=enviroment>動作環境</h2>
+    <p>
+      <ul>
+	<li><a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>1.4.5以降</li>
+	<li><a href="http://www.jsdlab.co.jp/~kamei/">xyzzy</a>-0.2.2.235 以降</li>
+	<li><a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#junk-library">junk-library</a>/0.0.0.4 以降</li>
+	<li><a href="http://www.osk.3web.ne.jp/~usitukai/">browser.dll拡張版</a> (option)</li>
+	<li><a href="http://ohkubo.s53.xrea.com/xyzzy/#browserex">browserex</a> (option)</li>
+	<li><a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#xml-rpc-modoki">xml-rpc-modoki</a>/0.0.0.5 以降 (option)</li>
+	<li><a href="http://www.csdinc.co.jp/archiver/">統合アーカイバ・プロジェクト</a>の各種DLL (option)</li>
+      </ul>
+    </p>
+    <h2 id=install>インストール</h2>
+    <p>
+      動作には、<a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>が必要です。あらかじめインストールしておいて下さい。
+    </p>
+    <p>
+      <a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#NetInstaller">NetInstaller</a>でインストールするか、<a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#KaMailV3">ダウンロード</a>したアーカイブを system-root 以下に展開してください。
+      また、<a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#junk-library">junk-library</a>が必要ですので、こちらもインストールしてください。
+    </p>
+    <h2 id=settings>設定</h2>
+    <p>
+      ni-autoload を有効にしていない場合は、以下を .xyzzy または siteinit.l に書いてください。
+    </p>
+    <pre>(autoload 'kamail3 "kamail3/defs" t)
+(autoload 'kamail3-toggle "kamail3/defs" t)</pre>
+    <p>
+      設定は、site-lisp/kamail3/config.l.sample を ~/.kamail3/config.l にコピーして必要箇所を記入してください。
+    </p>
+    <p>
+      mailtoでKaMailV3を呼びたい場合には、以下を .xyzzy または siteinit.l に書いてください。<br>
+      [参考] <a href="http://xyzzy.s53.xrea.com/qanda/wiki.cgi?p=ba9f759cc95417aed4356125f1641654">IE の mailto:foo@bar.ac.jp とかで KaMail を呼びたいのですが…。</a>
+    </p>
+    <pre>(autoload 'kamail3-mailto "kamail3/defs" nil)
+(setq *command-line-mailto-hook* #'kamail3-mailto)</pre>
+    <h2 id=start>起動</h2>
+    <p>
+      xyzzy で以下を実行します。
+    </p>
+    <pre>M-x kamail3</pre>
+    <p>
+      いったん引っ込めたり、また出したりする場合は以下を実行します。
+    </p>
+    <pre>M-x kamail3-toggle</pre>
+    <p>
+      これらはデフォルトではキーに割り当てられていませんので、必要に応じて設定してください。
+    </p>
+    <h2 id=usage>使い方</h2>
+    <p>
+      想定している典型的な使い方は、以下のような感じです。
+      <ul style="margin-left: 2em;">
+	<li><strong>g</strong>でメールを取り込む。</li>
+	<li><strong>Space</strong>でメールを読んでいく。</li>
+	<li><strong>r</strong>で返信したりとか。</li>
+	<li>spamだったら<strong>S</strong>でspamへ。</li>
+	<li>いらないメールは<strong>T</strong>でtrashへ。</li>
+	<li>タグをつけたい場合は<strong>t a</strong>とかでタグをつける。</li>
+	<li>ひと通り読み終わったら、<strong>a</strong>でメールをアーカイブ。</li>
+	<li>メールを探したくなったら、<strong>/</strong>で検索とか。</li>
+	<li>・・・などなど。<strong>q</strong>で終了。</li>
+      </ul>
+    </p>
+    <h2 id=search>検索</h2>
+    <dl>
+      <dt>通常検索 （キー：<strong>/</strong>）</dt>
+      <dd>
+	全文検索条件と属性検索条件と表示順指定をスペースで区切って入力します。条件は全てAND条件になります。<br>
+	全文検索条件・属性検索条件のどちらか一つは必ず入力する必要があります。
+	<ul>
+	  <li>
+	    普通に単語をスペース区切りで入力するとAND検索になります。
+	    <pre>例："xyzzy" と "windows" を含むメールを検索
+<span class="prompt">Query:</span> xyzzy windows</pre>
+	  </li>
+	  <li>
+	    正規表現で検索
+	    <pre>例："xyzzy" か "windows" を含むメールを検索
+<span class="prompt">Query:</span> [RX] (xyzzy|windows)</pre>
+	  </li>
+	  <li>
+	    日付の範囲指定をする場合は以下のように指定します。
+	    <pre>例："xyzzy" を含んだ2006/01/01 以降のメールを検索
+<span class="prompt">Query:</span> xyzzy date&gt;=20060101</pre>
+	    <pre>例："xyzzy" を含んだ2006年2月のメールを検索
+<span class="prompt">Query:</span> xyzzy date&gt;=20060201 date&lt;20060301</pre>
+	  </li>
+	  <li>
+	    日付の範囲指定は現在からの相対指定を行うこともできます。検索フォルダとして保存する場合に便利です。
+	    <pre>例："xyzzy" を含んだ3日以内のメールを検索
+<span class="prompt">Query:</span> xyzzy date:3d</pre>
+	    <pre>例："xyzzy" を含んだ1週間以内のメールを検索
+<span class="prompt">Query:</span> xyzzy date:1w</pre>
+	    <pre>例："xyzzy" を含んだ1年前以前のメールを検索
+<span class="prompt">Query:</span> xyzzy date:-1y</pre>
+	  </li>
+	  <li>
+	    日付以外の属性の検索を行う場合。
+	    <pre>例：xyzzy@example.com から来たメールを検索（From に xyzzy@example.com を含むメール）
+<span class="prompt">Query:</span> from:xyzzy@example.com</pre>
+	    <pre>例：Subjectに xyzzy を含むメールを検索
+<span class="prompt">Query:</span> subject:xyzzy</pre>
+	    <pre>例：Subjectを正規表現で検索
+<span class="prompt">Query:</span> subject~(xyzzy|windows)</pre>
+	    <pre>例：xyzzyメーリングリストのメールを検索（完全一致）
+<span class="prompt">Query:</span> x-ml-name=xyzzy</pre>
+	    <pre>例：xyzzy@example.com をFrom,To,Ccのどれかに含むメールを検索
+<span class="prompt">Query:</span> from,to,cc:xyzzy@example.com</pre>
+	  </li>
+	  <li>
+	    表示順を指定する場合。（指定しなければ Date の昇順）
+	    <pre>例："xyzzy" を含んだメールを Date の降順で表示
+<span class="prompt">Query:</span> xyzzy order&gt;date</pre>
+	    <pre>例："xyzzy" を含んだメールを Subject の昇順で表示
+<span class="prompt">Query:</span> xyzzy order&lt;subject</pre>
+	</ul>
+      </dd>
+      <dt>詳細検索 （キー：<strong>?</strong>）</dt>
+      <dd>
+	<a href="http://hyperestraier.sourceforge.net/uguide-ja.html#searchcond">Hyper Estraierの条件式</a>の「全文検索条件の通常書式」と「属性検索条件」と「順序指定」をそのまま指定して検索することができます。
+      </dd>
+    </dl>
+    <h2 id=keybind>キーバインド</h2>
+    <p>
+      <h3 id=summary_buffer>summary buffer でのキーバインド</h3>
+      <table class="data_list">
+	<tr><th rowspan=2>メール受信</th><td align="center"><strong>g</strong></td><td>メールを全て受信</td></tr>
+	<tr><td align="center"><strong>G</strong></td><td>メールを選択受信</td></tr>
+	<tr><th rowspan=8>メール表示<td align="center"><strong>Space</strong></td><td>メールを表示/メールをスクロール</td></tr>
+	<tr><td align="center"><strong>Tab</strong></td><td>次の未読メールを表示</td></tr>
+	<tr><td align="center"><strong>n</strong></td><td>次の行のメールを表示</td></tr>
+	<tr><td align="center"><strong>p</strong></td><td>前の行のメールを表示</td></tr>
+	<tr><td align="center"><strong>;</strong></td><td>メールの属性を表示</td></tr>
+	<tr><td align="center"><strong>s</strong></td><td>添付ファイルを保存</td></tr>
+	<tr><td align="center"><strong>x</strong></td><td>添付ファイルを保存して実行</td></tr>
+	<tr><td align="center"><strong>j</strong></td><td>partialメッセージを結合して表示</td></tr>
+	<tr><th rowspan=11>検索</th><td align="center"><strong>/</strong></td><td>通常検索</td></tr>
+	<tr><td align="center"><strong>?</strong></td><td>詳細検索</td></tr>
+	<tr><td align="center"><strong>→</strong></td><td>次のn件を表示</td></tr>
+	<tr><td align="center"><strong>←</strong></td><td>前のn件を表示</td></tr>
+	<tr><td align="center"><strong>h</strong></td><td>検索履歴メニューを表示</td></tr>
+	<tr><td align="center"><strong>C-x C-s</strong></td><td>検索条件をフォルダとして登録</td></tr>
+	<tr><td align="center"><strong>l f</strong></td><td>メールの送信者で検索</td></tr>
+	<tr><td align="center"><strong>l F</strong></td><td>メールの送信者でFrom,To,Ccを検索</td></tr>
+	<tr><td align="center"><strong>l s</strong></td><td>メールの件名で検索</td></tr>
+	<tr><td align="center"><strong>l t</strong></td><td>メールのスレッドを検索</td></tr>
+	<tr><td align="center"><strong>l m</strong></td><td>メールのIn-Reply-ToもしくはMessage-Idで検索</td></tr>
+	<tr><th rowspan=4>マーク</th><td align="center"><strong>m m</strong></td><td>その行のマークをトグル</td></tr>
+	<tr><td align="center"><strong>m a</strong></td><td>全てマークする</td></tr>
+	<tr><td align="center"><strong>m d</strong></td><td>全てマークを外す</td></tr>
+	<tr><td align="center"><strong>m /</strong></td><td>ヘッダーの条件を指定してマークする</td></tr>
+	<tr><th rowspan=5>メール作成</th><td align="center"><strong>c</strong></td><td>メールを新規作成</td></tr>
+	<tr><td align="center"><strong>r</strong></td><td>メールに返信</td></tr>
+	<tr><td align="center"><strong>R</strong></td><td>全員に返信</td></tr>
+	<tr><td align="center"><strong>f</strong></td><td>メールを転送</td></tr>
+	<tr><td align="center"><strong>F</strong></td><td>メールを添付ファイルとして転送</td></tr>
+	<tr><th rowspan=4>タグ</th><td align="center"><strong>t s</strong></td><td>タグを選択して検索</td></tr>
+	<tr><td align="center"><strong>t a</strong></td><td>タグを入力して付ける</td></tr>
+	<tr><td align="center"><strong>t d</strong></td><td>タグを外す</td></tr>
+	<tr><td align="center"><strong>t m</strong></td><td>マークしたメッセージにタグを付ける</td></tr>
+	<tr><th rowspan=9>フォルダ</th><td align="center"><strong>e</strong></td><td>フォルダ選択メニューを表示</td></tr>
+	<tr><td align="center"><strong>a</strong></td><td>既読メールをアーカイブ</td></tr>
+	<tr><td align="center"><strong>A</strong></td><td>メールをアーカイブ</td></tr>
+	<tr><td align="center"><strong>I</strong></td><td>メールをinboxへ移動</td></tr>
+	<tr><td align="center"><strong>S</strong></td><td>メールをspamへ移動</td></tr>
+	<tr><td align="center"><strong>T</strong></td><td>メールをtrashへ移動</td></tr>
+	<tr><td align="center"><strong>C-c s</strong></td><td>spamフォルダのメールを削除</td></tr>
+	<tr><td align="center"><strong>C-c t</strong></td><td>trashフォルダのメールを削除</td></tr>
+	<tr><td align="center"><strong>C-c E</strong></td><td>検索フォルダ削除メニューを表示</td></tr>
+	<tr><th rowspan=3>Expire</th><td align="center"><strong>X</strong></td><td>Expire実行</td></tr>
+	<tr><td align="center"><strong>C-x C-e</strong></td><td>検索条件をExpire設定として保存</td></tr>
+	<tr><td align="center"><strong>C-c X</strong></td><td>Expire設定削除メニューを表示</td></tr>
+	<tr><th rowspan=1>アドレス帳</th><td align="center"><strong>C-c a</strong></td><td>アドレス帳に登録</td></tr>
+	<tr><th rowspan=5>その他</th><td align="center"><strong>右クリック</strong></td><td>ポップアップメニューを表示</td></tr>
+	<tr><td align="center"><strong>y</strong></td><td>疑似インデックスをマージ</td></tr>
+	<tr><td align="center"><strong>F1</strong></td><td>readme.htmlを表示</td></tr>
+	<tr><td align="center"><strong>q</strong></td><td>メッセージを閉じる/終了</td></tr>
+	<tr><td align="center"><strong>Q</strong></td><td>終了</td></tr>
+      </table>
+
+      <h3 id=message_buffer>message buffer でのキーバインド</h3>
+      <table class="data_list">
+	<tr><th rowspan=3>メール表示<td align="center"><strong>Space</strong></td><td>メールをスクロール/閉じる</td></tr>
+	<tr><td align="center"><strong>s</strong></td><td>添付ファイルを保存</td></tr>
+	<tr><td align="center"><strong>x</strong></td><td>添付ファイルを保存して実行</td></tr>
+	<tr><th rowspan=5>メール作成</th><td align="center"><strong>c</strong></td><td>メールを新規作成</td></tr>
+	<tr><td align="center"><strong>r</strong></td><td>メールに返信</td></tr>
+	<tr><td align="center"><strong>R</strong></td><td>全員に返信</td></tr>
+	<tr><td align="center"><strong>f</strong></td><td>メールを転送</td></tr>
+	<tr><td align="center"><strong>F</strong></td><td>メールを添付して転送</td></tr>
+	<tr><th>その他</th><td align="center"><strong>q</strong></td><td>メッセージを閉じる</td></tr>
+      </table>
+      
+      <h3 id=draft_buffer>draft buffer でのキーバインド</h3>
+      <table class="data_list">
+	<tr><th rowspan=12>メール編集<td align="center"><strong>Enter</strong></td><td>カーソル位置の内容を編集</td></tr>
+	<tr><td align="center"><strong>d</strong></td><td>現在位置の内容を削除</td></tr>
+	<tr><td align="center"><strong>f</strong></td><td>Fromを選択</td></tr>
+	<tr><td align="center"><strong>s</strong></td><td>Subjectを編集</td></tr>
+	<tr><td align="center"><strong>e</strong></td><td>本文を編集</td></tr>
+	<tr><td align="center"><strong>t</strong></td><td>Toを追加</td></tr>
+	<tr><td align="center"><strong>T</strong></td><td>Toを追加（ダイアログ）</td></tr>
+	<tr><td align="center"><strong>c</strong></td><td>Ccを追加</td></tr>
+	<tr><td align="center"><strong>C</strong></td><td>Ccを追加（ダイアログ）</td></tr>
+	<tr><td align="center"><strong>b</strong></td><td>Bccを追加</td></tr>
+	<tr><td align="center"><strong>B</strong></td><td>Bccを追加（ダイアログ）</td></tr>
+	<tr><td align="center"><strong>m</strong></td><td>Content-Typeを編集</td></tr>
+	<tr><th rowspan=3>添付<td align="center"><strong>a</strong></td><td>ファイルを添付（複数選択可）</td></tr>
+	<tr><td align="center"><strong>C-u a</strong></td><td>ファイルを圧縮して添付</td></tr>
+	<tr><td align="center"><strong>A</strong></td><td>フォルダを圧縮して添付</td></tr>
+	<tr><th rowspan=6>送信・保存</th><td align="center"><strong>C-c C-c</strong></td><td>メールを送信</td></tr>
+	<tr><td align="center"><strong>C-x C-s</strong></td><td>メールを保存</td></tr>
+	<tr><td align="center"><strong>p</strong></td><td>前のメール</td></tr>
+	<tr><td align="center"><strong>n</strong></td><td>次のメール</td></tr>
+	<tr><td align="center"><strong>C-d</strong></td><td>現在編集中のメールを破棄</td></tr>
+	<tr><td align="center"><strong>q</strong></td><td>閉じる</td></tr>
+      </table>
+
+      <h3 id=edit_buffer>edit buffer でのキーバインド</h3>
+      <table class="data_list">
+	<tr><th rowspan=1>編集</th><td align="center"><strong>M-Insert</strong></td><td>署名を挿入</td></tr>
+	<tr><th rowspan=2>保存</th><td align="center"><strong>C-x C-s</strong></td><td>保存して編集を終了</td></tr>
+	<tr><td align="center"><strong>C-c q</strong></td><td>保存せずに編集を終了</td></tr>
+      </table>
+
+      <h3 id=signature_buffer>signature buffer でのキーバインド</h3>
+      <table class="data_list">
+	<tr><th rowspan=4>署名</th><td align="center"><strong>Enter</strong></td><td>署名を挿入</td></tr>
+	<tr><td align="center"><strong>n</strong></td><td>次の署名</td></tr>
+	<tr><td align="center"><strong>p</strong></td><td>次の署名</td></tr>
+	<tr><td align="center"><strong>q</strong></td><td>署名選択を閉じる</td></tr>
+      </table>
+      
+    </p>
+    <h2 id=admin>管理用コマンド</h2>
+    <p>
+      <h3 id=admin_regather>インデックスの情報を確認</h3>
+      <p class="doc">
+	以下を実行すると、インデックスの情報を確認することができます。
+	<pre><span class="prompt">M-x:</span> km3::he-inform</pre>
+      </p>
+      <h3 id=admin_regather>インデックス登録漏れなど</h3>
+      <p class="doc">
+	何らかのエラーのためにメッセージとインデックスの不整合が生じた場合には以下を実行して修復してください。
+	<pre>
+<span class="prompt">M-x:</span> km3::he-regather-all            &lt;= 登録・削除漏れ
+<span class="prompt">M-x:</span> km3::he-gather-unindexed-files  &lt;= 登録漏れ
+<span class="prompt">M-x:</span> km3::he-purge-all               &lt;= 削除漏れ
+<span class="prompt">M-x:</span> km3::he-repair-nofolder-files   &lt;= フォルダに属さないメッセージを指定フォルダに入れる
+</pre>
+      </p>
+      <h3 id=admin_index>インデックス最適化</h3>
+      <p class="doc">
+	しばらく利用していると、検索の速度と精度が少しずつ落ちてきますので以下を実行してインデックスを最適化してください。
+	<pre><span class="prompt">M-x:</span> km3::he-optimize</pre>
+      </p>
+      <h3 id=admin_attachments>添付ファイルの削除</h3>
+      <p class="doc">
+	メッセージの転送を行う場合に、元のメッセージの添付ファイルは自動的に保存され、そのまま残っていますので、定期的に削除する必要があります。<br>
+	ただし、転送メッセージのdraftを保存している場合などは送信時にエラーになりますので削除を行わないで下さい。
+	<pre><span class="prompt">M-x:</span> km3::message-cleanup-attachments</pre>
+      </p>
+      <h3 id=admin_he>Hyper Estraier のバージョンアップ</h3>
+      <p class="doc">
+	<a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>のバージョンアップでインデックスのフォーマットが変更された場合には、以下の手順でデータを移行してください。<br>
+	（インデックスのフォーマットが変わっていない場合には、<a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>を入れ替えるだけでOKです）
+	<pre><span class="prompt">M-x:</span> km3::he-dump       &lt;= 文書ドラフト形式で書き出し
+=&gt; ここで Hyper Estraier を入れ替える
+<span class="prompt">M-x:</span> km3::he-restore    &lt;= casketを作り直す</pre>
+      </p>
+    </p>
+    <h2 id=others>その他</h2>
+    <p>
+      <h3 id=import>KaMailからメールをインポート</h3>
+      <p class="doc">
+	KaMailその他MH形式のフォルダからのメールをインポートする場合には、以下を実行してください。インポートしたメールは既読でアーカイブした状態でインポートされます。<br>
+	メールの量にもよりますが、かなり時間がかかりますので気長にお待ち下さい。
+	<pre><span class="prompt">M-x:</span> kamail3                       &lt;= KaMailV3を起動しておく
+<span class="prompt">M-x:</span> load-library
+<span class="prompt">Load library:</span> kamail3/import
+<span class="prompt">M-x:</span> import-mh-folder
+<span class="prompt">Folder:</span> C:/xyzzy/KaMail/Mail       &lt;= MHフォルダの場所を指定
+<span class="prompt">Ignore Folders:</span> trash spam draft   &lt;= インポートしないフォルダをスペース区切りで指定（正規表現可）</pre>
+      </p>
+      <h3 id=mhtml>browser.dll、browserex を利用したHTML表示</h3>
+      <p class="doc">
+	config.l で 設定を行うと、summary buffer で以下のキーバインドが有効になります。
+      </p>
+      <table class="data_list">
+	<tr><th rowspan=2>HTMLメール表示</th><td align="center"><strong>,</strong></td><td>HTMLメールを browser.dll で表示</td></tr>
+	<tr><td align="center"><strong>q</strong></td><td>browserを閉じる/メッセージを閉じる/終了</td></tr>
+      </table>
+      <h3 id=popfile>POPFileとの連携</h3>
+      <p class="doc">
+	<a href="http://popfile.sourceforge.net/">POPFile</a>を利用している場合には、KaMail3からメールの分類を行うことができます。（POPFile側でXML-RPCを有効にしておく必要があります）<br>
+	config.l で 設定を行うと、summary buffer で以下のキーバインドが有効になります。
+      </p>
+      <table class="data_list">
+	<tr><th rowspan=1>POPFile</th><td align="center"><strong>z</strong></td><td>バケツ選択メニューを表示</td></tr>
+      </table>
+      <h3 id=upgrade>アップグレード時の注意事項</h3>
+      <p class="doc">
+	0.0.1.2beta1以前のバージョンからアップグレードする場合には、以下の点に注意してください。
+	<ul style="margin-left: 2em;">
+	  <li>inbox, unseenフォルダの形式が変更になっていますので、それらのフォルダにメッセージがない状態でアップグレードしてください。</li>
+	  <li>属性インデックスを張る場合には、<a href="#admin_he">Hyper Estraier のバージョンアップ</a>手順に従ってインデックスをを作り直してください。</li>
+	</ul>
+      </p>
+      <h3 id=pindex>疑似インデックス</h3>
+      <p class="doc">
+	HyperEstraier-1.4.0で実装された疑似インデックスを利用すると、インデックス登録を任意のタイミングで行うことができるようになるため、受信後にインデックス登録で待たされる時間を短くできます。ただし、検索は少し遅くなります。利用する場合には、config.lで設定を行ってください。
+      </p>
+      <p class="doc">
+	疑似インデックス内のメールが増えると、検索が遅くなりますので、適当なタイミングでインデックスにマージしてください。summary-buffer でのキーバインドは以下になります。
+      </p>
+      <table class="data_list">
+	<tr><td align="center"><strong>y</strong></td><td>疑似インデックスをマージ</td></tr>
+      </table>
+    </p>
+    <h2 id=thanks>謝辞</h2>
+    <p>
+      <a href="http://www.jsdlab.co.jp/~kamei/">xyzzy</a>を開発された亀井さん、<a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>を開発された平林さん、またお世話になった全ての方々に感謝いたします。
+    </p>
+    <h2 id=changelog>ChangeLog</h2>
+    <dl>
+      <dt>2007/12/12: 0.0.1.4beta6</dt>
+      <dd>
+	<ul>
+	  <li>送信した添付ファイルが壊れるのをたぶん修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/10/20: 0.0.1.4beta5</dt>
+      <dd>
+	<ul>
+	  <li>いろいろ修復するためのコマンドを用意。（<a href="#admin">管理用コマンド</a>参照）</li>
+	</ul>
+      </dd>
+      <dt>2006/10/05: 0.0.1.4beta4</dt>
+      <dd>
+	<ul>
+	  <li>疑似インデックスの文書ドラフト生成時の処理を一括して行うように変更。</li>
+	</ul>
+      </dd>
+      <dt>2006/09/06: 0.0.1.4beta3</dt>
+      <dd>
+	<ul>
+	  <li>
+	    疑似インデックスをMIMEとしてマージしてしまっていた不具合を修正。<br>
+	    利用していた場合には、以下のコマンドを実行してインデックスを修復してください。<br>
+	    ただし、疑似インデックスに入っていたメールの属性情報は失われ、inboxに入ります。
+	  </li>
+	</ul>
+	<pre><span class="prompt">M-x:</span> km3::he-repair-pindex</pre>
+      </dd>
+      <dt>2006/08/30: 0.0.1.4beta2</dt>
+      <dd>
+	<ul>
+	  <li>設定のドライブ文字が小文字だとメールが読めない不具合を修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/08/30: 0.0.1.4beta1</dt>
+      <dd>
+	<ul>
+	  <li>受信時の振り分け処理をgatherと同時に行うように変更。</li>
+	  <li><a href="#pindex">疑似インデックス</a>を利用可能にした。受信後のインデックス登録を軽くできる。</li>
+	  <li>通常検索で正規表現で検索できるようにした。</li>
+	</ul>
+      </dd>
+      <dt>2006/06/26: 0.0.1.3beta3</dt>
+      <dd>
+	<ul>
+	  <li>送信済フォルダのデフォルトをDate降順に修正。</li>
+	  <li>Dateが未来のメールがサーバーに残ってしまう場合があったのを修正。</li>
+	</ul>
+      </dd>
+    </dl>
+    <dl>
+      <dt>2006/05/25: 0.0.1.3beta2</dt>
+      <dd>
+	<ul>
+	  <li>既定のフォルダがDate降順になっていたのを修正。</li>
+	  <li>通常検索条件入力のhistoryが効いていなかったのを修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/20: 0.0.1.3beta1</dt>
+      <dd>
+	<ul>
+	  <li>hyper-estraier.lをestcmd.lに変更。</li>
+	  <li>km3::he-inform にバージョン情報を追加。</li>
+	  <li>属性インデックスが一部効いていなかったのを修正。</li>
+	  <li>draftで添付ファイルを全て削除してもmultipartのままになるのを修正。</li>
+	  <li>Hyper EstraierのP2P機構を利用する方法を試作。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/20: 0.0.1.2beta9</dt>
+      <dd>
+	<ul>
+	  <li>送信メッセージのDateフィールドの書式を修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/20: 0.0.1.2beta8</dt>
+      <dd>
+	<ul>
+	  <li>フォルダのデフォルト並び順指定を属性インデックスが効くように変更。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/19: 0.0.1.2beta7</dt>
+      <dd>
+	<ul>
+	  <li>ヘッダー属性が重複している場合にエラーになっていたのを修正。</li>
+	  <li>転送時に添付ファイルではないものまで転送しようとしてエラーになっていたのを修正。</li>
+	  <li>本文編集時の初期カーソル位置の設定。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/19: 0.0.1.2beta6</dt>
+      <dd>
+	<ul>
+	  <li>スレッド検索時の正規表現を修正した際のバグを修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/17: 0.0.1.2beta5</dt>
+      <dd>
+	<ul>
+	  <li>タグを外すときにエラーになっていたのを修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/13: 0.0.1.2beta4</dt>
+      <dd>
+	<ul>
+	  <li>"estcmd gather" に "-il ja" オプションを追加。</li>
+	  <li>スレッド検索時の正規表現を修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/12: 0.0.1.2beta3</dt>
+      <dd>
+	<ul>
+	  <li>unseenフォルダの形式を再度変更。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/11: 0.0.1.2beta2</dt>
+      <dd>
+	<ul>
+	  <li>Hyper Estraier 1.2.1対応。</li>
+	  <li>併せて属性インデックス用に、inbox, unseenフォルダの形式を変更。</li>
+	</ul>
+      </dd>
+      <dt>2006/04/10: 0.0.1.2beta1</dt>
+      <dd>
+	<ul>
+	  <li>Hyper Estraier 1.2.1対応準備。</li>
+	  <li>返信時の引用にパート表示が含まれてしまっていたのを修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/31: 0.0.1.1beta1</dt>
+      <dd>
+	<ul>
+	  <li>summaryのポップアップメニューを作成。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/30: 0.0.0.2alpha9</dt>
+      <dd>
+	<ul>
+	  <li>転送時に添付ファイルも転送するように。</li>
+	  <li>詳細検索がエラーになるのを修正。</li>
+	  <li>インデックス再構築用コマンドを用意。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/29: 0.0.0.2alpha8</dt>
+      <dd>
+	<ul>
+	  <li>mailto対応。</li>
+	  <li>ファイルを圧縮して添付とか。</li>
+	  <li>フォルダを圧縮して添付とか。</li>
+	  <li>draftでContent-Typeを編集とか。</li>
+	  <li>アドレス帳のダイアログ。</li>
+	  <li>POP3受信中のメッセージ表示。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/27: 0.0.0.2alpha7</dt>
+      <dd>
+	<ul>
+	  <li>message/partialに対応。ただしsummaryに全部揃っている場合のみ。</li>
+	  <li>readme.htmlを参照とか。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/24: 0.0.0.2alpha6</dt>
+      <dd>
+	<ul>
+	  <li>Hyper Estraier1.1.6対応。属性のOR検索に対応。(__)</li>
+	  <li>メールの送信者でFrom,To,Ccを検索とか。</li>
+	  <li>メールのスレッドを検索とか。遅い上に完全な検索ではありません。</li>
+	  <li>メールのIn-Reply-ToもしくはMessage-Idで検索とか。</li>
+	  <li>検索履歴メニューで長すぎる場合は表示を切り捨てるように。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/24: 0.0.0.2alpha5</dt>
+      <dd>
+	<ul>
+	  <li>POP3受信時の例外処理を適当に。</li>
+	  <li>*base-directory* にスペースが含まれていると処理ができなかったのを多分直した。</li>
+	  <li>*refile-rule-list* が未定義になっていたのを修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/22: 0.0.0.2alpha4</dt>
+      <dd>
+	<ul>
+	  <li>メールの送信者で検索とか。</li>
+	  <li>メールの件名で検索とか。</li>
+	  <li>添付として転送とか。</li>
+	  <li>併せて添付・送信回りをある程度直した。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/22: 0.0.0.2alpha3</dt>
+      <dd>
+	<ul>
+	  <li>Fromを元に挿入する署名をデフォルト選択。</li>
+	  <li>特別フォルダの別名設定が効かなかったのを修正。</li>
+	  <li>送信済メールを保存するオプション。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/21: 0.0.0.2alpha2</dt>
+      <dd>
+	<ul>
+	  <li>ファイル名指定が間違っていたのを修正。</li>
+	  <li>typoを修正。</li>
+	  <li>readme.htmlの間違いを訂正。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/21: 0.0.0.2alpha</dt>
+      <dd>
+	<ul>
+	  <li>返信時にFrom指定でエラーになるのを修正。</li>
+	</ul>
+      </dd>
+      <dt>2006/03/21: 0.0.0.1alpha</dt>
+      <dd>
+	<ul>
+	  <li>初版。</li>
+	</ul>
+      </dd>
+    </dl>
+    <h2 id=todo>ToDo</h2>
+    <p>
+      <ul>
+	<li>IMAP4対応？</li>
+	<li>LDAP対応？</li>
+      </ul>
+    </p>
+    <hr>
+  </body>
+</html>

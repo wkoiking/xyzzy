@@ -1,0 +1,9 @@
+UNZIP32.DLL Ver 5.42 (Release build)
+(free software) DO NOT DISTRIBUTE UNZIP32.DLL ALONE!
+DLL for Windows9x/Me/NT/200x/XP based on Info-ZIP Unzip version 5.4
+By: shoda T.      Trans. H.Ozawa
+Support:http://www.csdinc.co.jp/archiver/index-e.html
+UNZIP32.DLL is a 32 bit Windows library to extract
+ ZIP files.
+Application to use this DLL is necessary to actually 
+extract files.

@@ -1,0 +1,321 @@
+nkf32.dll UTF-8/16対応版 API
+
+
+UNICODEをサポートしない場合はワイド文字用関数（関数名がWで終わるもの）は
+つねに失敗します。ＯＳがWindows 95,98,Meの場合と、ＯＳがWindows NT,2000,XP
+に対してWindows 95,98,Me用のDLLを使用している場合です。
+
+
+nkf32103a.lzh 1.03 がインストールされた環境でも動作する必要のある
+アプリケーションはnkf32.dllをLoadLibraryしGetProcAddressで追加された機能
+の有無をチェックしてください。
+
+
+インクルードファイル
+nkf32.hのインクルード時にどの関数プロトタイプ宣言を使うかどうかをマクロで
+指定できます。
+
+#define NKF32103A
+定義しておくとnkf32103a.lzhと同一の関数のプロトタイプ宣言になります。
+
+#define TOMIME
+#define GETKANJICODE
+#define FILECONVERT1
+#define FILECONVERT2
+定義しておくとその関数のプロトタイプ宣言が有効になります。
+
+
+LIB
+nkf32103a.lzhのLIBが利用できます。
+
+
+1 バージョン
+nkf32.dllのバージョンを返します。
+
+void CALLBACK GetNkfVersion(LPSTR verStr);
+BOOL WINAPI GetNkfVersionSafeA(LPSTR verStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD lpTCHARsReturned /*in TCHARs*/);
+BOOL WINAPI GetNkfVersionSafeW(LPWSTR verStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD lpTCHARsReturned /*in TCHARs*/);
+BOOL WINAPI GetNkfVersionSafe(LPTSTR verStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD lpTCHARsReturned /*in TCHARs*/);
+nkf.hではGetNkfVersionSafeはUNICODEが定義されていない場合GetNkfVersionSafeAに、
+UNICODEが定義されている場合GetNkfVersionSafeWに#defineされます。
+
+verStr <nkf移植元バージョン> スペース <nkf32.dllバージョン> を返します。
+  例 "2.0.4.1 1"
+  参考 nkf32103a.lzh 1.03 では "1.5k 1.03.32" です。
+nBufferLength verStrの領域長（最後の0を含む）を文字数で与えます。
+lpTCHARsReturned バージョン文字列の長さ（最後の0を含む）を文字数で返します。
+
+戻り値
+GetNkfVersion
+  ありません。
+GetNkfVersionSafeA GetNkfVersionSafeW (GetNkfVersionSafe)
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+
+2 変換オプションの指定
+変換オプション文字列を指定します。連続したオプションの指定も可能です。
+オプションの詳細はnkf.exeのドキュメントと
+http://www01.tcp-ip.or.jp/~furukawa/nkf_utf8/ を参照して下さい。
+無効なオプションは無視されます。
+廃止されたオプションに注意してください。
+nkf32103a.lzhとの互換性のため先頭の"-"は省略可能です。
+
+int CALLBACK SetNkfOption(LPCSTR optStr);
+
+optStr 変換オプション文字列を指定します。
+  例 "-ZSs"
+
+戻り値
+関数が成功すると 0 が返ります。
+関数が失敗すると負値が返ります。
+
+
+3 コード変換
+文字コードを変換します。変換方法は変換オプションの指定で行っておきます。
+出力文字列、入力文字列の順です。
+--guessまたは-gを指定してコード変換した場合の結果はGetNkfGuess関数で取得
+します。
+
+void CALLBACK NkfConvert(LPSTR outStr, LPCSTR inStr);
+BOOL WINAPI NkfConvertSafe(LPSTR outStr,DWORD nOutBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/, LPCSTR inStr,DWORD nInBufferLength /*in Bytes*/);
+
+outStr 出力文字列を返します。
+inStr 入力文字列を与えます。
+nOutBufferLength outStrの領域長をバイト数で与えます。
+lpBytesReturned 出力文字列の長さ（出力文字列の後ろに付加される0を含まない）を
+  バイト数で返します。
+  *lpBytesReturnedがnOutBufferLength以上の場合、その戻り値は、格納
+  するために必要なバッファのサイズ - 1 を表しています。
+
+nInBufferLength 入力文字列の長さをバイト数で与えます。
+
+NkfConvert
+  outStr inStrは１バイトの0で終了する文字列です。
+  UTF-16は文字コードに値が0のバイトが含まれるため扱えません。
+NkfConvertSafe
+  nOutBufferLength > lpBytesReturned の場合に出力文字列の後ろに0を１バイト
+  付加します。
+
+戻り値
+NkfConvert
+  ありません。
+NkfConvertSafe
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+例1
+UNIXのテキスト（EUC） をMS-DOSのテキスト（シフトJISコード）に変換
+SetNkfOption("-Es");
+NkfConvertSafe(outStr,outStr,nOutBufferLength,lpBytesReturned,inStr,nInBufferLength);
+例2
+UNIXのテキスト（ISO-2022-JP 及び MIME）をMS-DOSのテキスト（シフトJISコード）
+に変換
+SetNkfOption("-Jsm");
+NkfConvertSafe(outStr,outStr,nOutBufferLength,lpBytesReturned,inStr,nInBufferLength);
+
+
+4 全角英数字・記号文字列の半角文字列変換
+全角英数字・記号文字列を半角文字列に変換します。
+出力文字列、入力文字列の順です。
+
+void CALLBACK CLASS_DECLSPEC ToHankaku(LPSTR inStr);
+BOOL WINAPI ToHankakuSafe(LPSTR outStr,DWORD nOutBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/,LPCSTR inStr,DWORD nInBufferLength /*in Bytes*/);
+
+inStr 入力文字列を与えます。 ToHankakuでは出力文字列を返します。
+outStr 出力文字列を返します。
+nOutBufferLength outStrの領域長をバイト数で与えます。
+lpBytesReturned 出力文字列の長さ（出力文字列の後ろに付加される0を含まない）を
+  バイト数で返します。
+nInBufferLength 入力文字列の長さをバイト数で与えます。
+
+ToHankakuSafe
+nOutBufferLength > lpBytesReturned の場合に出力文字列の後ろに0を１バイト付加
+します。
+
+戻り値
+ToHankaku
+  ありません。
+ToHankakuSafe
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+
+5 半角カタカナの全角カタカナ変換
+半角カタカナと一部の記号（｢｣ｰ等）を全角カタカナに変換します。
+出力文字列、入力文字列の順です。
+
+void CALLBACK ToZenkakuKana(LPSTR outStr ,LPCSTR inStr);
+BOOL WINAPI ToZenkakuKanaSafe(LPSTR outStr,DWORD nOutBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/,LPCSTR inStr,DWORD nInBufferLength /*in Bytes*/);
+
+outStr 出力文字列を返します。
+inStr 入力文字列を与えます。
+nOutBufferLength outStrの領域長をバイト数で与えます。
+lpBytesReturned 出力文字列の長さ（出力文字列の後ろに付加される0を含まない）を
+  バイト数で返します。
+nInBufferLength 入力文字列の長さをバイト数で与えます。
+
+ToZenkakuKanaSafe
+nOutBufferLength > lpBytesReturned の場合に出力文字列の後ろに0を１バイト付加
+します。
+
+戻り値
+ToZenkakuKana
+  ありません。
+ToZenkakuKanaSafe
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+
+6 メールサブジェクトのMIMEエンコード
+メールのサブジェクトをMIME（Base64）に変換します。
+シフトJISコードのメールのサブジェクトを変換する時は、ISO-2022-JPに変換した
+あと、MIMEに変換して下さい。
+出力文字列、入力文字列の順です。
+
+void CALLBACK EncodeSubject(LPSTR outStr ,LPCSTR inStr);
+void CALLBACK ToMime(LPSTR outStr ,LPCSTR inStr);
+BOOL WINAPI EncodeSubjectSafe(LPSTR outStr,DWORD nOutBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/,LPCSTR inStr,DWORD nInBufferLength /*in Bytes*/);
+outStr 出力文字列を返します。
+inStr 入力文字列を与えます。
+nOutBufferLength outStrの領域長をバイト数で与えます。
+lpBytesReturned 出力文字列の長さ（出力文字列の後ろに付加される0を含まない）を
+  バイト数で返します。
+nInBufferLength 入力文字列の長さをバイト数で与えます。
+
+戻り値
+EncodeSubject ToMime
+  ありません。
+EncodeSubjectSafe
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+
+7 コード種別の取得
+自動判別したコード種別を取得します。
+NkfGetKanjiCodeは以前のコード変換の結果を数値で取得します。
+GetNkfGuessA GetNkfGuessW (GetNkfGuess)は--guessまたは-gを指定してコード変換
+した後に結果を文字列で取得します。
+現在の実装ではGetNkfGuessWはGetNkfGuessAの結果をMultiByteToWideChar(CP_OEMCP,
+MB_PRECOMPOSED,,,,)した結果と同じになります。
+
+int CALLBACK NkfGetKanjiCode(VOID);
+BOOL WINAPI GetNkfGuessA(LPSTR outStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD lpTCHARsReturned /*in TCHARs*/);
+BOOL WINAPI GetNkfGuessW(LPWSTR outStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD lpTCHARsReturned /*in TCHARs*/);
+BOOL WINAPI GetNkfGuess(LPTSTR outStr,DWORD nBufferLength /*in TCHARs*/,LPDWORD lpTCHARsReturned /*in TCHARs*/);
+nkf.hではGetNkfGuessはUNICODEが定義されていない場合GetNkfGuessAに、
+UNICODEが定義されている場合GetNkfGuessWに#defineされます。
+
+outStr 出力文字列を返します。
+nBufferLength outStrの領域長をバイト数で与えます。
+lpTCHARsReturned 出力文字列の長さ（出力文字列の後ろに付加される0を含む）を
+  文字数で返します。
+
+戻り値
+NkfGetKanjiCode
+  コード種別が返ります。
+  0:シフトJIS, 1:EUC, 2:ISO-2022-JP, 3:UTF-8, 4:UTF-16LE, 5:UTF-16BE
+GetNkfGuessA GetNkfGuessW (GetNkfGuess)
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+
+8 ファイル変換
+ファイルをコード変換します。
+--guessまたは-gを指定してコード変換した場合の結果はGetNkfGuess関数で取得
+します。
+NkfFileConvert2*は入力ファイル名、出力ファイル名の順です（文字列変換の場合とは
+逆順です）。
+
+void CALLBACK NkfFileConvert1(LPCSTR fName);
+BOOL WINAPI NkfFileConvert1SafeA(LPCSTR fName,DWORD nBufferLength /*in TCHARs*/);
+BOOL WINAPI NkfFileConvert1SafeW(LPCWSTR fName,DWORD nBufferLength /*in TCHARs*/);
+BOOL WINAPI NkfFileConvert1Safe(LPCTSTR fName,DWORD nBufferLength /*in TCHARs*/);
+void CALLBACK NkfFileConvert2(LPCSTR fInName,LPCSTR fOutName);
+BOOL WINAPI NkfFileConvert2SafeA(LPCSTR fInName,DWORD fInBufferLength /*in TCHARs*/,LPCSTR fOutName,DWORD fOutBufferLength /*in TCHARs*/);
+BOOL WINAPI NkfFileConvert2SafeW(LPCWSTR fInName,DWORD fInBufferLength /*in TCHARs*/,LPCWSTR fOutName,DWORD fOutBufferLength /*in TCHARs*/);
+BOOL WINAPI NkfFileConvert2Safe(LPCTSTR fInName,DWORD fInBufferLength /*in TCHARs*/,LPCTSTR fOutName,DWORD fOutBufferLength /*in TCHARs*/);
+nkf.hではNkfFileConvert1SafeはUNICODEが定義されていない場合
+NkfFileConvert1SafeAに、UNICODEが定義されている場合NkfFileConvert1SafeWに
+#defineされます。NkfFileConvert2SafeはUNICODEが定義されていない場合
+NkfFileConvert2SafeAに、UNICODEが定義されている場合NkfFileConvert2SafeWに
+#defineされます。
+
+fName 入出力ファイル名を与えます。
+nBufferLength 入出力ファイル名の長さ（最後の0を含む）を文字数で与えます。
+fInName 入力ファイル名を与えます。
+fOutName 出力ファイル名を与えます。
+fInBufferLength 入力ファイル名の長さ（最後の0を含む）を文字数で与えます。
+fOutBufferLength 出力ファイル名の長さ（最後の0を含む）を文字数で与えます。
+
+NkfFileConvert1  NkfFileConvert1SafeA  NkfFileConvert1SafeW (NkfFileConvert1Safe)
+Windows NT/2000：GetTempPath 関数は、TMPとTEMPの各環境変数が指定している
+ディレクトリが存在しているかどうかをチェックしません。このためこれらの環境
+変数で指定されるディレクトリが存在しない場合関数は失敗します。
+
+戻り値
+NkfFileConvert1 NkfFileConvert2
+  ありません。
+NkfFileConvert1SafeA NkfFileConvert1SafeW (NkfFileConvert1Safe)
+NkfFileConvert2SafeA NkfFileConvert2SafeW (NkfFileConvert2Safe) 
+  関数が成功すると、0 以外の値が返ります。
+  関数が失敗すると、0 が返ります。
+
+
+9 機能の取得
+著作権、バージョン、他のnkf32.dllとの互換性を調べます。
+領域が不足する場合はnBufferLengthで指定した分だけ構造体の先頭からのデータ
+を返します。
+
+BOOL WINAPI GetNkfSupportFunctions(void *outStr,DWORD nBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/);
+
+outStr 構造体を返します。
+nBufferLength outStrの領域長をバイト数で与えます。
+pBytesReturned 構造体の長さをバイト数で返します。
+
+struct {
+DWORD size;
+LPCSTR copyrightA;
+LPCSTR versionA;
+LPCSTR dateA;
+DWORD functions;
+};
+
+size         構造体の長さ（バイト数）
+copyrightA   著作権文字列へのポインタ
+versionA     nkf.exeで用いられるバージョン文字列へのポインタ
+functions    他のnkf32.dllとの互換性（ビットごと）とUNICODEサポート
+             1(2^0ビット) : 1:nkf32103a.lzh 1.03と互換機能あり
+             2(2^1ビット) : 0:nkf32dll.zip 0.91と互換機能なし
+             4(2^2ビット) : 1:nkf32204.zip 2.0.4.0と互換機能あり
+                            0:互換機能なし
+             0x80000000(2^31ビット) : 0:UNICODEをサポートしない
+                                      1:UNICODEをサポートする
+
+構造体は機能拡張により今後メンバーが増える可能性があります。sizeを使用して
+参照したいメンバーが存在するかチェックしてください。
+functionsの互換機能は同一名称・同一引数で同一目的の機能を持っていることを意味
+しますが、必ず同一の結果を返すとは限りません。
+nkf32103a.lzh http://www2.tokai.or.jp/uminchu/runtime.html#NKF
+nkf32dll.zip  http://www.topstudio.co.jp/~kmuto/software/nkfdll/
+nkf32204.zip  http://www1.ttcn.ne.jp/~kaneto/dll/nkf32dll.html
+
+戻り値
+関数が成功すると、0 以外の値が返ります。
+関数が失敗すると、0 が返ります。
+
+
+10 Usageの取得
+nkf -vで表示する文字列を取得します。
+領域が不足する場合、関数は失敗し必要な領域長は取得できません。これは_vsnprintf
+が必要な領域長を返さないためです。
+
+BOOL WINAPI NkfUsage(LPSTR outStr,DWORD nBufferLength /*in Bytes*/,LPDWORD lpBytesReturned /*in Bytes*/);
+
+outStr Usageを返します。
+nBufferLength outStrの領域長（最後の0を含む）をバイト数で与えます。
+lpBytesReturned 関数が成功すると出力文字列の長さ（出力文字列の後ろに付加される0を含まない）をバイト数で返します。
+
+戻り値
+関数が成功すると、0 以外の値が返ります。
+関数が失敗すると、0 が返ります。

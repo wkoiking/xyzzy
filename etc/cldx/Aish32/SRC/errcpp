@@ -1,0 +1,129 @@
+MAKE Version 5.1  Copyright (c) 1987, 1998 Borland International
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c aish32.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+aish32.cpp:
+Warning aish32.cpp 123: Parameter '_hwnd' is never used in function __stdcall Aish(void * const,const char *,char *,const unsigned long)
+Warning aish32.cpp 154: Parameter '_iMode' is never used in function __stdcall AishCheckArchive(const char *,const int)
+Warning aish32.cpp 159: Parameter 'hinst' is never used in function __stdcall DllEntryPoint(void *,unsigned long,void *)
+Warning aish32.cpp 159: Parameter 'reason' is never used in function __stdcall DllEntryPoint(void *,unsigned long,void *)
+Warning aish32.cpp 159: Parameter 'reserved' is never used in function __stdcall DllEntryPoint(void *,unsigned long,void *)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_crc.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_crc.cpp:
+Warning ai_crc.cpp 44: Conversion may lose significant digits in function crc_check(unsigned short,unsigned char *,int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_blk2.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_blk2.cpp:
+Warning ai_blk2.cpp 21: Conversion may lose significant digits in function crc_set(unsigned char *,int)
+Warning ai_blk2.cpp 22: Conversion may lose significant digits in function crc_set(unsigned char *,int)
+Warning ai_blk2.cpp 103: Conversion may lose significant digits in function dummy_use(unsigned char *)
+Warning ai_blk2.cpp 223: Conversion may lose significant digits in function encblock(T_HD *)
+Warning ai_blk2.cpp 223: Conversion may lose significant digits in function encblock(T_HD *)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_fio.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_fio.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_fcrc.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_fcrc.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_7.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_7.cpp:
+Warning ai_7.cpp 85: Conversion may lose significant digits in function decline_7(unsigned char *,unsigned char *,unsigned int)
+Warning ai_7.cpp 86: Conversion may lose significant digits in function decline_7(unsigned char *,unsigned char *,unsigned int)
+Warning ai_7.cpp 87: Conversion may lose significant digits in function decline_7(unsigned char *,unsigned char *,unsigned int)
+Warning ai_7.cpp 98: Conversion may lose significant digits in function decline_7(unsigned char *,unsigned char *,unsigned int)
+Warning ai_7.cpp 99: Conversion may lose significant digits in function decline_7(unsigned char *,unsigned char *,unsigned int)
+Warning ai_7.cpp 101: Conversion may lose significant digits in function decline_7(unsigned char *,unsigned char *,unsigned int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_8.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_8.cpp:
+Warning ai_8.cpp 93: Conversion may lose significant digits in function decline_8(unsigned char *,unsigned char *,unsigned int)
+Warning ai_8.cpp 96: Conversion may lose significant digits in function decline_8(unsigned char *,unsigned char *,unsigned int)
+Warning ai_8.cpp 97: Conversion may lose significant digits in function decline_8(unsigned char *,unsigned char *,unsigned int)
+Warning ai_8.cpp 100: Conversion may lose significant digits in function decline_8(unsigned char *,unsigned char *,unsigned int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_s.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_s.cpp:
+Warning ai_s.cpp 124: Conversion may lose significant digits in function encline_s(unsigned char *,unsigned char *,unsigned int)
+Warning ai_s.cpp 249: Conversion may lose significant digits in function decline_s(unsigned char *,unsigned char *,unsigned int)
+Warning ai_s.cpp 250: Conversion may lose significant digits in function decline_s(unsigned char *,unsigned char *,unsigned int)
+Warning ai_s.cpp 252: Conversion may lose significant digits in function decline_s(unsigned char *,unsigned char *,unsigned int)
+Warning ai_s.cpp 265: Conversion may lose significant digits in function decline_s(unsigned char *,unsigned char *,unsigned int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_n.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_n.cpp:
+Warning ai_n.cpp 123: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 124: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 126: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 129: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 131: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 139: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 142: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 146: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 147: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+Warning ai_n.cpp 149: Conversion may lose significant digits in function decline_n(unsigned char *,unsigned char *,unsigned int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_hed.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_hed.cpp:
+Warning ai_hed.cpp 54: Conversion may lose significant digits in function readuuhead(T_HD *,unsigned char *,unsigned int)
+Warning ai_hed.cpp 118: Conversion may lose significant digits in function readhead(T_HD *,unsigned char *,unsigned int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_ish.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_ish.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_blk.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_blk.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_nam.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_nam.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c aish.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+aish.cpp:
+Warning aish.cpp 141: Conversion may lose significant digits in function aish_main(int,char * *)
+Warning aish.cpp 156: Conversion may lose significant digits in function aish_main(int,char * *)
+Warning aish.cpp 164: Conversion may lose significant digits in function aish_main(int,char * *)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_uue.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_uue.cpp:
+Warning ai_uue.cpp 176: Conversion may lose significant digits in function dummy_use(unsigned char *)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c mimedec.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+mimedec.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c ai_unix.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_unix.cpp:
+Warning ai_unix.cpp 140: Mixing pointers to different 'char' types in function filesetdate(unsigned char *,unsigned int)
+	bcc32 -tWD @MAKE0000.@@@
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+Turbo Incremental Link 3.01 Copyright (c) 1997, 1998 Borland International
+	ren AISH32.DLL AISH32.DLL
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -c aishmv32.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+aishmv32.cpp:
+Warning aishmv32.cpp 133: Parameter 'hinst' is never used in function __stdcall DllEntryPoint(void *,unsigned long,void *)
+Warning aishmv32.cpp 133: Parameter 'reason' is never used in function __stdcall DllEntryPoint(void *,unsigned long,void *)
+Warning aishmv32.cpp 133: Parameter 'reserved' is never used in function __stdcall DllEntryPoint(void *,unsigned long,void *)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -DMVOLENC=1 -c aishmv.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+aishmv.cpp:
+Warning aishmv.cpp 254: Parameter 'err_no' is never used in function qexec(void * const,char *,int *)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -DMVOLENC=1 -c ai_crc32.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_crc32.cpp:
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -DMVOLENC=1 -oai_crcmv.obj -c ai_crc.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_crc.cpp:
+Warning ai_crc.cpp 44: Conversion may lose significant digits in function crc_check(unsigned short,unsigned char *,int)
+	bcc32 -O2 -w -DBCB=1 -DUNIX=1 -DUUENCODE=1 -DMIMEDEC=1 -DNOERR=1 -DWIN32_DLL=1 -D__BUILDING_THE_DLL=1 -DMVOLENC=1 -oai_fiomv.obj -c ai_fio.cpp
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+ai_fio.cpp:
+	bcc32 -tWD @MAKE0001.@@@
+Borland C++ 5.3 for Win32 Copyright (c) 1993, 1998 Borland International
+Turbo Incremental Link 3.01 Copyright (c) 1997, 1998 Borland International
+	ren AISHMV32.DLL AISHMV32.DLL
+	implib AISH32.LIB AISH32.DLL
+
+Borland Implib Version 3.0.1 Copyright (c) 1991, 1998 Borland International
+	implib AISHMV32.LIB AISHMV32.DLL
+
+Borland Implib Version 3.0.1 Copyright (c) 1991, 1998 Borland International

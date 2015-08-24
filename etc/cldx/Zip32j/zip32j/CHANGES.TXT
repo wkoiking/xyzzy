@@ -1,0 +1,124 @@
+***************************************************************************
+	変更履歴
+***************************************************************************
+
+1997/10/05頃	ver0.10
+	・NIFTYServe FWINNT LIB#11にて初公開
+
+1997/10/11頃	ver0.11
+	・日本語ファイル名を通るようにZIP32J.DLL/IZIP32J.DLLを変更・作成した。
+	・再帰圧縮がうまくいかないので-rオプションを追加。
+	・さしあたって「-r 書庫ファイル名 ファイル名...」で圧縮するように変更
+
+1998/01/05	ver0.13
+	・MSVCRT.DLL(マルチスレッド用ランタイムライブラリ)がないとZIP32J.DLLが動かないのを訂正。つまりシングルスレッドライブラリをリンクするように変更した。
+	＃ Special Thanks To 土井さん
+	・いいかげんな(?)英語ドキュメントをつける。
+	・DOS形式の自己解凍書庫は余計なお世話な気がするのでLZH形式にした。
+
+1998/01/10	ver0.14
+	・Ver0.13にZIP32J.DLL本体が入っていないという大ボケが判明。すみません(_._)
+
+1998/06/02	ver0.15
+	・「-e」「-P <password>」オプションによる暗号化を行えるようにした。(ZCRYPT32.DLLが必要)
+
+1998/06/29	ver0.20
+	・バージョンなどのリソースを付ける。
+	・圧縮中ダイアログを表示する。
+	・なぜかFindFirst()/UnZipFindNext系などUNZIP系APIがサポートされる(^^;;
+	  (要UNZIP32.DLL)
+	  (FindFirst系はUNZIP32.DLLがサポートしな場合エミュレートする)
+	  (sdk\find_api.txt参照)
+	 #使う人はいるんだろうか・・・
+
+1998/06/30	ver0.21
+	・バージョン番号がVer 13.00になっていた(^^;;
+	・izip32j.dllがない場合zip32.dllを呼び出すようにした。
+	・Info-ZIPのZIP2.2からZIP2.3d(β版)で仕様が結構変わっているので両方に対応。
+	 DBCS対応パッチを送ったので当ててもらえればizip32j.dllがなくてもよくなるはず。
+
+1998/08/02	ver0.22
+	・モードレスダイアログをEndDialog()で閉じていたので「不正な処理で終了」する場合があった。DestroyWindow()に修正した。
+
+1998/08/10	ver0.23
+	漢字の2byte目がスペースとなる文字が最初にくると処理に失敗するバグ訂正
+	# while(isspace(*ptr)){ptr++;} -> while(isspace((unsigned char)*ptr)){ptr++;}
+
+1998/10/11	ver0.24
+	・"--sfx arcname.zip"で自己解凍書庫を作成できるようにした。
+	・-Aコマンドが正しく動作していなかったバグ訂正
+
+1998/11/02	ver0.25
+	・IZIP32J.DLLがないときZIP32.DLLを読むはずがZIP32J.DLLを呼んでいたバグ訂正
+	・バグがありそうなコードを変更。DLL読み込み時のエラーチェックを少し強化
+
+2000/02/21	ver0.30
+	・変更履歴をCHANGES.TXTに移動
+	・日本語(MBCS)に対応したZIP32.DLL Ver2.3がリリースされたため、IZIP32J.DLLよりもZIP32.DLLを優先するようにした。
+	・ZIP32.DLL Ver2.3のAPIがBeta版からRelease版で変わっていたのに対応。
+
+2000/02/22
+	・基準ディレクトリを「<ディレクトリ名>\」の他「<ディレクトリ名>/」で指定できるようにした。
+
+2000/03/12
+	・ZIP32SFX.DATなどの自己解凍書庫ヘッダを、GetSystemDirectory()で探していたのをSearchPath()で探すように変更。具体的には以下の順で検索します。
+	  1. 実行しているアプリケーションフォルダ
+	  2. カレントディレクトリ
+	  3. WindowsのSystemディレクトリ
+	  4. Windowsディレクトリ
+	  5. 環境変数PATHのディレクトリ
+	・OrigUnZipGetVersion()の初期か忘れにより、UnZipGetVersion()を呼び出したときエラーが起きるバグ修正
+
+2000/03/13	ver0.31
+	・Version0.31に変更。それだけ...
+
+2000/03/14	ver0.32
+	・メモリのfreeを忘れていたバグ修正(argv=split_cmdline_with_response(cmdline))
+
+2000/06/30	ver0.33
+	・ダイアログを少しコンパクトにした。
+	・(ZIP32.DLLがVer2.3以降の場合)圧縮中のキャンセルを可能にした。
+	・'-v'オプションが常に効くようにした。
+	by S.Noda(HZG02104@nifty.ne.jp)
+
+2000/08/15	ver0.34
+	・'-z'オプションを実装した。
+	by S.Noda(HZG02104@nifty.ne.jp)
+
+2000/08/21
+	・htmlディレクトリを作成した。CVSサーバ上のhtmlディレクトリ以下
+          を更新するとWebページ(http://openlab.ring.gr.jp/tsuneo/tar32/)
+          が直ちに反映されるようにした。
+	by tsuneo(tsuneo@rr.iij4u.or.jp)
+
+2000/08/27
+	・ドキュメントを修正した。
+	by S.Noda(HZG02104@nifty.ne.jp)
+
+2000/10/22	ver0.35
+	・'-b'オプションを実装した。
+	by S.Noda(HZG02104@nifty.ne.jp)
+
+2000/10/26
+	・BOOL WINAPI ZipEncryption(VOID);を追加した。
+	　これで、暗号化が可能か調べることができます(minizip.cを参考にしてください)。
+	by S.Noda(HZG02104@nifty.ne.jp)
+
+2000/10/27	Ver0.36
+	・ZipEncryptionを改良した。
+	・ZipEncryptionをZipQueryEncryptionと改名した。
+	by S.Noda(HZG02104@nifty.ne.jp)
+
+2000/12/06	Ver0.37
+	・Ver0.35以降でIZIP32J.DLLやZIP32.DLL Ver 2.2と共に使うと落ちるバグ修正
+	  ZPOPT22構造体で使われているPATH_MAXの定義が変更していたため。
+	  まぎらわしいのでZOPT22_PATH_MAXとして定義しなおしました。
+	by tsuneo(tsuneo@rr.iij4u.or.jp)
+
+2000/12/10
+	・'J'オプションの設定ミス修正.
+	by tsuneo(tsuneo@rr.iij4u.or.jp)
+	
+2000/12/17
+	・ドキュメントの微修正
+	by tsuneo(tsuneo@rr.iij4u.or.jp)

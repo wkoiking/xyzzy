@@ -1,0 +1,30 @@
+Xref: azalea fj.sources:6326
+Path: azalea!fdm!fgw!wnoc-sfc-news!wnoc-snd-ss2!akiu!YAMA11!oga
+From: oga@dgw.yz.yamagata-u.ac.jp (Hiroyuki Ogasawara)
+Newsgroups: fj.sources
+Subject: aish Version 1.12 ish/uuencode converter (1/2)
+Date: 20 Sep 1995 14:29:25 GMT
+Organization: Yamagata Univ., Yamagata, Japan
+Lines: 625
+Distribution: fj
+Message-ID: <43p8g5$p4d@yama11.yz.yamagata-u.ac.jp>
+NNTP-Posting-Host: diptx2.dgw.yz.yamagata-u.ac.jp
+X-Newsreader: mnews [version 1.18] 1994-05/16(Mon)
+
+このプログラムは、ish, uuencode/uudecode のテキストとバイナリを変換す
+るものです。もともと X680x0 用に作られたものを UNIX 上でも動作するよ
+うにしました。
+ ish, uuencode 共に区別なく扱え、また ish でもある程度長いファイル名
+を扱えるという特徴を持っています。というのも ish はもともと MS-DOS 上
+のものであったために、ヘッダに含むことのできるファイル名は 8文字 + 拡
+張子3文字 で切られてしまうからです。このプログラムでは、長いファイル
+名でもコメント行から元のファイル名を推定して補完を行います。
+詳しくはアーカイブ内の aish.doc を参照して下さい。ish のマルチボリュー
+ム形式のエンコードもできます。
+
+この記事は tar, gzip, uuencode にて変換した後2分割されています。それ
+ぞれの BEGIN～END 内の行を切り出し合成してから uudecode し、
+ aish112u.tar.gz に変換して下さい。(このプログラム install 後は切り
+出さずにそのままデコードできるようになります)
+--
+小笠原博之 oga@dgw.yz.yamagata-u.ac.jp

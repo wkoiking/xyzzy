@@ -1,0 +1,81 @@
+;
+;  エクスプローラのコンテキストメニューから『インストール』を選ぶこと
+;  によりインストールが行えます。通常，オリジナル配布の自己解凍書庫を
+;  実行した場合には，自動的にこのファイルを適用してインストールが終了
+;  しています。
+;
+
+[Version]
+signature="$CHICAGO$"
+SetupClass=BASE
+
+[DefaultInstall.NT]
+CopyFiles = UNRAR32.copy.Dll, UNRAR32.copy.Win, UNRAR32.Files.Inf
+AddReg    = UNRAR32.Reg
+
+[DefaultInstall]
+CopyFiles = UNRAR32.copy.Dll, UNRAR32.copy.Win, UNRAR32.Files.Inf
+AddReg    = UNRAR32.Reg
+
+[DefaultUnInstall.NT]
+DelFiles  = UNRAR32.copy.Dll, UNRAR32.copy.Win, UNRAR32.Files.Inf
+DelReg    = UNRAR32.Reg
+
+[DefaultUnInstall]
+DelFiles  = UNRAR32.copy.Dll, UNRAR32.copy.Win, UNRAR32.Files.Inf
+DelReg    = UNRAR32.Reg
+
+[Optional Components]
+UNRAR32Install
+
+[UNRAR32Install]
+CopyFiles = UNRAR32.copy.Dll, UNRAR32.copy.Win, UNRAR32.Files.Inf
+AddReg    = UNRAR32.Reg
+
+OptionDesc = %UNRAR32%
+Tip = %UNRAR32TIP%
+InstallType = 10 ;Typical, Custom.
+Uninstall = DefaultUnInstall
+
+[SourceDisksNames]
+1="UNRAR32.DLL",,1
+
+[SourceDisksFiles]
+UNRAR32.INF=1
+
+[DestinationDirs]
+UNRAR32.copy.Dll=11
+UNRAR32.copy.Win=10
+UNRAR32.Files.Inf = 17
+
+[UNRAR32.copy.Dll]
+UNRAR32.DLL
+UNRAR.DLL
+
+[UNRAR32.copy.Win]
+uinstcsd.exe
+
+[UNRAR32.Files.Inf]
+UNRAR32.INF
+
+[UNRAR32.Reg]
+HKCU,%DLLREG%,,,
+HKCU,%DLLREG%,"UNRAR32",,"%11%\UNRAR32.DLL"
+HKCU,%UNRAR32REG%,,,
+HKCU,%UNRAR32REG%,"Copyright",,%COPYRIGHT%
+HKCU,%UNRAR32REG%,"Suffix",,%SUFFIX%
+HKLM,%UNRAR32REG%,"Copyright",,%COPYRIGHT%
+HKLM,%UNRAR32REG%,"Suffix",,%SUFFIX%
+HKLM,%UDHERE%,,,
+HKLM,%UDHERE%,DisplayName,,%UNRAR32%
+HKLM,%UDHERE%,UninstallString,,"%10%\uinstcsd.exe -u -l unrar32"
+
+[Strings]
+UNRAR32="UNRAR32 Common Archivers Library DLL"
+COPYRIGHT="(c)1997-2013 by 亀井 哲弥 & Claybird (UNRAR.DLL by (c)2013 Alexander Roshal)"
+VERSION="Ver 0.13"
+SUFFIX="RAR|EXE|"
+UNRAR32TIP="Tip of UNRAR32"
+DLLREG="Software\ArchiverDll\Archiver"
+UNRAR32REG="Software\ArchiverDll\UNRAR32"
+UDHERE="Software\Microsoft\Windows\CurrentVersion\Uninstall\UNRAR32.DLL"

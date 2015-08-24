@@ -1,0 +1,162 @@
+; The BSD License
+; http://www.opensource.org/licenses/bsd-license.php
+;
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+; CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+; MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+; IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+; OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+; USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;
+; Copyright (C) 2002- HyperBeat
+; All Right Reserved.
+;
+; $Id: UnImp32.def,v 1.9 2005/06/17 13:15:49 hyperbeat Exp $
+;
+
+EXPORTS
+    UnImp
+    UnImpGetVersion
+    UnImpGetSubVersion
+    UnImpGetRunning
+    UnImpGetBackGroundMode
+    UnImpSetBackGroundMode
+    UnImpGetCursorMode
+    UnImpSetCursorMode
+    UnImpGetCursorInterval
+    UnImpSetCursorInterval
+    UnImpCheckArchive
+    UnImpGetFileCount
+    UnImpQueryFunctionList
+    UnImpConfigDialog
+    UnImpOpenArchive
+    UnImpOpenArchive2
+    UnImpCloseArchive
+    UnImpFindFirst
+    UnImpFindNext
+    UnImpAdd
+    UnImpExtract
+    UnImpMove
+    UnImpDelete
+    UnImpGetArcFileName
+    UnImpGetArcFileSize
+    UnImpGetArcFileSizeEx
+    UnImpGetArcOriginalSize
+    UnImpGetArcOriginalSizeEx
+    UnImpGetArcCompressedSize
+    UnImpGetArcCompressedSizeEx
+    UnImpGetArcRatio
+    UnImpGetArcDate
+    UnImpGetArcTime
+    UnImpGetArcCreateTimeEx
+    UnImpGetArcAccessTimeEx
+    UnImpGetArcWriteTimeEx
+    UnImpGetArcOSType
+    UnImpIsSFXFile
+    UnImpGetArcReadSize
+    UnImpGetArcReadSizeEx
+    UnImpGetFileName
+    UnImpGetMethod
+    UnImpGetOriginalSize
+    UnImpGetOriginalSizeEx
+    UnImpGetCompressedSize
+    UnImpGetCompressedSizeEx
+    UnImpGetRatio
+    UnImpGetDate
+    UnImpGetTime
+    UnImpGetCreateTime
+    UnImpGetCreateTimeEx
+    UnImpGetAccessTime
+    UnImpGetAccessTimeEx
+    UnImpGetWriteTime
+    UnImpGetWriteTimeEx
+    UnImpGetCRC
+    UnImpGetAttribute
+    UnImpGetOSType
+    UnImpSetEnumMembersProc
+    UnImpClearEnumMembersProc
+    UnImpSetEnumMembersProc64
+    UnImpClearEnumMembersProc64
+    UnImpSetOwnerWindow
+    UnImpClearOwnerWindow
+    UnImpSetOwnerWindowEx
+    UnImpKillOwnerWindowEx
+    UnImpSetOwnerWindowEx64
+    UnImpKillOwnerWindowEx64
+; 古いバージョンのAPI名
+    Unimp
+    UnimpGetVersion
+    UnimpGetSubVersion
+    UnimpGetRunning
+    UnimpGetBackGroundMode
+    UnimpSetBackGroundMode
+    UnimpGetCursorMode
+    UnimpSetCursorMode
+    UnimpGetCursorInterval
+    UnimpSetCursorInterval
+    UnimpCheckArchive
+    UnimpGetFileCount
+    UnimpQueryFunctionList
+    UnimpConfigDialog
+    UnimpOpenArchive
+    UnimpOpenArchive2
+    UnimpCloseArchive
+    UnimpFindFirst
+    UnimpFindNext
+    UnimpAdd
+    UnimpExtract
+    UnimpMove
+    UnimpDelete
+    UnimpGetArcFileName
+    UnimpGetArcFileSize
+    UnimpGetArcFileSizeEx
+    UnimpGetArcOriginalSize
+    UnimpGetArcOriginalSizeEx
+    UnimpGetArcCompressedSize
+    UnimpGetArcCompressedSizeEx
+    UnimpGetArcRatio
+    UnimpGetArcDate
+    UnimpGetArcTime
+    UnimpGetArcCreateTimeEx
+    UnimpGetArcAccessTimeEx
+    UnimpGetArcWriteTimeEx
+    UnimpGetArcOSType
+    UnimpIsSFXFile
+    UnimpGetArcReadSize
+    UnimpGetArcReadSizeEx
+    UnimpGetFileName
+    UnimpGetMethod
+    UnimpGetOriginalSize
+    UnimpGetOriginalSizeEx
+    UnimpGetCompressedSize
+    UnimpGetCompressedSizeEx
+    UnimpGetRatio
+    UnimpGetDate
+    UnimpGetTime
+    UnimpGetCreateTime
+    UnimpGetCreateTimeEx
+    UnimpGetAccessTime
+    UnimpGetAccessTimeEx
+    UnimpGetWriteTime
+    UnimpGetWriteTimeEx
+    UnimpGetCRC
+    UnimpGetAttribute
+    UnimpGetOSType
+    UnimpSetEnumMembersProc
+    UnimpClearEnumMembersProc
+    UnimpClearEnumMembersProc64
+    UnimpSetOwnerWindow
+    UnimpClearOwnerWindow
+    UnimpSetOwnerWindowEx
+    UnimpKillOwnerWindowEx
+    UnimpSetOwnerWindowEx64
+    UnimpKillOwnerWindowEx64
+
+; デバッグ用API
+    UnImpSetDebugMode
