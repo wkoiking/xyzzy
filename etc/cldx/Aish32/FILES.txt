@@ -1,0 +1,19 @@
+
+ファイル構成
+
+    .\
+    AISH32.DLL     : AISH32.DLL 本体
+    AISH32.H       : 開発者用 - AISH32.DLL のヘッダ・ファイル
+    AISH32.LIB     : 開発者用 - AISH32.DLL の実行時動的リンク用のライブラリ
+    AISHMV32.DLL   : AISHMV32.DLL 本体
+    AISHMV32.H     : 開発者用 - AISHMV32.DLL のヘッダ・ファイル
+    AISHMV32.LIB   : 開発者用 - AISHMV32.DLL の実行時動的リンク用のライブラリ
+    API.txt        : 開発者用 - API マニュアル
+    FILES.txt      : このファイル
+    HEADER.txt     : ヘッダ・ファイル
+    HISTROY.txt    : 改訂履歴
+    README.txt     : 説明ファイル
+
+    .\DOC          : オリジナル aish と aishmv の説明文
+
+    .\SRC          : 開発者用 - DLL を構築するためのソース・コード

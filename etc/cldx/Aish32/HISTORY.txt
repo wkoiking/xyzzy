@@ -1,0 +1,77 @@
+1999年 4月 5日: Ver. 0.01
+    リリース
+
+1999年 4月 7日: Ver. 0.02
+    　Aish() が正常終了したときに、誤って 0x8000 を返していたのを 0 を
+    返すように修正した。
+    　Aishmv() が正常終了したときに、誤って 0x8000 を返していたのを 0 
+    を返すように修正した。
+
+1999年 4月13日: Ver. 0.03
+    　マルチ・プラットフォーム対応で #if や #ifdef の嵐 (^^; だったオリ
+    ジナルのソース・コード部分から、これらのディレクティブを極力取り去
+    り、可読性をよくした（つもり？？？）。
+    　同時に、DLL のソースを C++ としてコンパイルするようにした。以降の
+    変更に対して C よりも安全な C++ の機構を使えるようにするための準備
+    である。
+    　統合アーカイバ・プロジェクトの DLL として最低限必須な API を全部
+    実装した。最低限必須な API とは次の通り。
+
+        xxx()
+        xxxGetVersion()
+        xxxGetRunning()
+        xxxCheckArchive()
+        xxxQueryFunctionList()
+
+    ●AISH32.DLL に関して
+    　AishQueryFunctionList() API を実装した。
+
+    ●AISHMV32.DLL に関して
+    　次の API を実装した。
+
+        AishmvCheckArchive()
+        AishmvGetVersion()
+        AishmvQueryFunctionList()
+
+1999年 4月15日: Ver. 0.04
+    　Aish() ならびに Aishmv() のウィンドウ・ハンドルの引数を利用するよ
+    うにした。
+    　次の API を実装した。
+
+    ●AISH32.DLL に関して
+        AishGetBackGroundMode()
+        AishSetBackGroundMode()
+        AishGetCursorMode()
+        AishSetCursorMode()
+        AishGetCursorInterval()
+        AishSetCursorInterval()
+
+    ●AISHMV32.DLL に関して
+        AishmvGetBackGroundMode()
+        AishmvSetBackGroundMode()
+        AishmvGetCursorMode()
+        AishmvSetCursorMode()
+        AishmvGetCursorInterval()
+        AishmvSetCursorInterval()
+
+
+Overview:
+    　ISH データが含まれないファイルをデコードさせると、Aish() は 0 を
+    返す。そのような場合、0 以外の値を返すようにしたい。
+
+    　いまの実装では、xxxCheckArchive() は、単にファイルの存在を調べる
+    だけの動作をする。この API 本来の動作をするように改良したい。
+
+    　完全に動作するかただのダミーであるかに関わらず、次の API を実装し
+    たい。
+
+        xxxConfigDialog()
+
+    　余裕があれば以下の Open 系 API も同じ要領で実装したい。
+
+        xxxOpenArchive()
+        xxxCloseArchive()
+        xxxFindFirst()
+        xxxFindNext()
+
+    　出力先ディレクトリを指定できるようにしたい。

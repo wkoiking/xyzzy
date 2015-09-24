@@ -1,0 +1,1791 @@
+Binary files origsrc/Release/unzipsfx.exe and src/Release/unzipsfx.exe differ
+diff -urN origsrc/extract.c src/extract.c
+--- origsrc/extract.c	Fri Apr 16 09:58:00 2004
++++ src/extract.c	Fri Jun 11 10:18:37 2004
+@@ -1270,7 +1270,16 @@
+                     break;
+                 }
+             if (query) {
+-#ifdef WINDLL
++// Chg-Start 2003/06/13 Niiyama(HEROPA)
++//#ifdef WINDLL
++#if defined(WIN32) && defined(GUI)
++                    /* Replace None */
++// Chg-Start 2004/06/11 Niiyama(HEROPA)	常に上書きにしてみる。
++//                    G.overwrite_mode = OVERWRT_NEVER;
++					G.overwrite_mode = OVERWRT_ALWAYS;
++// Chg-End 2004/06/11 Niiyama(HEROPA)
++#elif defined(WINDLL)
++// Chg-End 2003/06/13 Niiyama(HEROPA)
+                 switch (G.lpUserFunctions->replace != NULL ?
+                         (*G.lpUserFunctions->replace)(G.filename) :
+                         IDM_REPLACE_NONE) {
+diff -urN origsrc/fileio.c src/fileio.c
+--- origsrc/fileio.c	Sun May 23 10:01:20 2004
++++ src/fileio.c	Fri Jun 11 10:08:51 2004
+@@ -79,6 +79,11 @@
+ #endif
+ #include "ebcdic.h"   /* definition/initialization of ebcdic[] */
+ 
++// Add-Start 2003/06/12 Niiyama(HEROPA)
++#if defined(GUI) && defined(WIN32)
++#	include "wingui.h"
++#endif
++// Add-End 2003/06/12 Niiyama(HEROPA)
+ 
+ /*
+    Note: Under Windows, the maximum size of the buffer that can be used
+@@ -1216,6 +1221,11 @@
+     of this one.
+   ---------------------------------------------------------------------------*/
+ 
++// Add-Start 2003/06/12 Niiyama(HEROPA)
++#if (defined(GUI) && defined(WIN32))
++	return WinGuiUzpMessagePrnt(pG,buf,size,flag);
++#endif
++// Add-End 2003/06/12 Niiyama(HEROPA)
+ #if (defined(OS2) && defined(DLL))
+     if (MSG_NO_DLL2(flag))  /* if OS/2 DLL bit is set, do NOT print this msg */
+         return 0;
+@@ -1527,6 +1537,12 @@
+     /* tell picky compilers to shut up about "unused variable" warnings */
+     pG = pG;
+ #endif
++
++// Add-Start 2003/06/12 Niiyama(HEROPA)
++#if defined(GUI) && defined(WIN32)
++	return WinGuiUzpPassword (pG, rcnt, pwbuf, size, zfn, efn);
++#endif
++// Add-End 2003/06/12 Niiyama(HEROPA)
+ 
+     if (*rcnt == 0) {           /* First call for current entry */
+         *rcnt = 2;
+diff -urN origsrc/manifest.xml src/manifest.xml
+--- origsrc/manifest.xml	Thu Jan 01 09:00:00 1970
++++ src/manifest.xml	Fri Jun 11 10:08:51 2004
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
++<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
++	<assemblyIdentity version="1.0.0.0" processorArchitecture="X86" name="sfx32gui.heropa" type="win32" />
++	<description>sfx32gui</description>
++	<dependency><dependentAssembly>
++		<assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="X86" publicKeyToken="6595b64144ccf1df" language="*" />
++	</dependentAssembly></dependency>
++</assembly>
+diff -urN origsrc/resource.h src/resource.h
+--- origsrc/resource.h	Thu Jan 01 09:00:00 1970
++++ src/resource.h	Fri Jun 11 10:56:20 2004
+@@ -0,0 +1,25 @@
++//{{NO_DEPENDENCIES}}
++// Microsoft Developer Studio generated include file.
++// Used by unzipsfx.rc
++//
++#define IDD_DIALOG_LOG                  101
++#define IDD_DIALOG_PASSWORD             102
++#define IDD_DIALOG_FOLDER               103
++#define IDI_MAIN                        107
++#define IDC_EDIT_LOG                    1000
++#define IDC_EDIT_PASSWORD               1001
++#define IDC_EDIT_ARCHIVE                1002
++#define IDC_EDIT_EXTRACTING             1003
++#define IDC_EDIT_FOLDER                 1004
++#define IDVIEW                          1010
++
++// Next default values for new objects
++// 
++#ifdef APSTUDIO_INVOKED
++#ifndef APSTUDIO_READONLY_SYMBOLS
++#define _APS_NEXT_RESOURCE_VALUE        108
++#define _APS_NEXT_COMMAND_VALUE         40001
++#define _APS_NEXT_CONTROL_VALUE         1011
++#define _APS_NEXT_SYMED_VALUE           101
++#endif
++#endif
+Binary files origsrc/sfx32gui.ico and src/sfx32gui.ico differ
+diff -urN origsrc/unzip.c src/unzip.c
+--- origsrc/unzip.c	Sun May 23 10:01:12 2004
++++ src/unzip.c	Fri Jun 11 10:55:16 2004
+@@ -618,10 +618,206 @@
+ /*  main() / UzpMain() stub  */
+ /*****************************/
+ 
++// Add-Start 2003/06/12 Niiyama(HEROPA)
++#if defined(GUI) && defined(WIN32)
++#include <windows.h>
++#include <shlobj.h>		// Add 2003/05/08 Niiyama(HEROPA)
++#include <shlwapi.h>	// Add 2003/06/11 Niiyama(HEROPA)
++#include "resource.h"
++
++// Add-Start 2003/06/11 Niiyama(HEROPA)
++#define PACKVERSION(major,minor) MAKELONG(minor,major)
++#define BIF_NEWDIALOGSTYLE    0x0040
++// Add-Start 2003/06/12 Niiyama(HEROPA)
++HWND	m_hWnd = 0;
++
++INT CALLBACK BrowseCallbackProc(HWND hwnd, 
++                                UINT uMsg,
++                                LPARAM lp, 
++                                LPARAM pData) 
++{
++	TCHAR szDir[MAX_PATH];
++
++	switch(uMsg) {
++	case BFFM_INITIALIZED:
++		if (m_hWnd != 0) {
++			if (GetDlgItemText(m_hWnd, IDC_EDIT_FOLDER, szDir, MAX_PATH)) {
++				SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM)szDir);
++			} else {
++				if (GetCurrentDirectory(sizeof(szDir)/sizeof(TCHAR), szDir)) {
++					SendMessage(hwnd, BFFM_SETSELECTION, TRUE, (LPARAM)szDir);
++				}
++			}
++		}
++		break;
++	default:
++		break;
++	}
++	return 0;
++}
++// Add-End 2003/06/12 Niiyama(HEROPA)
++DWORD GetDllVersion(LPCTSTR lpszDllName)
++{
++
++    HINSTANCE hinstDll;
++    DWORD dwVersion = 0;
++
++    hinstDll = LoadLibrary(lpszDllName);
++	
++    if(hinstDll)
++    {
++        DLLGETVERSIONPROC pDllGetVersion;
++
++        pDllGetVersion = (DLLGETVERSIONPROC) GetProcAddress(hinstDll, "DllGetVersion");
++
++        if(pDllGetVersion)
++        {
++            DLLVERSIONINFO dvi;
++            HRESULT hr;
++
++            ZeroMemory(&dvi, sizeof(dvi));
++            dvi.cbSize = sizeof(dvi);
++
++            hr = (*pDllGetVersion)(&dvi);
++
++            if(SUCCEEDED(hr))
++            {
++                dwVersion = PACKVERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
++            }
++        }
++        
++        FreeLibrary(hinstDll);
++    }
++    return dwVersion;
++}
++// Add-End Niiyama(HEROPA)
++
++BOOL CALLBACK FolderDialogFunc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
++{
++	int ret;
++	char *p;
++	char folder[1000];
++// Add-Start 2003/05/08 Niiyama(HEROPA)
++	BROWSEINFO		bi;
++	TCHAR			szDir[MAX_PATH];
++	LPITEMIDLIST	pidl;
++	LPMALLOC		pMalloc;
++// Add-End 2003/05/08 Niiyama(HEROPA)
++
++	switch(msg){
++	case WM_INITDIALOG:
++		GetModuleFileName(GetModuleHandle(NULL),folder,1000);
++		if((p=strrchr(folder,'\\'))){
++			*(p+1)='\0';
++		}
++		SetDlgItemText(hwnd,IDC_EDIT_FOLDER,folder);
++		m_hWnd = hwnd;	// Add 2003/06/12 Niiyama(HEROPA)
++		return 1;
++	case WM_COMMAND:
++		switch(LOWORD(wParam)){
++// Add-Start 2003/05/08 Niiyama(HEROPA)
++		case IDVIEW:
++			if (SUCCEEDED(SHGetMalloc(&pMalloc))) {
++				ZeroMemory(&bi,sizeof(bi));
++				bi.hwndOwner = hwnd;
++				bi.pszDisplayName = 0;
++				bi.pidlRoot = 0;
++// Chg-Start 2003/06/11 Niiyama(HEROPA)
++//				bi.ulFlags = BIF_RETURNONLYFSDIRS;	// | BIF_STATUSTEXT;
++				if(GetDllVersion(TEXT("shell32.dll")) >= PACKVERSION(5,00)) {
++					bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
++				} else {
++					bi.ulFlags = BIF_RETURNONLYFSDIRS;	// | BIF_STATUSTEXT;
++				}
++// Chg-End	2003/06/11 Niiyama(HEROPA)
++				bi.lpfn = BrowseCallbackProc;	// Chg 2003/06/12 Niiyama(HEROPA)
++
++				pidl = SHBrowseForFolder(&bi);
++				if (pidl) {
++					if (SHGetPathFromIDList(pidl,szDir)) {
++						SetDlgItemText(hwnd, IDC_EDIT_FOLDER, szDir);
++					}
++
++					// In C++: pMalloc->Free(pidl); pMalloc->Release();
++					pMalloc->lpVtbl->Free(pMalloc,pidl);
++					pMalloc->lpVtbl->Release(pMalloc);
++				}
++			}
++			break;
++// Add-End 2003/05/08 Niiyama(HEROPA)
++		case IDOK:
++			GetDlgItemText(hwnd,IDC_EDIT_FOLDER,folder,1000);
++			if(chdir(folder)==-1){
++				char buf[1000];
++// Chg-Start 2004/06/11 Niiyama(HEROPA)
++//				sprintf(buf,"Can't change directory to[%s]. Make directory?",folder); 
++				sprintf(buf,"ディレクトリ\n\"%s\"\nが存在しません。作成しますか？",folder); 
++// Chg-End
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++//				ret = MessageBox(hwnd,buf,"UNZIPSFX",MB_YESNO);
++				ret = MessageBox(hwnd,buf,"UNZIPSFX",MB_YESNO | MB_ICONEXCLAMATION);
++// Chg-End 2003/05/08 Niiyama(HEROPA)
++				if(ret==IDYES){
++					if(mkdir(folder)==-1){
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++//						MessageBox(hwnd,"Can't make directory","UNZIPSFX",0);
++						MessageBox(hwnd,"ディレクトリが作成できません。","UNZIPSFX", MB_ICONSTOP);
++// Chg-End 2003/05/08 Niiyama(HEROPA)
++						exit(1);
++					}
++					if(chdir(folder)==-1){
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++//						MessageBox(hwnd,"Can't change directory","UNZIPSFX",0);
++						MessageBox(hwnd,"ディレクトリを変更できません。","UNZIPSFX", MB_ICONSTOP);
++// Chg-End 2003/05/08 Niiyama(HEROPA)
++						exit(1);
++					}
++				}else{
++//					exit(1);
++					return 1;
++				}
++			}
++			EndDialog(hwnd,0);
++			return 1;
++		case IDCANCEL:
++			SendMessage(hwnd,WM_CLOSE,0,0);
++			return 1;
++		}
++		break;
++	case WM_CLOSE:
++//		ret = MessageBox(hwnd,"Abort Really?","UNZIPSFX",MB_YESNO);
++		ret = MessageBox(hwnd,"中断しますか？","UNZIPSFX",MB_YESNO | MB_ICONEXCLAMATION);
++		if(ret==IDYES){
++			exit(1);
++		} else {
++			return 1;
++		}
++		break;
++	}
++	return 0;
++}
++
++// Chg-Start 2003/06/11 Niiyama(HEROPA)
++//int WINAPI WinMain(HANDLE hInst,HANDLE hPrev,char *cmd,int mode)
++int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
++// Chg-End
++// Add-End 2003/06/12 Niiyama(HEROPA)
++{
++	int argc=1;
++	char *argv[2];
++	char progname[1000];
++
++	GetModuleFileName(GetModuleHandle(NULL),progname,1000);
++	argv[0]=progname;
++	argv[1]=NULL;
++	DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_DIALOG_FOLDER),0,FolderDialogFunc);
++#else
+ int MAIN(argc, argv)   /* return PK-type error code (except under VMS) */
+     int argc;
+     char *argv[];
+ {
++#endif
++	{
+     int r;
+ 
+     CONSTRUCTGLOBALS();
+@@ -629,7 +825,7 @@
+     DESTROYGLOBALS();
+     RETURN(r);
+ }
+-
++}
+ 
+ 
+ 
+diff -urN origsrc/unzipsfx.dep src/unzipsfx.dep
+--- origsrc/unzipsfx.dep	Thu Jan 01 09:00:00 1970
++++ src/unzipsfx.dep	Fri Jun 11 10:08:51 2004
+@@ -0,0 +1,440 @@
++# Microsoft Developer Studio Generated Dependency File, included by unzipsfx.mak
++
++.\crc32.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	".\zip.h"\
++	
++
++.\crctab.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	".\zip.h"\
++	
++
++.\crypt.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\crypt.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\ttyio.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	".\zip.h"\
++	
++
++.\extract.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\crypt.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\intrface.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\decs.h"\
++	".\windll\structs.h"\
++	".\windll\windll.h"\
++	
++
++.\fileio.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\crypt.h"\
++	".\ebcdic.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\ttyio.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\decs.h"\
++	".\windll\structs.h"\
++	".\windll\windll.h"\
++	".\wingui.h"\
++	
++
++.\globals.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\inflate.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\crypt.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\inflate.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\match.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\win32\nt.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\nt.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\process.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\intrface.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\decs.h"\
++	".\windll\structs.h"\
++	".\windll\windll.h"\
++	
++
++.\ttyio.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\crypt.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\ttyio.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	".\zip.h"\
++	
++
++.\unreduce.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\unzip.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\consts.h"\
++	".\crypt.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\Unzipsfx.rc : \
++	".\manifest.xml"\
++	".\sfx32gui.ico"\
++	
++
++.\win32\win32.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\timezone.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\nt.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	
++
++.\wingui.c : \
++	".\acorn\riscos.h"\
++	".\acorn\swiven.h"\
++	".\amiga\amiga.h"\
++	".\amiga\z-stat.h"\
++	".\aosvs\aosvs.h"\
++	".\flexos\flxcfg.h"\
++	".\globals.h"\
++	".\msdos\doscfg.h"\
++	".\novell\nlmcfg.h"\
++	".\os2\os2cfg.h"\
++	".\os2\os2data.h"\
++	".\qdos\izqdos.h"\
++	".\theos\stat.h"\
++	".\theos\thscfg.h"\
++	".\unix\unxcfg.h"\
++	".\unzip.h"\
++	".\unzpriv.h"\
++	".\unzvers.h"\
++	".\win32\rsxntwin.h"\
++	".\win32\w32cfg.h"\
++	".\wince\punzip.h"\
++	".\wince\punzip.rcv"\
++	".\wince\wince.h"\
++	".\windll\structs.h"\
++	".\wingui.h"\
++	
+diff -urN origsrc/unzipsfx.dsp src/unzipsfx.dsp
+--- origsrc/unzipsfx.dsp	Thu Jan 01 09:00:00 1970
++++ src/unzipsfx.dsp	Fri Jun 11 10:08:51 2004
+@@ -0,0 +1,220 @@
++# Microsoft Developer Studio Project File - Name="unzipsfx" - Package Owner=<4>
++# Microsoft Developer Studio Generated Build File, Format Version 6.00
++# ** 編集しないでください **
++
++# TARGTYPE "Win32 (x86) Console Application" 0x0103
++
++CFG=unzipsfx - Win32 Debug
++!MESSAGE これは有効なﾒｲｸﾌｧｲﾙではありません。 このﾌﾟﾛｼﾞｪｸﾄをﾋﾞﾙﾄﾞするためには NMAKE を使用してください。
++!MESSAGE [ﾒｲｸﾌｧｲﾙのｴｸｽﾎﾟｰﾄ] ｺﾏﾝﾄﾞを使用して実行してください
++!MESSAGE 
++!MESSAGE NMAKE /f "unzipsfx.mak".
++!MESSAGE 
++!MESSAGE NMAKE の実行時に構成を指定できます
++!MESSAGE ｺﾏﾝﾄﾞ ﾗｲﾝ上でﾏｸﾛの設定を定義します。例:
++!MESSAGE 
++!MESSAGE NMAKE /f "unzipsfx.mak" CFG="unzipsfx - Win32 Debug"
++!MESSAGE 
++!MESSAGE 選択可能なﾋﾞﾙﾄﾞ ﾓｰﾄﾞ:
++!MESSAGE 
++!MESSAGE "unzipsfx - Win32 Release" ("Win32 (x86) Console Application" 用)
++!MESSAGE "unzipsfx - Win32 Debug" ("Win32 (x86) Console Application" 用)
++!MESSAGE 
++
++# Begin Project
++# PROP AllowPerConfigDependencies 0
++# PROP Scc_ProjName ""
++# PROP Scc_LocalPath ""
++CPP=cl.exe
++RSC=rc.exe
++
++!IF  "$(CFG)" == "unzipsfx - Win32 Release"
++
++# PROP BASE Use_MFC 0
++# PROP BASE Use_Debug_Libraries 0
++# PROP BASE Output_Dir "Release"
++# PROP BASE Intermediate_Dir "Release"
++# PROP BASE Target_Dir ""
++# PROP Use_MFC 0
++# PROP Use_Debug_Libraries 0
++# PROP Output_Dir "Release"
++# PROP Intermediate_Dir "Release"
++# PROP Ignore_Export_Lib 0
++# PROP Target_Dir ""
++# ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
++# ADD CPP /nologo /W3 /GX /O2 /I ".." /I "." /D "NDEBUG" /D "USE_CRYPT" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "SFX" /D "CRYPT" /D "GUI" /D "USE_DEFLATE64" /FR /YX /FD /c
++# ADD BASE RSC /l 0x411 /d "NDEBUG"
++# ADD RSC /l 0x411 /d "NDEBUG"
++BSC32=bscmake.exe
++# ADD BASE BSC32 /nologo
++# ADD BSC32 /nologo
++LINK32=link.exe
++# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
++# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
++# SUBTRACT LINK32 /pdb:none
++
++!ELSEIF  "$(CFG)" == "unzipsfx - Win32 Debug"
++
++# PROP BASE Use_MFC 0
++# PROP BASE Use_Debug_Libraries 1
++# PROP BASE Output_Dir "Debug"
++# PROP BASE Intermediate_Dir "Debug"
++# PROP BASE Target_Dir ""
++# PROP Use_MFC 0
++# PROP Use_Debug_Libraries 1
++# PROP Output_Dir "Debug"
++# PROP Intermediate_Dir "Debug"
++# PROP Ignore_Export_Lib 0
++# PROP Target_Dir ""
++# ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
++# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "SFX" /D "CRYPT" /D "GUI" /D "USE_DEFLATE64" /FR /YX /FD /c
++# ADD BASE RSC /l 0x411 /d "_DEBUG"
++# ADD RSC /l 0x411 /d "_DEBUG"
++BSC32=bscmake.exe
++# ADD BASE BSC32 /nologo
++# ADD BSC32 /nologo
++LINK32=link.exe
++# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
++# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
++# SUBTRACT LINK32 /pdb:none
++
++!ENDIF 
++
++# Begin Target
++
++# Name "unzipsfx - Win32 Release"
++# Name "unzipsfx - Win32 Debug"
++# Begin Source File
++
++SOURCE=.\consts.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\crc32.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\crctab.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\crypt.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\crypt.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\ebcdic.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\extract.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\fileio.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\globals.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\globals.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\inflate.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\inflate.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\manifest.xml
++# End Source File
++# Begin Source File
++
++SOURCE=.\match.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\win32\nt.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\win32\nt.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\process.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\win32\rsxntwin.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\sfx32gui.ico
++# End Source File
++# Begin Source File
++
++SOURCE=.\tables.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\ttyio.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\ttyio.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\unreduce.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\unzip.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\unzip.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\Unzipsfx.rc
++# End Source File
++# Begin Source File
++
++SOURCE=.\unzpriv.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\version.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\win32\w32cfg.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\win32\win32.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\wingui.c
++# End Source File
++# Begin Source File
++
++SOURCE=.\wingui.h
++# End Source File
++# Begin Source File
++
++SOURCE=.\zip.h
++# End Source File
++# End Target
++# End Project
+diff -urN origsrc/unzipsfx.dsw src/unzipsfx.dsw
+--- origsrc/unzipsfx.dsw	Thu Jan 01 09:00:00 1970
++++ src/unzipsfx.dsw	Fri Jun 11 10:08:51 2004
+@@ -0,0 +1,29 @@
++Microsoft Developer Studio Workspace File, Format Version 6.00
++# 警告: このﾜｰｸｽﾍﾟｰｽ ﾌｧｲﾙ を編集または削除しないでください!
++
++###############################################################################
++
++Project: "unzipsfx"=".\unzipsfx.dsp" - Package Owner=<4>
++
++Package=<5>
++{{{
++}}}
++
++Package=<4>
++{{{
++}}}
++
++###############################################################################
++
++Global:
++
++Package=<5>
++{{{
++}}}
++
++Package=<3>
++{{{
++}}}
++
++###############################################################################
++
+diff -urN origsrc/unzipsfx.mak src/unzipsfx.mak
+--- origsrc/unzipsfx.mak	Thu Jan 01 09:00:00 1970
++++ src/unzipsfx.mak	Fri Jun 11 10:08:51 2004
+@@ -0,0 +1,397 @@
++# Microsoft Developer Studio Generated NMAKE File, Based on unzipsfx.dsp
++!IF "$(CFG)" == ""
++CFG=unzipsfx - Win32 Debug
++!MESSAGE 構成が指定されていません。ﾃﾞﾌｫﾙﾄの unzipsfx - Win32 Debug を設定します。
++!ENDIF 
++
++!IF "$(CFG)" != "unzipsfx - Win32 Release" && "$(CFG)" != "unzipsfx - Win32 Debug"
++!MESSAGE 指定された ﾋﾞﾙﾄﾞ ﾓｰﾄﾞ "$(CFG)" は正しくありません。
++!MESSAGE NMAKE の実行時に構成を指定できます
++!MESSAGE ｺﾏﾝﾄﾞ ﾗｲﾝ上でﾏｸﾛの設定を定義します。例:
++!MESSAGE 
++!MESSAGE NMAKE /f "unzipsfx.mak" CFG="unzipsfx - Win32 Debug"
++!MESSAGE 
++!MESSAGE 選択可能なﾋﾞﾙﾄﾞ ﾓｰﾄﾞ:
++!MESSAGE 
++!MESSAGE "unzipsfx - Win32 Release" ("Win32 (x86) Console Application" 用)
++!MESSAGE "unzipsfx - Win32 Debug" ("Win32 (x86) Console Application" 用)
++!MESSAGE 
++!ERROR 無効な構成が指定されています。
++!ENDIF 
++
++!IF "$(OS)" == "Windows_NT"
++NULL=
++!ELSE 
++NULL=nul
++!ENDIF 
++
++!IF  "$(CFG)" == "unzipsfx - Win32 Release"
++
++OUTDIR=.\Release
++INTDIR=.\Release
++# Begin Custom Macros
++OutDir=.\Release
++# End Custom Macros
++
++ALL : "$(OUTDIR)\unzipsfx.exe" "$(OUTDIR)\unzipsfx.bsc"
++
++
++CLEAN :
++	-@erase "$(INTDIR)\crc32.obj"
++	-@erase "$(INTDIR)\crc32.sbr"
++	-@erase "$(INTDIR)\crctab.obj"
++	-@erase "$(INTDIR)\crctab.sbr"
++	-@erase "$(INTDIR)\crypt.obj"
++	-@erase "$(INTDIR)\crypt.sbr"
++	-@erase "$(INTDIR)\extract.obj"
++	-@erase "$(INTDIR)\extract.sbr"
++	-@erase "$(INTDIR)\fileio.obj"
++	-@erase "$(INTDIR)\fileio.sbr"
++	-@erase "$(INTDIR)\globals.obj"
++	-@erase "$(INTDIR)\globals.sbr"
++	-@erase "$(INTDIR)\inflate.obj"
++	-@erase "$(INTDIR)\inflate.sbr"
++	-@erase "$(INTDIR)\match.obj"
++	-@erase "$(INTDIR)\match.sbr"
++	-@erase "$(INTDIR)\nt.obj"
++	-@erase "$(INTDIR)\nt.sbr"
++	-@erase "$(INTDIR)\process.obj"
++	-@erase "$(INTDIR)\process.sbr"
++	-@erase "$(INTDIR)\ttyio.obj"
++	-@erase "$(INTDIR)\ttyio.sbr"
++	-@erase "$(INTDIR)\unreduce.obj"
++	-@erase "$(INTDIR)\unreduce.sbr"
++	-@erase "$(INTDIR)\unzip.obj"
++	-@erase "$(INTDIR)\unzip.sbr"
++	-@erase "$(INTDIR)\Unzipsfx.res"
++	-@erase "$(INTDIR)\vc60.idb"
++	-@erase "$(INTDIR)\win32.obj"
++	-@erase "$(INTDIR)\win32.sbr"
++	-@erase "$(INTDIR)\wingui.obj"
++	-@erase "$(INTDIR)\wingui.sbr"
++	-@erase "$(OUTDIR)\unzipsfx.bsc"
++	-@erase "$(OUTDIR)\unzipsfx.exe"
++
++"$(OUTDIR)" :
++    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
++
++CPP=cl.exe
++CPP_PROJ=/nologo /ML /W3 /GX /O2 /I ".." /I "." /D "NDEBUG" /D "USE_CRYPT" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "SFX" /D "CRYPT" /D "GUI" /D "USE_DEFLATE64" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\unzipsfx.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
++
++.c{$(INTDIR)}.obj::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cpp{$(INTDIR)}.obj::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cxx{$(INTDIR)}.obj::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.c{$(INTDIR)}.sbr::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cpp{$(INTDIR)}.sbr::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cxx{$(INTDIR)}.sbr::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++RSC=rc.exe
++RSC_PROJ=/l 0x411 /fo"$(INTDIR)\Unzipsfx.res" /d "NDEBUG" 
++BSC32=bscmake.exe
++BSC32_FLAGS=/nologo /o"$(OUTDIR)\unzipsfx.bsc" 
++BSC32_SBRS= \
++	"$(INTDIR)\crc32.sbr" \
++	"$(INTDIR)\crctab.sbr" \
++	"$(INTDIR)\crypt.sbr" \
++	"$(INTDIR)\extract.sbr" \
++	"$(INTDIR)\fileio.sbr" \
++	"$(INTDIR)\globals.sbr" \
++	"$(INTDIR)\inflate.sbr" \
++	"$(INTDIR)\match.sbr" \
++	"$(INTDIR)\nt.sbr" \
++	"$(INTDIR)\process.sbr" \
++	"$(INTDIR)\ttyio.sbr" \
++	"$(INTDIR)\unreduce.sbr" \
++	"$(INTDIR)\unzip.sbr" \
++	"$(INTDIR)\win32.sbr" \
++	"$(INTDIR)\wingui.sbr"
++
++"$(OUTDIR)\unzipsfx.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
++    $(BSC32) @<<
++  $(BSC32_FLAGS) $(BSC32_SBRS)
++<<
++
++LINK32=link.exe
++LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"$(OUTDIR)\unzipsfx.pdb" /machine:I386 /out:"$(OUTDIR)\unzipsfx.exe" 
++LINK32_OBJS= \
++	"$(INTDIR)\crc32.obj" \
++	"$(INTDIR)\crctab.obj" \
++	"$(INTDIR)\crypt.obj" \
++	"$(INTDIR)\extract.obj" \
++	"$(INTDIR)\fileio.obj" \
++	"$(INTDIR)\globals.obj" \
++	"$(INTDIR)\inflate.obj" \
++	"$(INTDIR)\match.obj" \
++	"$(INTDIR)\nt.obj" \
++	"$(INTDIR)\process.obj" \
++	"$(INTDIR)\ttyio.obj" \
++	"$(INTDIR)\unreduce.obj" \
++	"$(INTDIR)\unzip.obj" \
++	"$(INTDIR)\win32.obj" \
++	"$(INTDIR)\wingui.obj" \
++	"$(INTDIR)\Unzipsfx.res"
++
++"$(OUTDIR)\unzipsfx.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
++    $(LINK32) @<<
++  $(LINK32_FLAGS) $(LINK32_OBJS)
++<<
++
++!ELSEIF  "$(CFG)" == "unzipsfx - Win32 Debug"
++
++OUTDIR=.\Debug
++INTDIR=.\Debug
++# Begin Custom Macros
++OutDir=.\Debug
++# End Custom Macros
++
++ALL : "$(OUTDIR)\unzipsfx.exe" "$(OUTDIR)\unzipsfx.bsc"
++
++
++CLEAN :
++	-@erase "$(INTDIR)\crc32.obj"
++	-@erase "$(INTDIR)\crc32.sbr"
++	-@erase "$(INTDIR)\crctab.obj"
++	-@erase "$(INTDIR)\crctab.sbr"
++	-@erase "$(INTDIR)\crypt.obj"
++	-@erase "$(INTDIR)\crypt.sbr"
++	-@erase "$(INTDIR)\extract.obj"
++	-@erase "$(INTDIR)\extract.sbr"
++	-@erase "$(INTDIR)\fileio.obj"
++	-@erase "$(INTDIR)\fileio.sbr"
++	-@erase "$(INTDIR)\globals.obj"
++	-@erase "$(INTDIR)\globals.sbr"
++	-@erase "$(INTDIR)\inflate.obj"
++	-@erase "$(INTDIR)\inflate.sbr"
++	-@erase "$(INTDIR)\match.obj"
++	-@erase "$(INTDIR)\match.sbr"
++	-@erase "$(INTDIR)\nt.obj"
++	-@erase "$(INTDIR)\nt.sbr"
++	-@erase "$(INTDIR)\process.obj"
++	-@erase "$(INTDIR)\process.sbr"
++	-@erase "$(INTDIR)\ttyio.obj"
++	-@erase "$(INTDIR)\ttyio.sbr"
++	-@erase "$(INTDIR)\unreduce.obj"
++	-@erase "$(INTDIR)\unreduce.sbr"
++	-@erase "$(INTDIR)\unzip.obj"
++	-@erase "$(INTDIR)\unzip.sbr"
++	-@erase "$(INTDIR)\Unzipsfx.res"
++	-@erase "$(INTDIR)\vc60.idb"
++	-@erase "$(INTDIR)\vc60.pdb"
++	-@erase "$(INTDIR)\win32.obj"
++	-@erase "$(INTDIR)\win32.sbr"
++	-@erase "$(INTDIR)\wingui.obj"
++	-@erase "$(INTDIR)\wingui.sbr"
++	-@erase "$(OUTDIR)\unzipsfx.bsc"
++	-@erase "$(OUTDIR)\unzipsfx.exe"
++	-@erase "$(OUTDIR)\unzipsfx.ilk"
++	-@erase "$(OUTDIR)\unzipsfx.pdb"
++
++"$(OUTDIR)" :
++    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
++
++CPP=cl.exe
++CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "." /I ".." /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "SFX" /D "CRYPT" /D "GUI" /D "USE_DEFLATE64" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\unzipsfx.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
++
++.c{$(INTDIR)}.obj::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cpp{$(INTDIR)}.obj::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cxx{$(INTDIR)}.obj::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.c{$(INTDIR)}.sbr::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cpp{$(INTDIR)}.sbr::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++.cxx{$(INTDIR)}.sbr::
++   $(CPP) @<<
++   $(CPP_PROJ) $< 
++<<
++
++RSC=rc.exe
++RSC_PROJ=/l 0x411 /fo"$(INTDIR)\Unzipsfx.res" /d "_DEBUG" 
++BSC32=bscmake.exe
++BSC32_FLAGS=/nologo /o"$(OUTDIR)\unzipsfx.bsc" 
++BSC32_SBRS= \
++	"$(INTDIR)\crc32.sbr" \
++	"$(INTDIR)\crctab.sbr" \
++	"$(INTDIR)\crypt.sbr" \
++	"$(INTDIR)\extract.sbr" \
++	"$(INTDIR)\fileio.sbr" \
++	"$(INTDIR)\globals.sbr" \
++	"$(INTDIR)\inflate.sbr" \
++	"$(INTDIR)\match.sbr" \
++	"$(INTDIR)\nt.sbr" \
++	"$(INTDIR)\process.sbr" \
++	"$(INTDIR)\ttyio.sbr" \
++	"$(INTDIR)\unreduce.sbr" \
++	"$(INTDIR)\unzip.sbr" \
++	"$(INTDIR)\win32.sbr" \
++	"$(INTDIR)\wingui.sbr"
++
++"$(OUTDIR)\unzipsfx.bsc" : "$(OUTDIR)" $(BSC32_SBRS)
++    $(BSC32) @<<
++  $(BSC32_FLAGS) $(BSC32_SBRS)
++<<
++
++LINK32=link.exe
++LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:yes /pdb:"$(OUTDIR)\unzipsfx.pdb" /debug /machine:I386 /out:"$(OUTDIR)\unzipsfx.exe" /pdbtype:sept 
++LINK32_OBJS= \
++	"$(INTDIR)\crc32.obj" \
++	"$(INTDIR)\crctab.obj" \
++	"$(INTDIR)\crypt.obj" \
++	"$(INTDIR)\extract.obj" \
++	"$(INTDIR)\fileio.obj" \
++	"$(INTDIR)\globals.obj" \
++	"$(INTDIR)\inflate.obj" \
++	"$(INTDIR)\match.obj" \
++	"$(INTDIR)\nt.obj" \
++	"$(INTDIR)\process.obj" \
++	"$(INTDIR)\ttyio.obj" \
++	"$(INTDIR)\unreduce.obj" \
++	"$(INTDIR)\unzip.obj" \
++	"$(INTDIR)\win32.obj" \
++	"$(INTDIR)\wingui.obj" \
++	"$(INTDIR)\Unzipsfx.res"
++
++"$(OUTDIR)\unzipsfx.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
++    $(LINK32) @<<
++  $(LINK32_FLAGS) $(LINK32_OBJS)
++<<
++
++!ENDIF 
++
++
++!IF "$(NO_EXTERNAL_DEPS)" != "1"
++!IF EXISTS("unzipsfx.dep")
++!INCLUDE "unzipsfx.dep"
++!ELSE 
++!MESSAGE Warning: cannot find "unzipsfx.dep"
++!ENDIF 
++!ENDIF 
++
++
++!IF "$(CFG)" == "unzipsfx - Win32 Release" || "$(CFG)" == "unzipsfx - Win32 Debug"
++SOURCE=.\crc32.c
++
++"$(INTDIR)\crc32.obj"	"$(INTDIR)\crc32.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\crctab.c
++
++"$(INTDIR)\crctab.obj"	"$(INTDIR)\crctab.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\crypt.c
++
++"$(INTDIR)\crypt.obj"	"$(INTDIR)\crypt.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\extract.c
++
++"$(INTDIR)\extract.obj"	"$(INTDIR)\extract.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\fileio.c
++
++"$(INTDIR)\fileio.obj"	"$(INTDIR)\fileio.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\globals.c
++
++"$(INTDIR)\globals.obj"	"$(INTDIR)\globals.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\inflate.c
++
++"$(INTDIR)\inflate.obj"	"$(INTDIR)\inflate.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\match.c
++
++"$(INTDIR)\match.obj"	"$(INTDIR)\match.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\win32\nt.c
++
++"$(INTDIR)\nt.obj"	"$(INTDIR)\nt.sbr" : $(SOURCE) "$(INTDIR)"
++	$(CPP) $(CPP_PROJ) $(SOURCE)
++
++
++SOURCE=.\process.c
++
++"$(INTDIR)\process.obj"	"$(INTDIR)\process.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\ttyio.c
++
++"$(INTDIR)\ttyio.obj"	"$(INTDIR)\ttyio.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\unreduce.c
++
++"$(INTDIR)\unreduce.obj"	"$(INTDIR)\unreduce.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\unzip.c
++
++"$(INTDIR)\unzip.obj"	"$(INTDIR)\unzip.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++SOURCE=.\Unzipsfx.rc
++
++"$(INTDIR)\Unzipsfx.res" : $(SOURCE) "$(INTDIR)"
++	$(RSC) $(RSC_PROJ) $(SOURCE)
++
++
++SOURCE=.\win32\win32.c
++
++"$(INTDIR)\win32.obj"	"$(INTDIR)\win32.sbr" : $(SOURCE) "$(INTDIR)"
++	$(CPP) $(CPP_PROJ) $(SOURCE)
++
++
++SOURCE=.\wingui.c
++
++"$(INTDIR)\wingui.obj"	"$(INTDIR)\wingui.sbr" : $(SOURCE) "$(INTDIR)"
++
++
++
++!ENDIF 
++
+diff -urN origsrc/unzipsfx.rc src/unzipsfx.rc
+--- origsrc/unzipsfx.rc	Thu Jan 01 09:00:00 1970
++++ src/unzipsfx.rc	Fri Jun 11 10:56:20 2004
+@@ -0,0 +1,210 @@
++//Microsoft Developer Studio generated resource script.
++//
++#include "resource.h"
++
++#define APSTUDIO_READONLY_SYMBOLS
++/////////////////////////////////////////////////////////////////////////////
++//
++// Generated from the TEXTINCLUDE 2 resource.
++//
++#include "afxres.h"
++
++/////////////////////////////////////////////////////////////////////////////
++#undef APSTUDIO_READONLY_SYMBOLS
++
++/////////////////////////////////////////////////////////////////////////////
++// 日本語 resources
++
++#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
++#ifdef _WIN32
++LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
++#pragma code_page(932)
++#endif //_WIN32
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// 24
++//
++
++1                       24      MOVEABLE PURE   "manifest.xml"
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// Dialog
++//
++
++IDD_DIALOG_LOG DIALOG DISCARDABLE  0, 0, 239, 189
++STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | 
++    WS_SYSMENU
++CAPTION "UNZIPSFX(WIN32/GUI)"
++FONT 9, "MS UI Gothic"
++BEGIN
++    PUSHBUTTON      "キャンセル",IDCANCEL,94,168,50,14
++    EDITTEXT        IDC_EDIT_LOG,7,7,225,155,ES_MULTILINE | ES_AUTOVSCROLL | 
++                    ES_READONLY | ES_WANTRETURN | WS_VSCROLL | NOT 
++                    WS_TABSTOP
++END
++
++IDD_DIALOG_PASSWORD DIALOG DISCARDABLE  0, 0, 295, 69
++STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | 
++    WS_SYSMENU
++CAPTION "UNZIPSFX(WIN32/GUI)"
++FONT 9, "MS UI Gothic"
++BEGIN
++    DEFPUSHBUTTON   "OK",IDOK,238,7,50,14
++    PUSHBUTTON      "キャンセル",IDCANCEL,238,24,50,14
++    EDITTEXT        IDC_EDIT_PASSWORD,43,39,185,12,ES_PASSWORD | 
++                    ES_AUTOHSCROLL
++    EDITTEXT        IDC_EDIT_ARCHIVE,43,7,185,12,ES_AUTOHSCROLL | 
++                    ES_READONLY
++    LTEXT           "書庫:",IDC_STATIC,7,7,16,8
++    LTEXT           "出力中:",IDC_STATIC,7,23,23,8
++    EDITTEXT        IDC_EDIT_EXTRACTING,43,23,185,12,ES_AUTOHSCROLL | 
++                    ES_READONLY
++    LTEXT           "パスワード:",IDC_STATIC,7,40,33,8
++END
++
++IDD_DIALOG_FOLDER DIALOG DISCARDABLE  0, 0, 267, 77
++STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_CAPTION | 
++    WS_SYSMENU
++CAPTION "UNZIPSFX(WIN32/GUI)"
++FONT 9, "MS UI Gothic"
++BEGIN
++    LTEXT           "出力先:",IDC_STATIC,7,7,23,8
++    EDITTEXT        IDC_EDIT_FOLDER,7,20,199,13,ES_AUTOHSCROLL
++    PUSHBUTTON      "参照...",IDVIEW,210,18,50,14
++    DEFPUSHBUTTON   "OK",IDOK,210,36,50,14
++    PUSHBUTTON      "キャンセル",IDCANCEL,210,54,50,14
++END
++
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// DESIGNINFO
++//
++
++#ifdef APSTUDIO_INVOKED
++GUIDELINES DESIGNINFO DISCARDABLE 
++BEGIN
++    IDD_DIALOG_LOG, DIALOG
++    BEGIN
++        LEFTMARGIN, 7
++        RIGHTMARGIN, 232
++        TOPMARGIN, 7
++        BOTTOMMARGIN, 182
++    END
++
++    IDD_DIALOG_PASSWORD, DIALOG
++    BEGIN
++        LEFTMARGIN, 7
++        RIGHTMARGIN, 288
++        TOPMARGIN, 7
++        BOTTOMMARGIN, 62
++    END
++
++    IDD_DIALOG_FOLDER, DIALOG
++    BEGIN
++        LEFTMARGIN, 7
++        RIGHTMARGIN, 260
++        TOPMARGIN, 7
++        BOTTOMMARGIN, 68
++    END
++END
++#endif    // APSTUDIO_INVOKED
++
++
++#ifdef APSTUDIO_INVOKED
++/////////////////////////////////////////////////////////////////////////////
++//
++// TEXTINCLUDE
++//
++
++1 TEXTINCLUDE DISCARDABLE 
++BEGIN
++    "resource.h\0"
++END
++
++2 TEXTINCLUDE DISCARDABLE 
++BEGIN
++    "#include ""afxres.h""\r\n"
++    "\0"
++END
++
++3 TEXTINCLUDE DISCARDABLE 
++BEGIN
++    "\r\n"
++    "\0"
++END
++
++#endif    // APSTUDIO_INVOKED
++
++
++#ifndef _MAC
++/////////////////////////////////////////////////////////////////////////////
++//
++// Version
++//
++
++VS_VERSION_INFO VERSIONINFO
++ FILEVERSION 0,0,4,0
++ PRODUCTVERSION 0,0,4,0
++ FILEFLAGSMASK 0x3fL
++#ifdef _DEBUG
++ FILEFLAGS 0x1L
++#else
++ FILEFLAGS 0x0L
++#endif
++ FILEOS 0x40004L
++ FILETYPE 0x1L
++ FILESUBTYPE 0x0L
++BEGIN
++    BLOCK "StringFileInfo"
++    BEGIN
++        BLOCK "041104b0"
++        BEGIN
++            VALUE "Comments", "UNZIPSFX for WIN32/GUI\0"
++            VALUE "CompanyName", "heropa@dream.com\0"
++            VALUE "FileDescription", "UNZIPSFX for WIN32/GUI\0"
++            VALUE "FileVersion", "0, 0, 4, 0\0"
++            VALUE "InternalName", "sfx32gui.dat\0"
++            VALUE "LegalCopyright", "Copyright (C) 2003-2004 Niiyama(HEROPA), Yoshioka Tsuneo, Info-ZIP\0"
++            VALUE "LegalTrademarks", "\0"
++            VALUE "OriginalFilename", "sfx32gui.dat\0"
++            VALUE "PrivateBuild", "\0"
++            VALUE "ProductName", "UNZIPSFX\0"
++            VALUE "ProductVersion", "0, 0, 4, 0\0"
++            VALUE "SpecialBuild", "\0"
++        END
++    END
++    BLOCK "VarFileInfo"
++    BEGIN
++        VALUE "Translation", 0x411, 1200
++    END
++END
++
++#endif    // !_MAC
++
++
++/////////////////////////////////////////////////////////////////////////////
++//
++// Icon
++//
++
++// Icon with lowest ID value placed first to ensure application icon
++// remains consistent on all systems.
++IDI_MAIN                ICON    DISCARDABLE     "sfx32gui.ico"
++#endif    // 日本語 resources
++/////////////////////////////////////////////////////////////////////////////
++
++
++
++#ifndef APSTUDIO_INVOKED
++/////////////////////////////////////////////////////////////////////////////
++//
++// Generated from the TEXTINCLUDE 3 resource.
++//
++
++
++/////////////////////////////////////////////////////////////////////////////
++#endif    // not APSTUDIO_INVOKED
++
+diff -urN origsrc/wingui.c src/wingui.c
+--- origsrc/wingui.c	Thu Jan 01 09:00:00 1970
++++ src/wingui.c	Fri Jun 11 10:55:15 2004
+@@ -0,0 +1,135 @@
++/*
++	wingui.c
++*/
++
++#include "wingui.h"
++#include "resource.h"
++#include <windows.h>
++#include <process.h>
++
++HWND LogDialogHwnd = NULL;
++HANDLE LogDialogEvent = NULL;
++HANDLE LogThread = 0;
++
++BOOL CALLBACK LogDialogFunc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
++{
++	int ret;
++
++	switch(msg){
++	case WM_INITDIALOG:
++		LogDialogHwnd = hwnd;
++		SetEvent(LogDialogEvent);
++		return 1;
++	case WM_COMMAND:
++		switch(LOWORD(wParam)){
++		case IDCANCEL:
++			SendMessage(hwnd,WM_CLOSE,0,0);
++			return 1;
++		}
++		break;
++	case WM_CLOSE:
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++//		ret = MessageBox(hwnd,"Abort Really?","UNZIPSFX",MB_YESNO);
++		ret = MessageBox(hwnd,"中断しますか？","UNZIPSFX",MB_YESNO | MB_ICONEXCLAMATION);
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++		if(ret==IDYES){
++			exit(1);
++// Add-Start 2004/06/11 Niiyama(HEROPA)
++		} else {
++			return 1;
++// Add-End 2004/06/11 Niiyama(HEROPA)
++		}
++	}
++	return 0;
++}
++DWORD WINAPI LogThreadFunc(void *dummy)
++{
++	int ret;
++
++	HINSTANCE hInst = GetModuleHandle(NULL);
++	ret =  DialogBox(hInst,MAKEINTRESOURCE(IDD_DIALOG_LOG),NULL,LogDialogFunc);
++	return 0;
++}
++int UZ_EXP WinGuiUzpMessagePrnt(zvoid *pG,uch *buf,ulg size,int flag)
++{
++	DWORD threadid;
++	if(LogThread == 0){
++		LogDialogEvent = CreateEvent(NULL,0,0,NULL);
++		//LogThread = _beginthread(LogThreadFunc,0,NULL);
++		
++		LogThread = CreateThread(NULL,0,LogThreadFunc,0,0,&threadid);
++		
++		WaitForSingleObject(LogDialogEvent,INFINITE);
++		CloseHandle(LogDialogEvent);
++	}
++	if(LogDialogHwnd){
++		char buf2[1000];
++		char *ptr=buf,*ptr2=buf2;
++		while(*ptr){
++			if(*ptr=='\n'){*ptr2++='\r';}
++			*ptr2++ = *ptr++;
++		}
++		*ptr2='\0';
++		SendDlgItemMessage(LogDialogHwnd,IDC_EDIT_LOG,EM_REPLACESEL,1,(DWORD)buf2);
++		//SendDlgItemMessage(LogDialogHwnd,IDC_EDIT_LOG,EM_FMTLINES,TRUE,0);
++	}
++	return 0;
++}
++typedef struct PasswordDialogStruct
++{
++	zvoid *pG;int *rcnt;char *pwbuf;int size;ZCONST char *zfn;char *efn;
++}PasswordDialogStruct;
++
++PasswordDialogStruct *s;
++BOOL CALLBACK PasswordDialogFunc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
++{
++	int ret;
++
++	switch(msg){
++	case WM_INITDIALOG:
++		s = (PasswordDialogStruct*)lParam;
++		SetDlgItemText(hwnd,IDC_EDIT_ARCHIVE,s->zfn);
++		SetDlgItemText(hwnd,IDC_EDIT_EXTRACTING,s->zfn);
++		return 1;
++	case WM_COMMAND:
++		switch(LOWORD(wParam)){
++		case IDOK:
++			GetDlgItemText(hwnd,IDC_EDIT_PASSWORD,s->pwbuf,s->size);
++			EndDialog(hwnd,IZ_PW_ENTERED/*0*/);
++			return 1;
++		case IDCANCEL:
++			EndDialog(hwnd,IZ_PW_CANCEL/*-1*/);
++			return 1;
++			break;
++		}
++		break;
++	case WM_CLOSE:
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++//		ret = MessageBox(hwnd,"Abort Really?","UNZIPSFX",MB_YESNO);
++		ret = MessageBox(hwnd,"中断しますか？","UNZIPSFX",MB_YESNO | MB_ICONEXCLAMATION);
++// Chg-Start 2003/05/08 Niiyama(HEROPA)
++		if(ret==IDYES){
++			exit(1);
++// Add-Start 2004/06/11 Niiyama(HEROPA)
++		} else {
++			return 1;
++// Add-End
++		}
++		break;
++	}
++	return 0;
++}
++int UZ_EXP WinGuiUzpPassword(zvoid *pG,int *rcnt,char *pwbuf,int size,ZCONST char *zfn,ZCONST char *efn)
++{
++	int ret;
++	HMODULE hInst = GetModuleHandle(NULL);
++	PasswordDialogStruct s = {pG,rcnt,pwbuf,size,zfn,efn};
++
++	if(*rcnt==0){*rcnt=2;}else{(*rcnt)--;}
++	ret = DialogBoxParam(hInst
++		,MAKEINTRESOURCE(IDD_DIALOG_PASSWORD)
++		,NULL
++		,PasswordDialogFunc
++		,(DWORD)&s);
++	return 0;
++}
+diff -urN origsrc/wingui.h src/wingui.h
+--- origsrc/wingui.h	Thu Jan 01 09:00:00 1970
++++ src/wingui.h	Fri Jun 11 10:08:51 2004
+@@ -0,0 +1,9 @@
++/*
++	wingui.h
++*/
++#include "unzip.h"
++
++int UZ_EXP WinGuiUzpMessagePrnt(zvoid *pG,uch *buf,ulg size,int flag);
++int UZ_EXP WinGuiUzpPassword(zvoid *pG,int *rcnt,char *pwbuf,int size,ZCONST char *zfn,ZCONST char *efn);
++
++
