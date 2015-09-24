@@ -1,0 +1,69 @@
+     =================================================================
+                          UNARJ32.DLL Ver 1.10a          Nov 10,2007
+     -----------------------------------------------------------------
+                                       Micco <micco(a)mbd.nifty.com>
+     =================================================================
+
+
+1. Introduction
+
+  Thank you for downloading UNARJ32.DLL.
+
+  UNARJ32.DLL is a DLL (dynamic-link library) to process ARJ archive files.
+You can extract stored files in an archive file to the specified directory.
+
+
+2. Distribution file
+
+  UAR3110A.EXE contains the following files:
+
+      UNARJ32J.DLL:  DLL for compressing and extracting files.
+      UNARJ32.H:     The header file for using UNARJ32.DLL.
+      UNARJ32J.LIB:  The import library for compiling with VC++.
+      UNARJBC.LIB:   The import library for compiling with BC++.
+      DELREG.EXE:    The program used for the uninstallation of UNARJ32.DLL.
+      UNARJ32.INF:   The file used for the installation of UNARJ32.DLL.
+      UNARJ32.TXT:   Description of the software.  [*]
+      UNARJ32E.TXT:  This file.
+      API.TXT:       Description of UNARJ32 APIs.  [*]
+      COMMAND.TXT:   Description of the command for Unarj() API.  [*]
+      HEADER.TXT:    Description of the specifications of the ARJ archive
+                     file.  [*]
+      WINMES.TXT:    Description of the Windows Message which UNARJ32.DLL
+                     uses.  [*]
+      ENUMAPI.TXT:   Description of the UnarjSetEnumMembersProc() API and
+                     so on.  [*]
+      STRTABLE.TXT   Description of the UnarjSetLangueSpecified() API and
+                     so on.  [*]
+      HISTORY.TXT:   Update information.  [*]
+
+         *: Written in Japanese.
+
+
+3. Distribution policy
+
+  These software and documents are copyright-reserved free program.
+You can use, copy, and distribute this software with free charge under the
+following conditions:
+
+      1: Never change copyright statement.
+      2: Never change any programs and documents.
+      3: The author is not liable to any damage caused by the use of these
+         programs.
+      4: The author has no duty to remedy to the deficiencies of these
+         programs.
+      5: When you distribute this software with publications, or with your
+         product, you must print copyright statement on manuals, documents,
+         and so on.
+      6: You must distribute UNARJ32J.DLL with at least UNARJ32.TXT.
+
+
+4. How to contact the author.
+
+  Please send e-mail to the author.  However, I'm afraid my reply may get
+late.  My e-mail address is the following:
+
+      micco(a)mbd.nifty.com
+
+
+                                                         End of document...

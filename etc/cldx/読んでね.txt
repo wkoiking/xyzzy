@@ -1,0 +1,17 @@
+このフォルダには、caldixでダウンロードされた
+DLLの説明書を格納してあります。よくお読み下さい。
+
+★ UNZIP32.DLL を企業内等で利用する場合には、必ず
+★ ライセンス契約が必要です。詳細は下記ページにて。
+★ http://www.csdinc.co.jp/archiver/lib/unzip32.html
+
+それぞれのDLLの作者様のサイトは、
+ 『統合アーカイバプロジェクト』
+ 　　http://www.csdinc.co.jp/archiver/ 
+からリンクをたどって訪れることが出来ます。
+是非一度は行ってみることをお勧めします。
+
+DLLのアンインストールは uncaldix が便利。
+     http://www6.plala.or.jp/amasoft/soft/uncaldix.html
+
+caldixに関するご質問等は( http://www.kmonos.net/ )へ

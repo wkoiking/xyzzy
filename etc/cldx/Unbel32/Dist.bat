@@ -1,0 +1,1 @@
+zip -9 -r %1.zip *.* -x *.bak -x *.aps -x *.ilk -x *.lk* -x *.map -x *.mk* -x *.sym -x *.obj -x *.res -x *.plg -x *.opt -x *.ncb -x *.lib -x *.err

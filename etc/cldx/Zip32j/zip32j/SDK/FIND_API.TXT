@@ -1,0 +1,25 @@
+***************************************************************************
+	ZIP32J.DLL UNZIP系API一覧とその説明
+***************************************************************************
+
+＊ZIP系はAPI_ZIP.TXTを見て下さい。＊
+
+●はじめに
+
+　UNZIP32.DLLのUnZip()APIを利用してUnZipFindFirst()/UnZipFindNext()等のAPIを実現させています。
+
+●実装API一覧
+
+WORD WINAPI UnZipGetVersion(VOID);
+int WINAPI UnZip(const HWND hWnd,LPCSTR szCmdLine,LPSTR szOutput,const DWORD dwSize);
+HARC WINAPI UnZipOpenArchive(const HWND hWnd,LPCSTR szFileName,const DWORD dwMode);
+int WINAPI UnZipCloseArchive(HARC hArc);
+int WINAPI UnZipFindFirst(HARC hArc,LPCSTR szWildName,LPINDIVIDUALINFO lpSubInfo);
+int WINAPI UnZipFindNext(HARC hArc,LPINDIVIDUALINFO lpSubInfo);
+BOOL WINAPI UnZipQueryFunctionList(const int iFunction);
+
+なお、これらの前に"Zip"をつけたZipUnZipGetVersion()などを代わりに用いることもできます。
+
+●ひとこと
+
+Info-ZIPのUNZIP32.DLLでは動作しません。(^^;

@@ -1,0 +1,14 @@
+LIBRARY UNBEL32
+EXPORTS
+    Unbel             @1
+    UnbelGetVersion   @2
+	UnbelGetFileCount @3
+	UnbelCheckArchive @4
+	UnbelConfigDialog @5
+	UnbelFindFirst    @6
+	UnbelFindNext     @7
+	UnbelGetArcFileName @8
+	UnbelOpenArchive  @9
+	UnbelCloseArchive @10
+	UnbelGetFileName  @11
+    UnbelGetSubVersion   @12

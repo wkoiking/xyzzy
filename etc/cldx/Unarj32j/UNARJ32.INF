@@ -1,0 +1,71 @@
+;
+; Installation file for UNARJ32.DLL
+;
+; Copyright 2000-2006, Micco.
+;
+;  エクスプローラのコンテキストメニューから『インストール』を選ぶこと
+;  によりインストールが行えます。通常，オリジナル配布の自己解凍書庫を
+;  実行した場合には，自動的にこのファイルを適用してインストールが終了
+;  しています。
+;
+
+[Version]
+signature="$CHICAGO$"
+SetupClass=BASE
+
+[DefaultInstall.NT]
+CopyFiles = UnArj32.copy.Dll, UnArj32.Files.Inf
+AddReg    = UnArj32.Reg
+
+[DefaultInstall]
+CopyFiles = UnArj32.copy.Dll, UnArj32.Files.Inf
+AddReg    = UnArj32.Reg
+
+[DefaultUnInstall.NT]
+DelFiles  = UnArj32.copy.Dll, UnArj32.Files.Inf
+DelReg    = UnArj32.Reg
+
+[DefaultUnInstall]
+DelFiles  = UnArj32.copy.Dll, UnArj32.Files.Inf
+DelReg    = UnArj32.Reg
+
+[Optional Components]
+UnArj32Install
+
+[UnArj32Install]
+CopyFiles = UnArj32.copy.Dll, UnArj32.Files.Inf
+AddReg    = UnArj32.Reg
+
+OptionDesc = %UNARJ32%
+Tip = %UNARJ32TIP%
+InstallType = 10 ;Typical, Custom.
+Uninstall = DefaultUnInstall
+
+[SourceDisksNames]
+1="UNARJ32.DLL","",1
+
+[SourceDisksFiles]
+UNARJ32.INF=1
+
+[DestinationDirs]
+UnArj32.copy.Dll=11
+UnArj32.Files.Inf = 17
+
+[UnArj32.copy.Dll]
+UNARJ32J.DLL
+
+[UnArj32.Files.Inf]
+UNARJ32.INF
+
+[UnArj32.Reg]
+HKLM,%DLLREG%,,,
+HKLM,%DLLREG%,"UNARJ32",,"%11%\UNARJ32J.DLL"
+HKLM,%UNARJ32REG%,,,
+HKLM,%UNARJ32REG%,"Copyright",,"Robert K Jung & (c)1993-2006 by Micco."
+HKLM,%UNARJ32REG%,"Suffix",,"ARJ|EXE|"
+
+[Strings]
+UNARJ32="UNARJ32 アーカイバ DLL"
+UNARJ32TIP="Tip of UnArj32"
+DLLREG="Software\ArchiverDll\Archiver"
+UNARJ32REG="Software\ArchiverDll\UNARJ32"

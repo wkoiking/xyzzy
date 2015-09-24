@@ -1,0 +1,141 @@
+---------------------------------------------------------------------------- 
+       Extract .ZIP file from Windows!
+           UNZIP32.DLL Ver 5.42 (Release build)
+                By: shoda T.  mail form: http://www.csdinc.co.jp/mailto/
+                Document translated by:H.Ozawa
+                and modify it by: shoda T.
+---------------------------------------------------------------------------- 
+
+#Japanese document is in UNZIP32.TXT separately.
+
+#Documents for DEVELOPPER (detail of APIs) is available from following URL.
+#     http://www.csdinc.co.jp/archiver/index-e.html
+
+
+0. Introduction
+
+    Thank you for downloading UNZIP32.DLL.
+
+    UNZIP32.DLL is a Windows DLL to extract ZIP archive files. It is 32 bit
+    version so Windows 9x/Me or Windows NT/200x/XP (for Intel) is necessary.
+    Furthermore, application to use this library is necessary. It will not
+    extract files without such a program.
+
+
+1. Installation
+
+    Ordinarily,simply excute UNZP542.EXE. Automatic installation will begin.
+    Answer YES to all prompt.
+    Then installation will complete and display this document.
+
+    If you get any errors, see following "7. Install Manually".
+
+
+2. Using UNZIP32.DLL
+
+    UNZIP32.DLL is only a library for 32 bit Windows system. It would not
+    run by itself.
+
+    An application using UNZIP32.DLL is necessary to extract file.
+    Please use application supporting UNZIP32.DLL ver.0.7x or later.
+
+
+3. Fee and Donation
+
+    UNZIP32.DLL is a free software.
+    But donation will be welcome.
+    Visit http://www.csdinc.co.jp/archiver/index-e.html for more infomations.
+
+
+4. Distribution
+
+   UNZIP32.DLL may be freely distributed for non-commercial, non-shareware,
+   or personal use if the following conditions are obeyed: 
+
+        1. Copyright notifications must not be altered in any way.
+        2. All documentation files must be included with the distribution
+           file. Please do not just distribute just the UNZIP32.DLL file.
+        3. Distributors should not charge more than the cost of medium and
+           should not charge handling fee or any other cost. Distributors
+           should also not put any limitation on usage of the software.
+	4. Make it apparent that UNZIP32.DLL is FREE SOFT.
+	   It is necessary to state this in the program description.
+	5. If this program is to be mentioned or included in any
+           publication such a user group newsletters, it is necessary to
+           state copyright information in the article.
+
+   If UNZIP32.DLL is to be included with a commercial or shareware product
+   such as software, commercial CD-ROM packages, books, or magazines, it is
+   neccessary to contact the author for a license.
+   It is also neccessary to contact the author if you put the file in a
+   "CLOSED" place or make any limitations for users and/or uploaders.
+
+
+5. Copyright
+
+    File extraction routine in UNZIP is copyrighted by members of Info-ZIP group.
+    ZIP file format is patented by PKWARE.
+    This DLL version and modifications are copyrighted by shoda T.
+
+    Developers will not be held liable for any damages which might occur
+    using this software.
+
+
+6. Support
+
+    A. WEB Page
+         http://www.csdinc.co.jp/archiver/index-e.html
+
+    B. Mail
+         http://www.csdinc.co.jp/mailto/
+
+
+7. Install Manually
+
+    Following files are included in the UNZP542.EXE file:
+
+    UNZIP32E.TXT : This document.
+    UNZIP32.TXT  : Document in Japanese.
+
+    UNZIP32.DLL  : Library (DLL for UNZIP)
+    ARCINST.EXE  : Installer.
+    UNZIP32.INF  : Configuration file for installer.
+    FILE_ID.DIZ  : Package identification file.
+
+    When using UNZIP32.DLL, move UNZIP32.DLL file to the Windows directory
+      (Usually \Windows\system , \Windows\system32 for Windows XP or
+       \Winnt\system32 for Windows NT)
+    Explorer by default does not display files with extension .DLL.
+    Select [View]-[Options]-[Show all Files]
+
+
+8. Version (simplified)
+
+    version 0.60  March 14,1994  initial version of UNZIP.DLL
+    version 0.65                 minor bug fix
+
+    version 0.70  ?,1996         initial version of UNZIP32.DLL(alpha 1)
+    version 0.75  Jan.13,1997    initial public UNZIP32.DLL release (beta 1)
+    version 0.76  Feb.4,1997     minor bug fix (beta 2)
+    version 0.77  Feb.9,1997     minor bug fix (beta 3)
+    version 0.90  Jan.12,1999    major version up(alpha 10)
+    version 0.95  Jan.22,1999    minor bug fix (beta 4)
+    version 0.96  Jan.23,1999    minor bug fix (beta 5)
+    version 5.40  Feb.10,1999    first official release
+    version 5.41  Nov.20,1999    (alpha-1, not released publicly)
+    version 5.41  someday,2005   (alpha-2, not released publicly)
+    version 5.41  Sep.11,2005    minor bug fix (beta 3)
+    version 5.41  Sep.15,2005    minor bug fix (beta 4)
+    version 5.41  Dec.15,2005    minor bug fix (beta 5)
+    version 5.41  Feb.8,2006     minor bug fix (beta 6)
+    version 5.41  Feb.24,2006    minor bug fix (beta 7)
+    version 5.42  Mar.1,2006     release candidate (RC)
+    version 5.42  Mar.5,2006     official release
+
+
+9. Afterthoughts
+
+   I hope UNZIP32.DLL could find some usefulness to everyone. 
+
+                          shoda T. (http://www.csdinc.co.jp/shoda%20T./)
+------------------------------------------------------------------------------ 

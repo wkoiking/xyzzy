@@ -1,0 +1,537 @@
+=======================================================================
+      UNARJ32.DLL Ver 1.10a  ウィンドウズ・メッセージ説明ファイル
+=======================================================================
+
+                                               Ｍｉｃｃｏ (Nov.10,2007)
+
+はじめに
+
+　UNARJ32.DLL のドキュメント構成は以下のようになっています。
+
+    API.TXT      : 基幹を成す Unarj() 系及び OpenArchive() 系 API の説明
+    COMMAND.TXT  : Unarj() に渡すコマンド文字列についての説明
+    WINMES.TXT   : SetOwnerWindow() 系 API の説明
+    ENUMAPI.TXT  : SetEnumMembersProc() 系 API の説明
+    STRTABLE.TXT : 言語設定用 API についての説明
+    HEADER.TXT   : ARJ の書庫仕様 (ただし，UNARJ32.DLL が扱うもの)
+    HISTORY.TXT  : 修正履歴
+
+　このドキュメントでは，SetOwnerWindow() 系 API について説明されています。
+API.TXT には API 全体に関する記述が存在しますので， そちらも参照したほう
+が良いでしょう。
+
+-----------------------------------------------------------------------
+%1. 各 API の説明。
+%2. UNARJ32.DLL が出すウィンドウズメッセージ
+%3. ARCHIVERPROC の定義
+%4. EXTRACTINGINFO の構造
+%5. EXTRACTINGINFOEX の構造
+%6. EXTRACTINGINFOEX32 の構造
+%7. EXTRACTINGINFOEX64 の構造
+%8. 処理の流れ
+-----------------------------------------------------------------------
+
+　UNARJ32.DLL は， "-i" オプションで展開状況表示を抑制された場合について
+は，呼び出し元のウィンドウに対して展開状況を知らせるメッセージを送ります。
+ただし， この後で説明する API により通知先のウィンドウを設定する必要があ
+ります。
+
+-----------------------------------------------------------------------
+%1. 各 API の説明。
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjSetOwnerWindow(
+                HWND  _hwnd
+            )
+-----------------------------------------------------------------------
+順序数   90 : UnarjSetOwnerWindow
+        390 : UnarjSetOwnerWindowA
+        690 : UnarjSetOwnerWindowW
+要求版  UnarjSetOwnerWindow  : 0.01
+        UnarjSetOwnerWindowA : 0.99
+        UnarjSetOwnerWindowW : 0.99
+機能
+        UNARJ32.DLL のメッセージの送信先ウィンドウを設定します。UNARJ32.
+        DLL はここで指定されたウィンドウにメッセージを送信します。
+
+引数
+        _hwnd           メッセージを受け取るウィンドウ。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中で変更できなかった場合や， 既にこの API で
+                        別のウィンドウが設定されている場合には  FALSE を
+                        返します。実際のエラーコードを得るには UnarjGet-
+                        LastError() API を使用してください。
+
+Unicode
+        Ver 0.99 以降では Unicode 版と ANSI 版が実装されていますが，UNARJ-
+        32.DLL は内部動作が Unicode に対応していないため，常に ANSI へ変換
+        されて処理が行われる点に注意が必要となります。
+
+注意
+        この API は 16  ビット版との互換性のために用意されているもので，
+        今後の拡張も見込めません。従って，得に必要でない限り，後述の Un-
+        arjSetOwnerWindowEx64() を使用するようにしてください。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjClearOwnerWindow(
+                VOID
+            )
+-----------------------------------------------------------------------
+順序数  91
+要求版  0.01
+機能
+        UnarjSetOwnerWindow() で設定したウィンドウの設定を解除します。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中で解除できなかった場合には FALSE を返します。
+                        実際のエラーコードを得るには UnarjGetLastError()
+                        API を使用してください。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjSetOwnerWindowEx(
+                HWND            _hwnd,
+                LPARCHIVERPROC  _lpArcProc
+            )
+-----------------------------------------------------------------------
+順序数   51 : UnarjSetOwnerWindowEx
+        351 : UnarjSetOwnerWindowExA
+        651 : UnarjSetOwnerWindowExW
+要求版  UnarjSetOwnerWindowEx  : 0.01
+        UnarjSetOwnerWindowExA : 0.99
+        UnarjSetOwnerWindowExW : 0.99
+機能
+        UNARJ32.DLL の展開状況を受け取るためのコールバック関数の指定を行
+        います。_lpArcProc に NULL を指定すると _hwnd で指定したウィンド
+        ウに メッセージを送出します。
+
+引数
+        _hwnd           メッセージを受け取るウィンドウ。
+        _lpArcProc      情報を受け取るためのコールバック関数へのポインタ。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中で変更できなかった場合や， 既にこの API で
+                        別のウィンドウが設定されている場合には  FALSE を
+                        返します。実際のエラーコードを得るには UnarjGet-
+                        LastError() API を使用してください。
+
+Unicode
+        Ver 0.99 以降では Unicode 版と ANSI 版が実装されていますが，UNARJ-
+        32.DLL は内部動作が Unicode に対応していないため，常に ANSI へ変換
+        されて処理が行われる点に注意が必要となります。
+
+注意
+        この API によるコールバック関数が使用する構造体については， 仕様
+        が固定されているために，今後の拡張が見込めません。なるべく後述の
+        UnarjSetOwnerWindowEx64() を使用するようにしてください。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjKillOwnerWindowEx(
+                HWND  _hwnd
+            )
+-----------------------------------------------------------------------
+順序数  52
+要求版  0.01
+機能
+        UnarjSetOwnerWindowEx() で設定したウィンドウの設定を解除します。
+
+引数
+        _hwnd           指定してあると，UnarjSetOwnerWindowEx() 時に指定
+                        したものとの整合性チェックが行われます。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中で解除できなかった場合には FALSE を返します。
+                        実際のエラーコードを得るには UnarjGetLastError()
+                        API を使用してください。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjSetOwnerWindowEx64(
+                HWND            _hwnd,
+                LPARCHIVERPROC  _lpArcProc,
+                DWORD           _dwStructSize
+            )
+-----------------------------------------------------------------------
+順序数  108
+要求版  0.50
+機能
+        UNARJ32.DLL の展開状況を受け取るためのコールバック関数の指定を行
+        います。_lpArcProc に NULL を指定すると _hwnd で指定したウィンド
+        ウに メッセージを送出します。
+
+引数
+        _hwnd           メッセージを受け取るウィンドウ。
+        _lpArcProc      情報を受け取るためのコールバック関数へのポインタ。
+        _dwStructSize   使用する構造体のモード。実際には EXTRACTINGINFO-
+                        EX，EXTRACTINGINFOEX32， EXTRACTINGINFOEX64 の中
+                        で使用するものを決定し，そのサイズを指定する必要
+                        があります。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中で変更できなかった場合や， 既にこの API で
+                        別のウィンドウが設定されている場合には  FALSE を
+                        返します。実際のエラーコードを得るには UnarjGet-
+                        LastError() API を使用してください。
+
+注意
+        通常，API で使用する構造体については，仕様変更等が発生した場合に
+        は，構造体のサイズ情報等を利用してアプリ側で対応することになりま
+        すが， 使用 DLL の改版という比較的軽微な変更のために既存のアプリ
+        が一時的にしろ利用できなくなるのは不便です。
+        そのような状況を回避し，アプリ側で対応時期を決定できるようにする
+        ため， この API については，API としての見通しが悪くなるデメリッ
+        トを無視して，モード指定を行うようになっています。
+
+-----------------------------------------------------------------------
+BOOL WINAPI UnarjKillOwnerWindowEx64(
+                HWND  _hwnd
+            )
+-----------------------------------------------------------------------
+順序数  109
+要求版  0.50
+機能
+        UnarjSetOwnerWindowEx64() で設定したウィンドウの設定を解除します。
+
+引数
+        _hwnd           指定してあると，UnarjSetOwnerWindowEx64() 時に指
+                        定したものとの整合性チェックが行われます。
+
+戻り値
+        正常終了時      TRUE を返します。
+        エラー時        動作中で解除できなかった場合には FALSE を返します。
+                        実際のエラーコードを得るには UnlhaGetLastError()
+                        API を使用してください。
+
+
+-----------------------------------------------------------------------
+%2. UNARJ32.DLL が出すウィンドウズメッセージ
+-----------------------------------------------------------------------
+
+●wm_arcextract
+
+　wm_arcextract メッセージは，UnarjSetOwnerWindow() で設定したウィンドウ
+に UNARJ32.DLL から送られます。このメッセージを受け取ることにより，
+UNARJ32 がこれから処理する格納ファイル名やファイルサイズ等を得ることがで
+きます。
+
+　wm_arcextract メッセージは，RegisterWindowMessage() API によりシステム
+への登録を行った上で使用するようにしてください。
+
+-----------------------------------------------------------------------
+LRESULT CALLBACK WindowProc(
+                HWND    _hwnd,
+                UINT    _uMsg,      // wm_arcextract
+                WPARAM  _wParam,
+                LPARAM  _lParam
+            )
+-----------------------------------------------------------------------
+
+引数
+        wParam          (int)nMode
+                        通知モード。UNARJ32.DLL の処理の状態を以下の数値
+                        で表します。
+
+                        0 : UNARJ32.DLL が該当ファイルの処理を開始するこ
+                            とを表します。
+                        1 : UNARJ32.DLL が該当ファイルの処理中であること
+                            を表します。
+                        2 : UNARJ32.DLL が処理を終え，lpEis のメモリを開
+                            放しようとしていることを表します。
+                        3 : UNARJ32.DLL が該当書庫の処理を開始することを
+                            表します。 szSourceFileName に書庫名が格納さ
+                            れます。
+                        4 : UNARJ32.DLL では未使用です。
+                        5 : UNARJ32.DLL がファイルをサーチ中であることを
+                            表します。検索にマッチしたファイルのファイル
+                            名が得られます。
+                        6 : UNARJ32.DLL では未使用です。
+                        7 : UNARJ32.DLL では未使用です。
+
+        lParam          (EXTRACTINGINFO *)lpEis
+                        ファイル名等が格納されている EXTRACTINGINFO 構造
+                        体へのポインタです。
+
+戻り値
+        0               UNARJ32.DLL に処理の継続を指示します。
+        0 以外          UNARJ32.DLL に処理を中止させます。
+
+
+-----------------------------------------------------------------------
+%3. ARCHIVERPROC の定義
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+BOOL CALLBACK ARCHIVERPROC(
+                          HWND    _hwnd,
+                          UINT    _uMsg,
+                          UINT    _nState,
+                          LPVOID  _lpEis
+                      );
+-----------------------------------------------------------------------
+
+引数
+        _hwnd           UnarjSetOwnerWindowEx で指定したウィンドウハンド
+                        ルが渡されます。
+        _uMsg           現在のところは wm_arcextract となります。
+        _nState         wm_arcextract の wParam，つまり nMode が格納され
+                        ます。
+        _lpEis          構造体へのポインタです。格納ファイルに関する情報
+                        が得られます。実際には，次のどれかとなります。
+
+            LPEXTRACTINGINFOEX _lpEis
+                    UnarjSetOwnerWindowEx() か  sizeof(EXTRACTINGINFOEX)
+                    を指定して UnarjSetOwnerWindowEx64() を使用した場合。
+            LPEXTRACTINGINFOEX32 _lpEis
+                    sizeof(EXTRACTINGINFOEX32) を指定して UnarjSetOwner-
+                    WindowEx64() を使用した場合。
+            LPEXTRACTINGINFOEX64 _lpEis
+                    sizeof(EXTRACTINGINFOEX64) を指定して UnarjSetOwner-
+                    WindowEx64() を使用した場合。
+
+戻り値
+        TRUE            UNARJ32.DLL に処理の継続を指示します。
+        FALSE           UNARJ32.DLL に処理を中止させます。
+
+
+-----------------------------------------------------------------------
+%4. EXTRACTINGINFO の構造
+-----------------------------------------------------------------------
+構造体定義
+                typedef struct {
+                        DWORD   dwFileSize;
+                        DWORD   dwWriteSize;
+                        TCHAR   szSourceFileName[FNAME32_MAX + 1];
+                        TCHAR   dummy1[3];
+                        TCHAR   szDestFileName[FNAME32_MAX + 1];
+                        TCHAR   dummy[3];
+                }  EXTRACTINGINFO
+
+メンバの説明
+        dwFileSize              格納ファイルのサイズ。
+        dwWriteSize             展開処理で書き込んだサイズ。
+        szSourceFileName        処理を行う格納ファイル名。
+        szDestFileName          実際に書き込まれるパス名。
+
+
+-----------------------------------------------------------------------
+%5. EXTRACTINGINFOEX の構造
+-----------------------------------------------------------------------
+構造体定義
+                typedef struct {
+                        EXTRACTINGINFO  exinfo;
+                        DWORD           dwCompressedSize;
+                        DWORD           dwCRC;
+                        UINT            uOSType;
+                        WORD            wRatio;
+                        WORD            wDate;
+                        WORD            wTime;
+                        TCHAR           szAttribute[8];
+                        TCHAR           szMode[8];
+                } EXTRACTINGINFOEX;
+
+        exinfo                  EXTRACTINGINFO 構造体が格納されます。
+        dwCompressedSize        格納ファイルの圧縮サイズ。
+        dwCRC                   格納ファイルのチェックサム。
+        uOSType                 ファイルを格納した際に使われた OS。
+                                         0      MS-DOS
+                                         1      PRIMOS
+                                         2      UNIX
+                                         3      AMIGA
+                                         4      MAC-OS
+                                         5      OS/2
+                                         6      APPLE GS
+                                         7      ATARI ST
+                                         8      NEXT
+                                         9      VAX VMS
+                                        10      その他 (Windows95)
+        wRatio                  パーミル (千分率) による格納ファイルの圧
+                                縮率。
+        wDate                   ftime の上位ワードと同じ次の構造で現された
+                                格納ファイルの日付。
+                                    struct {
+                                        unsigned ft_day   : 5;
+                                        unsigned ft_month : 4;
+                                        unsigned ft_year  : 7;
+                                    } _DosDate;
+                                ft_year に格納される値は 1980 年からの経過
+                                年数です。したがって，理論的には 2107 年ま
+                                で表現できることになります。
+        wTime                   ftime の下位ワードと同じ次の構造で現された
+                                格納ファイルの時刻。
+                                    struct {
+                                        unsigned ft_tsec : 5;
+                                        unsigned ft_min  : 6;
+                                        unsigned ft_hour : 5;
+                                    } _DosTime;
+                                ft_tsec  に格納される値が秒を 2 で割ったも
+                                のである点に注意してください。
+
+                                <<重要>>
+                                NTFS 上のファイルや  UNIX 等が期限のファイ
+                                ルの場合， 00:00:01 等秒が奇数である場合が
+                                当然ありますが，そのようなデータの扱いがプ
+                                ラットフォームにより異なっていることに注意
+                                してください。Win32s，Win95 では丸めの際に
+                                切り捨てが行われますが，その他では切り上げ
+                                が行われます。 特に注意が必要なのは，Win98
+                                であり，API のバグから，SetFileTime() 等で
+                                は切り上げが行われるにもかかわらず   File-
+                                TimeToDosDateTime() では切り捨てられてしま
+                                います。
+                                UNARJ32.DLL においては，Win32 API を使用し
+                                ないことにより，Win98 においても切り上げた
+                                数値が返されるようになっています。
+                                (Ver 0.29 以降)
+        szAttribute             格納ファイルの属性。
+        szMode                  UNARJ32.DLL では格納ファイルの各種属性を
+                                示す文字列が格納されています。
+
+
+-----------------------------------------------------------------------
+%6. EXTRACTINGINFOEX32 の構造
+-----------------------------------------------------------------------
+構造体定義
+                typedef struct {
+                        DWORD           dwStructSize;
+                        EXTRACTINGINFO  exinfo;
+                        DWORD           dwFileSize;
+                        DWORD           dwCompressedSize;
+                        DWORD           dwWriteSize;
+                        DWORD           dwAttributes;
+                        DWORD           dwCRC;
+                        UINT            uOSType;
+                        WORD            wRatio;
+                        FILETIME        ftCreateTime;
+                        FILETIME        ftAccessTime;
+                        FILETIME        ftWriteTime;
+                        TCHAR           szMode[8];
+                        TCHAR           szSourceFileName[FNAME_MAX32 + 1];
+                        TCHAR           dummy1[3];
+                        TCHAR           szDestFileName[FNAME_MAX32 + 1];
+                        TCHAR           dummy2[3];
+                } EXTRACTINGINFOEX;
+
+        dwStructSize            構造体のサイズ。
+        exinfo                  EXTRACTINGINFO 構造体が格納されます。
+                                互換性のために残してあるだけです。
+        dwFileSize              格納ファイルのサイズ。
+        dwCompressedSize        格納ファイルの圧縮サイズ。
+        dwWriteSize             展開処理で書き込んだサイズ。
+        dwAttributes            格納ファイルの属性。
+        dwCRC                   格納ファイルのチェックサム。
+        uOSType                 ファイルを格納した際に使われた OS。
+                                         0      MS-DOS
+                                         1      PRIMOS
+                                         2      UNIX
+                                         3      AMIGA
+                                         4      MAC-OS
+                                         5      OS/2
+                                         6      APPLE GS
+                                         7      ATARI ST
+                                         8      NEXT
+                                         9      VAX VMS
+                                        10      その他 (Windows95)
+        wRatio                  パーミル (千分率) による格納ファイルの圧
+                                縮率。
+        ftCreateFile            FILETIME 形式によるファイルの作成日時。
+                                FILETIME 形式とは Jan.1,1601 00:00:00 か
+                                らの 100ns 単位の経過時間を 64bit の数値
+                                で表したものです。 詳しくは Win32 API の
+                                ヘルプ等を参照してください。
+        ftAccessTime            FILETIME 形式によるファイルの参照日時。
+        ftWriteTime             FILETIME 形式によるファイルの更新日時。
+        szMode                  UNARJ32.DLL では格納ファイルの各種属性を
+                                示す文字列が格納されています。
+        szSourceFileName        処理を行う格納ファイル名。
+        szDestFileName          実際に書き込まれるパス名。
+
+
+-----------------------------------------------------------------------
+%7. EXTRACTINGINFOEX64 の構造
+-----------------------------------------------------------------------
+構造体定義
+                typedef struct {
+                        DWORD           dwStructSize;
+                        EXTRACTINGINFO  exinfo;
+                        ULHA_INT64      llFileSize;
+                        ULHA_INT64      llCompressedSize;
+                        ULHA_INT64      llWriteSize;
+                        DWORD           dwAttributes;
+                        DWORD           dwCRC;
+                        UINT            uOSType;
+                        WORD            wRatio;
+                        FILETIME        ftCreateTime;
+                        FILETIME        ftAccessTime;
+                        FILETIME        ftWriteTime;
+                        TCHAR           szMode[8];
+                        TCHAR           szSourceFileName[FNAME_MAX32 + 1];
+                        TCHAR           dummy1[3];
+                        TCHAR           szDestFileName[FNAME_MAX32 + 1];
+                        TCHAR           dummy2[3];
+                } EXTRACTINGINFOEX;
+
+        dwStructSize            構造体のサイズ。
+        exinfo                  EXTRACTINGINFO 構造体が格納されます。
+                                互換性のために残してあるだけです。
+        llFileSize              格納ファイルのサイズ。
+        llCompressedSize        格納ファイルの圧縮サイズ。
+        llWriteSize             展開処理で書き込んだサイズ。
+        dwAttributes            格納ファイルの属性。
+        dwCRC                   格納ファイルのチェックサム。
+        uOSType                 ファイルを格納した際に使われた OS。
+                                         0      MS-DOS
+                                         1      PRIMOS
+                                         2      UNIX
+                                         3      AMIGA
+                                         4      MAC-OS
+                                         5      OS/2
+                                         6      APPLE GS
+                                         7      ATARI ST
+                                         8      NEXT
+                                         9      VAX VMS
+                                        10      その他 (Windows95)
+        wRatio                  パーミル (千分率) による格納ファイルの圧
+                                縮率。
+        ftCreateFile            FILETIME 形式によるファイルの作成日時。
+                                FILETIME 形式とは Jan.1,1601 00:00:00 か
+                                らの 100ns 単位の経過時間を 64bit の数値
+                                で表したものです。 詳しくは Win32 API の
+                                ヘルプ等を参照してください。
+        ftAccessTime            FILETIME 形式によるファイルの参照日時。
+        ftWriteTime             FILETIME 形式によるファイルの更新日時。
+        szMode                  UNARJ32.DLL では格納ファイルの各種属性を
+                                示す文字列が格納されています。
+        szSourceFileName        処理を行う格納ファイル名。
+        szDestFileName          実際に書き込まれるパス名。
+
+
+------------------------------------------------------------------------
+%6. 処理の流れ
+------------------------------------------------------------------------
+１．nMode 3 でメッセージを送出。書庫名を得られます。
+
+　前処理が行われる場合（展開時の合計チェック等）には以下のメッセージを送
+出。
+
+２．nMode 5 でメッセージを送出。格納ファイル名が得られます。処理が終了す
+    るまで，検索にマッチしたファイルごとにメッセージを送出。
+
+３．格納ファイル毎に nMode 0 でメッセージを送出。 格納ファイル名を得られ
+    ます。
+
+　展開などの処理が行われた場合，以下のメッセージをさらに送出。
+
+４．nMode 0 でメッセージを送出。格納ファイル名等を得られます。
+５．nMode 1 でメッセージを送出。書き込みサイズが得られます。そのファイル
+    についての展開処理が終了するまで，このメッセージを送出し続けます。
+
+　すべての処理が終了した時点で（展開状況表示を消すタイミング），
+
+６．nMode 2 でメッセージを送出。
+
+=======================================================================

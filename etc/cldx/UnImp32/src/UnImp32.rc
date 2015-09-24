@@ -1,0 +1,170 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "Resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,17,0,43
+ PRODUCTVERSION 0,17,0,43
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x29L
+#else
+ FILEFLAGS 0x28L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "04110000"
+        BEGIN
+            VALUE "Comments", "UnImp Common Archiver Library"
+            VALUE "CompanyName", "HyperBeat"
+            VALUE "FileDescription", "UnImp Common Archiver Library"
+            VALUE "FileVersion", "0, 17, 0, 43"
+            VALUE "InternalName", "UnImp32"
+            VALUE "LegalCopyright", "Copyright (C) 2002- HyperBeat All Right Reserved"
+            VALUE "LegalTrademarks", "UnImp32.dll"
+            VALUE "OriginalFilename", "UnImp32.dll"
+            VALUE "PrivateBuild", "-"
+            VALUE "ProductName", "UnImp32.dll"
+            VALUE "ProductVersion", "0, 17, 0, 43"
+            VALUE "SpecialBuild", "-"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 0
+    END
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "Resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_STATUS DIALOGEX 0, 0, 247, 97
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | 
+    WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "UnImp32.dll 動作ステータス"
+FONT 9, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "書庫名：",IDC_STATIC,8,8,26,8
+    LTEXT           "",IDC_ARCNAME,66,8,168,8
+    LTEXT           "格納ファイル名：",IDC_STATIC,8,20,46,8
+    LTEXT           "",IDC_FILENAME,66,20,168,8
+    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",WS_BORDER | 
+                    0x1,11,53,228,11
+    PUSHBUTTON      "キャンセル(&C)",IDC_CANCEL,191,71,43,17,BS_CENTER | 
+                    BS_VCENTER
+    LTEXT           "出力先ファイル名：",IDC_STATIC,8,32,51,8
+    LTEXT           "",IDC_OUTFILENAME,66,32,168,8
+END
+
+IDD_UPDATE DIALOGEX 0, 0, 239, 117
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | 
+    WS_CAPTION
+CAPTION "上書き確認"
+FONT 9, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "",IDC_ARC_FILENAME,11,10,216,8
+    LTEXT           "",IDC_LOCAL_FILENAME,11,42,216,8
+    LTEXT           "↓",IDC_STATIC,26,26,8,8
+    LTEXT           "展開先には既にファイルが存在しています。\n実行する処理を選択してください。",
+                    IDC_STATIC,11,64,148,18
+    PUSHBUTTON      "上書き",IDC_UPDATE,11,90,45,17
+    PUSHBUTTON      "全て上書き",IDC_UPDATE_ALL,61,90,45,17
+    PUSHBUTTON      "スキップ",IDC_SKIP,112,90,45,17
+    PUSHBUTTON      "全てスキップ",IDC_SKIP_ALL,162,90,45,17
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// MODULE
+//
+
+IDM_IMPSFX              MODULE                  "Release\\ImpSfx.exe"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_MAIN                CURSOR                  "Imp.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_MAIN                ICON                    "Imp.ico"
+#endif    // 日本語 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,180 @@
+;;; -*- Mode: Lisp; Package: EDITOR -*-
+;;;
+;;; This file is not part of xyzzy.
+;;;
+;$Id: config.l.sample 722 2006-08-30 16:45:53Z torihat $
+;
+; config.l sample
+;
+
+(in-package "kamail3")
+
+;;; -----------------------------------------------------------------
+;;; ディレクトリ設定
+;;; -----------------------------------------------------------------
+; メール保存ディレクトリ（デフォルトは "~/.kamail3/mail"）
+;(setq *mail-directory* "C:/Mail")
+
+;;; -----------------------------------------------------------------
+;;; 送信者名・アドレス
+;;;
+;;; consもしくはconsのlistで指定する
+;;; -----------------------------------------------------------------
+;(setq *from-address* '("xyzzy@example.com" . "XYZZY Taro"))
+
+;;; -----------------------------------------------------------------
+;;; SMTPサーバ
+;;;
+;;; 設定をリストで指定
+;;; (make-smtpconf :server "smtp.example.com" ; SMTPサーバのアドレス
+;;;                :port   9025               ; (option) ポート
+;;;                :auth   "login"            ; (option) 認証種別（"plain" "login" "cram-md5"）
+;;;                :user   "username"         ; (option) 認証ユーザー名
+;;;                :pass   "password"         ; (option) 認証パスワード
+;;;                :realm  "realm"            ; (option) realm
+;;;                )
+;;; -----------------------------------------------------------------
+; 例：通常はサーバーアドレスだけの指定でOK
+;(setq *smtp-config-list*
+;      (list (make-smtpconf :server "mail.example.com")))
+
+;;; -----------------------------------------------------------------
+;;; メール受信設定
+;;;
+;;; 設定をリストで指定
+;;; ; MHフォルダから（取込元からメールを削除します）
+;;; (cons *fetch-mh-type*
+;;;       (make-fetchmh :dir    "C:/Mail/inbox"    ; 取込元ディレクトリ
+;;;                     :folder *folder-spam*      ; (option) 振り分け先フォルダ
+;;;                     :tags   '("xyzzy" "yzzyx") ; (option) タグをリストで指定
+;;;                     :status *attr-status-seen* ; (option) ステータスを指定
+;;;                     ))
+;;; ; POP3で
+;;; (cons *fetch-pop3-type*
+;;;       (make-fetchpop3 :host  "pop3.example.com" ; POP3サーバ
+;;;                       :port  9110               ; (option) ポート（110以外の場合）
+;;;                       :user  "username"         ; ユーザー名
+;;;                       :pass  "password"         ; パスワード
+;;;                       :auth  "apop"             ; (option) 認証方式
+;;;                       :keep  3                  ; サーバー側削除 (nil => 削除する
+;;;                       ))                        ;                 t   => 削除しない
+;;;                                                 ;                 n   => n日間削除しない)
+;;; -----------------------------------------------------------------
+;(setq *fetch-config-list*
+;      (list (cons *fetch-mh-type* ; MHフォルダからインポートの例
+;                  (make-fetchmh :dir "C:/Mail/inbox"))
+;            (cons *fetch-mh-type* ; SPAMフォルダに振り分けて既読にする例
+;                  (make-fetchmh :dir "C:/Mail/spam"
+;                                :folder *folder-spam*
+;                                :status *attr-status-seen*))
+;            (cons *fetch-pop3-type* ; サーバー側に3日間置いておく設定
+;                  (make-fetchpop3 :host "pop3.example.com"
+;                                  :user "xyzzy"
+;                                  :pass "yzzyx"
+;                                  :keep 3))
+;            ))
+
+;;; -----------------------------------------------------------------
+;;; POP3受信時の振り分けルール
+;;;
+;;; 振り分けルールをリストで指定
+;;; (make-rule :conditions '(("field" . "value")) ; ヘッダーのフィールドと正規表現をリストで指定
+;;;            :folder     *folder-spam*          ; 振り分け先フォルダ名
+;;;            :tag        "xyzzy"                ; 設定するタグ
+;;;            :status     *attr-status-seen*     ; 設定するステータス
+;;;            )
+;;; -----------------------------------------------------------------
+;(setq *refile-rule-list*
+;      (list (make-rule :conditions '(("x-text-classification" . "spam"))
+;		       :folder *folder-spam*) ; POPFileでspam判定されたメールの振り分け例
+;	    (make-rule :conditions '(("x-spam-flag" . "YES"))
+;		       :folder *folder-spam*) ; SpamAssassinの場合の振り分け例
+;	    ))
+
+;;; -----------------------------------------------------------------
+;;; 配色設定
+;;; -----------------------------------------------------------------
+; summaryの配所設定
+;(setq *attribute-summary-mark*       (list :foreground  1))
+;(setq *attribute-summary-status*     (list :foreground 13))
+;(setq *attribute-summary-multipart*  (list :foreground 12))
+;(setq *attribute-summary-date*       (list :foreground 10))
+;(setq *attribute-summary-from*       (list :foreground 11))
+;(setq *attribute-summary-title*      (list :foreground 14))
+; messageの配色設定
+;(setq *attribute-message-header*
+;      (list
+;       (cons "date"     (cons (list :bold t :foreground 9)
+;			      (list :bold t :foreground 10)))
+;       (cons "from"     (cons (list :bold t :foreground 9)
+;			      (list :bold t :foreground 11)))
+;       (cons "to"       (cons (list :bold t :foreground 9)
+;			      (list :bold t :foreground 12)))
+;       (cons "cc"       (cons (list :bold t :foreground 9)
+;			      (list :bold t :foreground 13)))
+;       (cons "subject"  (cons (list :bold t :foreground 9)
+;			      (list :bold t :foreground 14)))
+;       (cons "reply-to" (cons (list :bold t :foreground 9)
+;			      (list :bold t :foreground 11)))
+;       ))
+; messageの上記以外の配色
+;(setq *attribute-message-header-default*
+;      (cons (list :foreground 9)
+;	    (list :foreground 15)))
+; messageのパート表示部分
+;(setq *attribute-message-part*
+;      (list :foreground 1))
+; messageの本文部分
+;(setq *attribute-draft-body* nil)
+; messageの引用部分
+;(setq *attribute-message-quote*
+;      (list (list :foreground 9)
+;	    (list :foreground 10)
+;	    (list :foreground 11)
+;	    (list :foreground 12)))
+
+;;; -----------------------------------------------------------------
+;;; 署名
+;;;
+;;; 署名文字列をリストで指定
+;;; -----------------------------------------------------------------
+;(setq *signature-list*
+;      '("署名１・・・・・"
+;	"署名２・・・・・"))
+
+;;; -----------------------------------------------------------------
+;;; Hyper Estraier の設定
+;;; -----------------------------------------------------------------
+;;; gather の追加オプション（デフォルトは "estcmd gather -pc CP932 -fm -cm -sd"）
+;;; 詳細は Hyper Estraier のユーザーガイドを参照してください。
+;(setq *he-cmd-gather-option* "-cs 256")
+
+;;; -----------------------------------------------------------------
+;;; その他
+;;; -----------------------------------------------------------------
+;;; メール取得後に inbox を開く
+;(add-hook '*fetch-execute-all-hook* 'folder-open-inbox)
+;;; summary でスレッド表示する
+;(setq *summary-print-thread* t)
+;;; 送信済メールを保存する
+;(setq *send-message-save* t)
+;;; 特別フォルダの別名設定
+;(setq *folder-inbox-alias*  "1.受信箱")
+;(setq *folder-unseen-alias* "2.未読メール")
+;(setq *folder-spam-alias*   "3.迷惑メール")
+;(setq *folder-trash-alias*  "4.ゴミ箱")
+;(setq *folder-sent-alias*   "5.送信済")
+
+;;; -----------------------------------------------------------------
+;;; 拡張設定
+;;; -----------------------------------------------------------------
+;;; HTMLメール表示拡張を使用する （要browserex）
+;(require "kamail3/mhtml")
+;(setq *mhtml-browser-height* 400) ; browserの高さ
+;;; POPFile拡張を使用する
+;(require "kamail3/popfile")
+;(setq *popfile-url* "http://localhost:8081/RPC2")
+;(setq *popfile-username* "admin")
+;(setq *popfile-password* "")
+;;; 疑似インデックスを使用する
+;(setq *use-pseudo-index* t)

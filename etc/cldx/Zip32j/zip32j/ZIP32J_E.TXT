@@ -1,0 +1,41 @@
+warning: I'm sorry,this English Document is very simple...
+
+The First Distribution place:  http://openlab.ring.gr.jp/tsuneo/
+The Second Distribution place: http://www.csdinc.co.jp/archiver/
+===========================================================================
+[Software Name] ZIP32J.DLL Ver0.3x
+                 (ZIP library having Common Archiver Project's Interface
+                 (by Wrapping Info-ZIP's library))
+[Filename]      ZIP3J03x.LZH
+[Keyword]       1:ZIP32J  2:PACK/UNPACK  3:$WIN32  4:#PACK  5:#DLL
+[Copyright]     Yoshioka Tsuneo(tsuneo@rr.iij4u.or.jp)
+
+[OS]            Windows 95,Windows 98,Windows NT
+[Need DLL]      ZIP32.DLL(Ver2.3) or IZIP32J
+[Development Language]  Microsoft Visual C++ 6.0 Japanese version.
+[Software Kind] Free Software.
+                FREE for Copy,Edit,Re-distribute,and so on.(liks PDS)
+[Support]       NIFTYSERVE FWINDC MES#3
+                or E-MAIL to me.
+===========================================================================
+[Introduction]
+
+This library is ZIP library.
+You must install ZIP32J.DLL or IZIP32J.DLL(Japanese).
+
+[Install]
+
+Please copy DLL to Windows SYSTEM folder.
+
+[Reference]
+
+InfoZip
+  http://www.csdom.com/pub/infozip/
+Common Archiver Homepage
+  http://www.csdinc.co.jp/archiver/
+
+-----
+If you are developer please look at sdk folder.(zip3js_e.txt)
+
+and... welcome  e-mail.
+===========================================================================

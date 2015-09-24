@@ -1,0 +1,25 @@
+LIBRARY	zip32j
+EXPORTS
+	ZipGetVersion
+	ZipGetRunning
+	
+	Zip
+	ZipConfigDialog
+	ZipQueryFunctionList
+	ZipQueryEncryption
+
+	UnZip
+	UnZipGetVersion
+	UnZipOpenArchive
+	UnZipFindFirst
+	UnZipCloseArchive
+	UnZipFindNext
+	UnZipQueryFunctionList
+
+	ZipUnZip
+	ZipUnZipGetVersion
+	ZipUnZipOpenArchive
+	ZipUnZipFindFirst
+	ZipUnZipCloseArchive
+	ZipUnZipFindNext
+	ZipUnZipQueryFunctionList
