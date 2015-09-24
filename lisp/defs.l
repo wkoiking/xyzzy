@@ -8,52 +8,52 @@
 (in-package "editor")
 
 (export '(mode-line-format mode-specific-indent-command *auto-mode-alist*
-	  show-dots ignored-extensions insert-default-directory
-	  mode-specific-indent-command *default-buffer-mode*
-	  *caret-shape-block* *caret-shape-thin*
-	  *caret-shape-half-block* *caret-shape-underline*
-	  *initial-buffer-mode* *tab-columns*
-	  *kinsoku-mode* *kinsoku-bol-chars* *kinsoku-eol-chars*
-	  *kinsoku-extend-limit* *kinsoku-shorten-limit*
-	  *fill-kinsoku-mode*
-	  *file-dialog-filter* *file-dialog-filter-index*
-	  *syntax-option-c-preprocessor* *syntax-option-indent-c++*
-	  *syntax-option-indent-java* *syntax-option-column-comment-char*
-	  *syntax-option-indent-c++/cli*
-	  ))
+          show-dots ignored-extensions insert-default-directory
+          mode-specific-indent-command *default-buffer-mode*
+          *caret-shape-block* *caret-shape-thin*
+          *caret-shape-half-block* *caret-shape-underline*
+          *initial-buffer-mode* *tab-columns*
+          *kinsoku-mode* *kinsoku-bol-chars* *kinsoku-eol-chars*
+          *kinsoku-extend-limit* *kinsoku-shorten-limit*
+          *fill-kinsoku-mode*
+          *file-dialog-filter* *file-dialog-filter-index*
+          *syntax-option-c-preprocessor* *syntax-option-indent-c++*
+          *syntax-option-indent-java* *syntax-option-column-comment-char*
+          *syntax-option-indent-c++/cli*
+          ))
 
 (or (boundp 'mode-line-format)
     (setq-default mode-line-format "--%*- %b (%M) [%k:%l] %P %f"))
 
 (defvar *auto-mode-alist* '(("\\.c$" . c-mode)
-			    ("\\.h$" . detect-c-or-c++-mode)
-			    ("\\.cc$" . c++-mode)
-			    ("\\.cxx$" . c++-mode)
-			    ("\\.cpp$" . c++-mode)
-			    ("\\.hxx$" . c++-mode)
-			    ("\\.hpp$" . c++-mode)
-			    ("\\.inl$" . c++-mode)
-			    ("\\.l$" . lisp-mode)
-			    ("\\.lisp$" . lisp-mode)
-			    ("\\.txt$" . text-mode)
-			    ("\\.doc$" . text-mode)
-			    ("\\.log$" . text-mode)
-			    ("\\.html?$" . html-mode)
-			    ("\\.pas$" . pascal-mode)
-			    ("\\.tex$" . LaTeX-mode)
-			    ("\\.java$" . java-mode)
-			    ("\\.sql$" . sql-mode)
-			    ("\\.idl$" . idl-mode)
-			    ("\\.pl$" . perl-mode)
-			    ("\\.pm$" . perl-mode)
-			    ("\\.cgi$" . perl-mode)
-			    ("\\.bas$" . basic-mode)
-			    ("\\.mb$" . basic-mode)
-			    ("\\.frm$" . basic-mode)
-			    ("\\.cls$" . basic-mode)
-			    ("\\.css$" . css-mode)
-			    ("\\.cs$" . csharp-mode)
-			   ))
+                            ("\\.h$" . detect-c-or-c++-mode)
+                            ("\\.cc$" . c++-mode)
+                            ("\\.cxx$" . c++-mode)
+                            ("\\.cpp$" . c++-mode)
+                            ("\\.hxx$" . c++-mode)
+                            ("\\.hpp$" . c++-mode)
+                            ("\\.inl$" . c++-mode)
+                            ("\\.l$" . lisp-mode)
+                            ("\\.lisp$" . lisp-mode)
+                            ("\\.txt$" . text-mode)
+                            ("\\.doc$" . text-mode)
+                            ("\\.log$" . text-mode)
+                            ("\\.html?$" . html-mode)
+                            ("\\.pas$" . pascal-mode)
+                            ("\\.tex$" . LaTeX-mode)
+                            ("\\.java$" . java-mode)
+                            ("\\.sql$" . sql-mode)
+                            ("\\.idl$" . idl-mode)
+                            ("\\.pl$" . perl-mode)
+                            ("\\.pm$" . perl-mode)
+                            ("\\.cgi$" . perl-mode)
+                            ("\\.bas$" . basic-mode)
+                            ("\\.mb$" . basic-mode)
+                            ("\\.frm$" . basic-mode)
+                            ("\\.cls$" . basic-mode)
+                            ("\\.css$" . css-mode)
+                            ("\\.cs$" . csharp-mode)
+                            ))
 
 (defvar show-dots nil)
 
@@ -74,8 +74,8 @@
 
 (or *minor-mode-alist*
     (setq *minor-mode-alist*
-	  '((auto-fill . "Fill")
-	    (overwrite-mode . "Ovrwt"))))
+          '((auto-fill . "Fill")
+            (overwrite-mode . "Ovrwt"))))
 
 (setq *ime-control* t)
 (setq *drag-and-drop-auto-activate* t)
@@ -91,12 +91,12 @@
 
 (or *protected-local-variables*
     (setq *protected-local-variables*
-	  '(kept-undo-information
-	    need-not-save
-	    buffer-read-only
-	    auto-save
-	    lock-file
-	    abbrev-mode)))
+          '(kept-undo-information
+            need-not-save
+            buffer-read-only
+            auto-save
+            lock-file
+            abbrev-mode)))
 
 (defvar *tab-columns* 8)
 
@@ -151,19 +151,19 @@
     :unlha32 :unrar32 :unzip32 :yz1 :zip32j))
 
 (mapc #'(lambda (x)
-	  (setf (get (car x) 'archiver-dll-file-name) (cdr x)))
+          (setf (get (car x) 'archiver-dll-file-name) (cdr x)))
       '((:ish32 . "ISH32.DLL")
-	(:tar32 . "tar32.dll")
-	(:unlha32 . "UNLHA32.DLL")
-	(:unarj32 . "UNARJ32J.DLL")
-	(:unzip32 . "UNZIP32.DLL")
-	(:zip32j . "ZIP32J.DLL")
-	(:cab32 . "cab32.dll")
-	(:unrar32 . "unrar32.dll")
-	(:bga32 . "Bga32.dll")
-	(:yz1 . "Yz1.dll")
-	(:ungca32 . "UnGCA32.dll")
-	(:7-zip . "7-zip32.dll")))
+        (:tar32 . "tar32.dll")
+        (:unlha32 . "UNLHA32.DLL")
+        (:unarj32 . "UNARJ32J.DLL")
+        (:unzip32 . "UNZIP32.DLL")
+        (:zip32j . "ZIP32J.DLL")
+        (:cab32 . "cab32.dll")
+        (:unrar32 . "unrar32.dll")
+        (:bga32 . "Bga32.dll")
+        (:yz1 . "Yz1.dll")
+        (:ungca32 . "UnGCA32.dll")
+        (:7-zip . "7-zip32.dll")))
 
 (export '(make-tags-file make-tags-file-dialog *maketags-list*))
 (autoload 'make-tags-file "maketags" t)
@@ -178,13 +178,13 @@
 (autoload 'life-mode "life" t)
 
 (export '(search-dialog replace-dialog count-matches-dialog
-	  goto-line-dialog open-file-dialog
-	  close-selected-buffer
-	  close-and-open-file-dialog save-as-dialog
-	  save-buffer-dialog insert-file-dialog rename-dialog
-	  execute-subprocess-dialog pipe-command-dialog
-	  launch-application-dialog print-selected-buffer-dialog
-	  control-code-dialog-box select-xyzzy))
+          goto-line-dialog open-file-dialog
+          close-selected-buffer
+          close-and-open-file-dialog save-as-dialog
+          save-buffer-dialog insert-file-dialog rename-dialog
+          execute-subprocess-dialog pipe-command-dialog
+          launch-application-dialog print-selected-buffer-dialog
+          control-code-dialog-box select-xyzzy))
 
 (autoload 'search-dialog "dialogs" t)
 (autoload 'replace-dialog "dialogs" t)
