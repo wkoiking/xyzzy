@@ -136,7 +136,7 @@
   (execute-subprocess (concat *markdown-command*
                               "--filter pandoc-crossref "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
-                              "--webtex -s -S -N --toc -H C:/Users/Nao/Dropbox/data/css/markdown7.css "
+                              "--webtex -s -S -N --toc --toc-depth=5 -H C:/Users/Nao/Dropbox/data/css/markdown7.css "
                               "\"" (buffer-name (selected-buffer)) "\"")))
 
 (defun pandoc-compile-to-simple-html ()
