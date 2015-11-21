@@ -56,30 +56,48 @@
         ("aアプリケーション" . "C:/Users/5630/Desktop/使用しないアプリケーション/")
         ("Delhi Metro 8（ローカル）" . "C:/Users/5630/DelhiMetro8/hascats/")
         ("Delhi Metro 8 (kk)" . "//KPFSV/kk/k04/03件名業務/02_海外/07_インド関連/デリーメトロ/11_ATS設計/hascats/")
+<<<<<<< HEAD
         ("Delhi Metro 8（ns-pub）" .  "//KPFSV/ns-pub/p04/国際システム設計部_河合_デリーATS資料（保管期限：2020年3月31日）品証共有/delhi-line-8-ats-2015/")
         ("Delhi Metro 8 (comment from DMRC)" .  "//KPFSV/kk/k04/03件名業務/02_海外/07_インド関連/デリーメトロ/06_Final Designe/100_Comment from DMRC/")
+=======
+        ("Delhi Metro 8" . "Z:/07_インド関連/デリーメトロ/11_ATS設計/hascats/")
+        ("Delhi Metro 8（ns-pub）" .  "//KPFSV/ns-pub/p04/国際システム設計部_河合_デリーATS資料（保管期限：2020年3月31日）品証共有/delhi-line-8-ats-2015/")
+>>>>>>> ac4bc35e878803ad771a49f90301b692bd28a68a
 ;         ("Delhi Metro 8（品証）" . "Y:/delhi-line-8-ats-2015/")
         ("Delhi Office Server" . "//192.168.1.10/Fileserver/Common/01_Technical")
         ("k勤怠関係" . "C:/Users/Nao/Dropbox/work/k勤怠関係/")
         ("d台帳" . "C:/Users/Nao/Dropbox/work/d台帳/")
         ("g外注依頼" . "C:/Users/Nao/Dropbox/work/g外注依頼/")
+<<<<<<< HEAD
         ("b部会資料" . "//KPFSV/kk/k04/01支援業務/04_ワークフロー/58_畑崎直紀/01B．部会資料/")
         ("Sao Paulo 6（ローカル1）" . "C:/Users/5630/SP6/hascats/")
         ("Sao Paulo 6" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/011_ATS_(藤永)/")
         ("Sao Paulo 6（国際送付）" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_サンパウロ6号_国際藤永管理_期限2015年8月1日/")
         ("Sao Paulo 6（進捗報告）" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/003C_Executive Design/002B_進捗報告/")
+=======
+        ("Sao Paulo 6（ローカル）" . "C:/Users/Nao/Dropbox/work/SaoPaulo/")
+        ("Sao Paulo 6" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/011_ATS_(藤永)/")
+        ("Sao Paulo 6（国際送付）" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_サンパウロ6号_国際藤永管理_期限2015年8月1日/")
+>>>>>>> ac4bc35e878803ad771a49f90301b692bd28a68a
         ("ssh" . "C:/Users/5630/.ssh/")
         ("JMRT（ローカル）" . "C:/Users/Nao/Dropbox/work/JMRT/")
         ("JMRT" . "//KPFSV/ns-pub/p04/ジャカルタMRT作業フォルダ_期限2018年12月31日/")
         ("JMRT国際送付" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_ジャカルタMRT_国際近内管理_期限2014年8月1日/")
+<<<<<<< HEAD
         ("pプロジェクト案件進捗管理" . "//KPFSV/kk/k04/01支援業務/04_ワークフロー/44_石川達哉/【国際システム設計部】/プロジェクト案件進捗会議/")
+=======
+>>>>>>> ac4bc35e878803ad771a49f90301b692bd28a68a
         ("s接地基準協同研究委員会（ローカル）" . "C:/Users/Nao/Dropbox/work/s接地基準協同研究委員会/")
         ("s接地基準協同研究委員会" . "//KPFSV/kk/k04/01支援業務/04_ワークフロー/45_内海博文(インドPJ)/01_個人フォルダ/5121_高橋昌秀/電気学会（接地）/")
         ("CTCセンタ（ローカル）" . "C:/Users/Nao/Dropbox/work/131期/t台湾在来CTC/")
         ("CTCセンタ" . "//KPFSV/kk/k04/03件名業務/02_海外/01_台湾関連/01_台湾在来/CTCセンタ/")
         ("scanner" . "C:/scanner_fuji/")
         ("WQUP（ローカル）" . "C:/Users/Nao/Dropbox/work/WQUP/")
+<<<<<<< HEAD
         ("WQUP" . "//KPFSV/kk/k04/03件名業務/02_海外/00_海外共通/")
+=======
+        ("WQUP" . "//KPFSV/kk/k04/03件名業務/02_海外/00_海外共通/003_カタログ/81_社内用総合カタログ(英HTML)/")
+>>>>>>> ac4bc35e878803ad771a49f90301b692bd28a68a
         ("ISO文章" . "//KPFSV/kk/k04/00共通業務/01_ISO文書/7600（技術共通）/")
         ("KBA進捗" . "//KPFSV/ns-pub/p04/2020年期限/国際事業部KBA_期限200331/")
         ("ns-rule" . "//KPFSV/ns-rule/r01/")
@@ -127,7 +145,10 @@
         ("EXE" "*.exe")
         ("vsd" "*.vsd")
         ("ZIP" "*.zip")
+<<<<<<< HEAD
         ("MOV" "*.MOV")
+=======
+>>>>>>> ac4bc35e878803ad771a49f90301b692bd28a68a
         ("Railway" "*.rail")))
 
 ;; ファイラでファイル名をコピーする
