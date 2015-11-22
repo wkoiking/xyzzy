@@ -1,6 +1,4 @@
 This is my xyzzy repository
-<<<<<<< HEAD
-=======
 
 # ToDo
 
@@ -25,4 +23,3 @@ Add Path:
 ~~~
 site-lisp/kamail3/defs.l:48:(defvar *base-directory* "C:/Mail")
 ~~~
->>>>>>> ac4bc35e878803ad771a49f90301b692bd28a68a
