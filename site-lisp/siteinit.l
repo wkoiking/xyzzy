@@ -600,7 +600,7 @@
 (defun ghci-get-buffer ()
   (setq *ghci-buffer* (get-buffer-create *ghci-buffer-name*)))
 
-(defvar *ghci-command* "cabal repl")
+(defvar *ghci-command* "ghci")
 (defvar *ghci-buffer-name* "*GHCi*")
 (defvar *ghci-buffer* nil)
 
