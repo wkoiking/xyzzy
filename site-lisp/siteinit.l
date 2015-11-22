@@ -13,8 +13,6 @@
 ; (setf *git-bash* (map-slash-to-backslash "\"C:/Program Files/Git/bin/sh.exe\" --login -i"))
 (setf *git-bash* (map-slash-to-backslash "C:/Users/5630/xyzzy/bin/cmder/Cmder.exe"))
 
-(map-slash-to-backslash "C:/Users/5630/xyzzy/diffutils-2.8.7-1-bin/bin/diff.exe")
-
 (define-key filer-keymap '(#\C-x #\g)
             #'(lambda ()
                 (interactive)
@@ -58,7 +56,6 @@
         ("Delhi Metro 8 (kk)" . "//KPFSV/kk/k04/03件名業務/02_海外/07_インド関連/デリーメトロ/11_ATS設計/hascats/")
         ("Delhi Metro 8（ns-pub）" .  "//KPFSV/ns-pub/p04/国際システム設計部_河合_デリーATS資料（保管期限：2020年3月31日）品証共有/delhi-line-8-ats-2015/")
         ("Delhi Metro 8 (comment from DMRC)" .  "//KPFSV/kk/k04/03件名業務/02_海外/07_インド関連/デリーメトロ/06_Final Designe/100_Comment from DMRC/")
-;         ("Delhi Metro 8（品証）" . "Y:/delhi-line-8-ats-2015/")
         ("Delhi Office Server" . "//192.168.1.10/Fileserver/Common/01_Technical")
         ("k勤怠関係" . "C:/Users/Nao/Dropbox/work/k勤怠関係/")
         ("d台帳" . "C:/Users/Nao/Dropbox/work/d台帳/")
@@ -69,6 +66,7 @@
         ("Sao Paulo 6（国際送付）" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_サンパウロ6号_国際藤永管理_期限2015年8月1日/")
         ("Sao Paulo 6（進捗報告）" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/003C_Executive Design/002B_進捗報告/")
         ("ssh" . "C:/Users/5630/.ssh/")
+        ("sスタートアップ" . "C:/Users/5630/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/")
         ("JMRT（ローカル）" . "C:/Users/Nao/Dropbox/work/JMRT/")
         ("JMRT" . "//KPFSV/ns-pub/p04/ジャカルタMRT作業フォルダ_期限2018年12月31日/")
         ("JMRT国際送付" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_ジャカルタMRT_国際近内管理_期限2014年8月1日/")
