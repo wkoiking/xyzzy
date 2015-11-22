@@ -15,7 +15,7 @@
 
 ;;; ghci-mode（マイナーモード）
 (defvar-local ghci-mode nil)
-(defvar *ghci-command* "cabal repl")
+(defvar *ghci-command* "ghci")
 (defvar *ghci-buffer-name* "*GHCi*")
 (defvar *ghci-buffer* nil)
 (defvar *ghci-process* nil)
