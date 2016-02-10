@@ -63,6 +63,7 @@
         ("b部会資料" . "//KPFSV/kk/k04/01支援業務/04_ワークフロー/58_畑崎直紀/01B．部会資料/")
         ("Sao Paulo 6（ローカル1）" . "C:/Users/5630/SP6/hascats/")
         ("Sao Paulo 6" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/011_ATS_(藤永)/")
+        ("Sao Paulo 6（集中対応）" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/003C_Executive Design/012_集中対応(0112-15)/System Overview - TOC/")
         ("Sao Paulo 6（国際送付）" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_サンパウロ6号_国際藤永管理_期限2015年8月1日/")
         ("Sao Paulo 6（進捗報告）" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/003C_Executive Design/002B_進捗報告/")
         ("ssh" . "C:/Users/5630/.ssh/")
@@ -600,7 +601,7 @@
 (defun ghci-get-buffer ()
   (setq *ghci-buffer* (get-buffer-create *ghci-buffer-name*)))
 
-(defvar *ghci-command* "ghci")
+(defvar *ghci-command* "stack ghci")
 (defvar *ghci-buffer-name* "*GHCi*")
 (defvar *ghci-buffer* nil)
 
