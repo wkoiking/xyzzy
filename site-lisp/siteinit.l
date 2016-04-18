@@ -62,7 +62,8 @@
         ("g外注依頼" . "C:/Users/Nao/Dropbox/work/g外注依頼/")
         ("b部会資料" . "//KPFSV/kk/k04/01支援業務/04_ワークフロー/58_畑崎直紀/01B．部会資料/")
         ("Sao Paulo 6（ローカル1）" . "C:/Users/5630/SP6/hascats/")
-        ("Sao Paulo 6" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/011_ATS_(藤永)/")
+;         ("Sao Paulo 6" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/011_ATS_(藤永)/")
+        ("Sao Paulo 6" . "C:/Users/5630/Desktop/SP6/")
         ("Sao Paulo 6（集中対応）" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/003C_Executive Design/012_集中対応(0112-15)/System Overview - TOC/")
         ("Sao Paulo 6（国際送付）" . "//KPFSV/ns-pub/p04/海外SEG⇔国際_サンパウロ6号_国際藤永管理_期限2015年8月1日/")
         ("Sao Paulo 6（進捗報告）" . "//KPFSV/kk/k04/03件名業務/02_海外/11_ブラジル/サンパウロメトロ6号/003C_Executive Design/002B_進捗報告/")
@@ -151,31 +152,31 @@
                            #'(lambda () (interactive) (filer-get-attach-format)))
                           (:item nil "Haskellリスト表記でコピー(&H)"
                            #'(lambda () (interactive) (filer-get-filenames 1 ", " "[" "]" "\"" "\"")))
-                          (:item nil "pandocのimgとしてコピー(&P)"
+                          (:item nil "pandocのimgとしてコピー1(&I)"
                            #'(lambda () (interactive) (filer-get-pandoc-image)))
-                          (:item nil "pandocのimgとしてコピー2(&I)"
+                          (:item nil "pandocのimgとしてコピー2(&P)"
                            #'(lambda () (interactive) (filer-get-pandoc-image2)))
+                          (:item nil "pandocのimgとしてコピー3(&N)"
+                           #'(lambda () (interactive) (filer-get-pandoc-image3)))
                           )))
                 (track-popup-menu *get-filenamestring-menu*)))
 
 (defun filer-get-filenames (type sep open-bracket close-bracket open-quote close-quote)
   (interactive)
-  (let* ((selected-files (or (filer-get-mark-files)
+  (let* ((fullpaths (or (filer-get-mark-files)
                              (list (filer-get-current-file))))
-         (file-strs (mapcar #'(lambda (filename) (filer-get-filenamestring filename type)) selected-files)))
+         (file-strs (mapcar #'(lambda (filename) (filer-get-filenamestring filename type)) fullpaths)))
     (copy-to-clipboard (filer-make-clipboard-string file-strs sep open-bracket close-bracket open-quote close-quote))
     (message "ファイル名をコピーしました")))
 
-(defun filer-get-filenamestring (filename type)
+(defun filer-get-filenamestring (fullpath type)
   (interactive)
   (let (str)
     (cond
-     ((= type 1) (setq str (if (file-directory-p filename)
-                               (car (reverse (pathname-directory (concat filename "x"))))
-                             (file-namestring filename))))
-     ((= type 2) (setq str filename))
-     ((= type 3) (setq str (map-slash-to-backslash filename)))
-     ((= type 4) (setq str (concat "file:///" filename))))
+     ((= type 1) (setq str (file-namestring fullpath)))
+     ((= type 2) (setq str fullpath))
+     ((= type 3) (setq str (map-slash-to-backslash fullpath)))
+     ((= type 4) (setq str (concat "file:///" fullpath))))
     str))
 
 (defun filer-make-clipboard-string (lst sep open-bracket close-bracket open-quote close-quote)
@@ -191,43 +192,43 @@
         (+ 1 (string-left-match-number (subseq str1 1) (subseq str2 1)))
       0)))
 
-(defun string-trim-extension (str)
-  (reverse (string-trim-extension-sub (reverse str))))
-
-(defun string-trim-extension-sub (str)
-  (if (= 0 (length str))
-      ""
-    (if (char-equal (elt str 0) #\.)
-        (subseq str 1)
-      (string-trim-extension-sub (subseq str 1)))))
-
 (defun filer-get-pandoc-image ()
   (interactive)
-  (let* ((selected-files (or (filer-get-mark-files)
+  (let* ((fullpaths (or (filer-get-mark-files)
                             (list (filer-get-current-file))))
-         (filenames (mapcar #'(lambda (filename) (filer-get-filenamestring filename 1)) selected-files))
-         (fullpaths (mapcar #'(lambda (filename) (filer-get-filenamestring filename 2)) selected-files))
-;          (working-dir (default-directory))
+         (filenames (mapcar #'(lambda (filename) (pathname-name filename)) fullpaths))
          (working-dir (get-buffer-file-name))
          (image-strs (mapcar #'(lambda (filename fullpath)
-                                 (concat "[" (string-trim-extension filename) "]: ./"
-                                                                   (subseq fullpath (string-left-match-number working-dir fullpath))))
-                             filenames fullpaths)))
+                                 (concat "![" (substitute-string filename "_" " ") "](./" (subseq fullpath (string-left-match-number working-dir fullpath)) "){#fig:"
+                                         (string-downcase (substitute-string (substitute-string filename "_" "-") " " "-")) "}"))
+                                 filenames fullpaths)))
     (copy-to-clipboard (filer-make-clipboard-string image-strs
                         "\n" "" "" "" ""))
     (message "ファイル名をコピーしました")))
 
 (defun filer-get-pandoc-image2 ()
   (interactive)
-  (let* ((selected-files (or (filer-get-mark-files)
+  (let* ((fullpaths (or (filer-get-mark-files)
                             (list (filer-get-current-file))))
-         (filenames (mapcar #'(lambda (filename) (filer-get-filenamestring filename 1)) selected-files))
-         (fullpaths (mapcar #'(lambda (filename) (filer-get-filenamestring filename 2)) selected-files))
-;          (working-dir (default-directory))
+         (filenames (mapcar #'(lambda (filename) (filer-get-filenamestring filename 1)) fullpaths))
+         (working-dir (get-buffer-file-name))
+         (image-strs (mapcar #'(lambda (filename fullpath)
+                                 (concat "[" (pathname-name filename) "]: ./"
+                                         (subseq fullpath (string-left-match-number working-dir fullpath))))
+                             filenames fullpaths)))
+    (copy-to-clipboard (filer-make-clipboard-string image-strs
+                        "\n" "" "" "" ""))
+    (message "ファイル名をコピーしました")))
+
+(defun filer-get-pandoc-image3 ()
+  (interactive)
+  (let* ((fullpaths (or (filer-get-mark-files)
+                            (list (filer-get-current-file))))
+         (filenames (mapcar #'(lambda (filename) (pathname-name filename)) fullpaths))
          (working-dir (get-buffer-file-name))
          (image-strs (mapcar #'(lambda (filename fullpath)
                                  (concat "![](./" (subseq fullpath (string-left-match-number working-dir fullpath)) ")"))
-                             filenames fullpaths)))
+                                 filenames fullpaths)))
     (copy-to-clipboard (filer-make-clipboard-string image-strs
                         "\n" "" "" "" ""))
     (message "ファイル名をコピーしました")))
@@ -310,7 +311,7 @@
       (let*
           ((ppc (write-to-string (round (/ w2 centimeter))))
            (density (concat ppc "x" ppc)))
-        (call-process (concat "gm convert -density " density " -units pixelspercentimeter " filename " " (string-trim-extension filename) ".png")
+        (call-process (concat "gm convert -density " density " -units pixelspercentimeter " filename " " (pathname-name filename) ".png")
                       :exec-directory (filer-get-directory)
                       :wait t)
         ))))
@@ -325,7 +326,7 @@
           (call-process (concat "gm convert -size " size " -resize " size " -compose over -gravity Center -background white -extent " size " " filename " " filename))))
       (let*
           ((new-size (concat (write-to-string (* 40 centimeter)) "x" (write-to-string (round (/ (* 40 centimeter h) w2))))))
-        (call-process (concat "gm convert -size " new-size " " filename " -resize " new-size " +profile \"*\" " (string-trim-extension filename) ".png")
+        (call-process (concat "gm convert -size " new-size " " filename " -resize " new-size " +profile \"*\" " (pathname-name filename) ".png")
                       :exec-directory (filer-get-directory)
                       :wait t)))))
 

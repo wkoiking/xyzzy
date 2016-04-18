@@ -90,6 +90,9 @@
 (defparameter *h4-style* '(:color 8 0 :underline))
 (defparameter *h5-style* '(:color 8 0))
 (defparameter *h6-style* '(:color 8 0))
+(defparameter *deletion-style* '(:color 6 0))
+(defparameter *addition-style* '(:color 2 0))
+(defparameter *normal-text-style* '(:color 1 0))
 (defparameter *listmarker-style* '(:keyword 0 :bold))
 (defparameter *italic-style* '(:keyword 1 :bold))
 (defparameter *bold-style* '(:keyword 1 :bold))
@@ -106,6 +109,10 @@
            ("^#### .+" nil ,*h4-style*)
            ("^##### .+" nil ,*h5-style*)
            ("^###### .+" nil ,*h6-style*)
+           
+           ("^\\+.+" nil ,*addition-style*)
+           ("^\\-\\-.+" nil ,*normal-text-style*)
+           ("^\\-.+" nil ,*deletion-style*)
            
            ("^[ \t]*[*+-] " nil ,*listmarker-style*)
            
@@ -288,5 +295,3 @@
      (ed::set-buffer-local 'indent-tabs-mode nil)))
 
 ;;; markdown-mode.l ends here.
-
-

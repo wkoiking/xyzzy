@@ -90,11 +90,11 @@
   (interactive "p")
   (let ((x (following-char)))
 	(cond
-	 ((alpha-num-p x) (while (and (alpha-num-p (following-char)) (less-than-end (point)))
+	 ((alpha-num-p x) (while (and (alpha-num-p (following-char)) (< (point) (point-max)))
 						(forward-char)))
-	 ((syntax-whitespace-p x) (while (and (syntax-whitespace-p (following-char)) (less-than-end (point)))
+	 ((syntax-whitespace-p x) (while (and (syntax-whitespace-p (following-char)) (< (point) (point-max)))
 								(forward-char)))
-	 ((syntax-symbol-p x) (while (and (syntax-symbol-p (following-char)) (less-than-end (point)))
+	 ((syntax-symbol-p x) (while (and (syntax-symbol-p (following-char)) (< (point) (point-max)))
 							(forward-char)))
 	 ((open-paren-p x) (goto-matched-parenthesis) (forward-char))
 	 (t (forward-char)))))
@@ -103,23 +103,17 @@
   (interactive "p")
   (let ((x (preceding-char)))
 	(cond
-	 ((alpha-num-p x) (while (and (alpha-num-p (preceding-char)) (larger-than-beginning (point)))
+	 ((alpha-num-p x) (while (and (alpha-num-p (preceding-char)) (> (point) (point-min)))
 						(backward-char)))
-	 ((syntax-whitespace-p x) (while (and (syntax-whitespace-p (preceding-char)) (larger-than-beginning (point)))
+	 ((syntax-whitespace-p x) (while (and (syntax-whitespace-p (preceding-char)) (> (point) (point-min)))
 								(backward-char)))
-	 ((syntax-symbol-p x) (while (and (syntax-symbol-p (preceding-char)) (larger-than-beginning (point)))
+	 ((syntax-symbol-p x) (while (and (syntax-symbol-p (preceding-char)) (> (point) (point-min)))
 							(backward-char)))
 	 ((close-paren-p x) (backward-char) (goto-matched-parenthesis))
 	 (t (backward-char)))))
 
 (defun alpha-num-p (x)
   (or (alpha-char-p x) (digit-char-p x) (equal #\' x)))
-
-(defun less-than-end (x)
-  (< (point) (save-excursion (end-of-buffer) (point))))
-
-(defun larger-than-beginning (x)
-  (> (point) (save-excursion (beginning-of-buffer) (point))))
 
 (defun open-paren-p (x)
   (or (equal x #\() (equal x #\{) (equal x #\[)))
