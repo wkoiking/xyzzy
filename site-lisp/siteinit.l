@@ -51,6 +51,7 @@
         ("Haskell" . "C:/Users/Nao/Dropbox/Haskell/")
         ("blog" . "C:/Users/Nao/Dropbox/Public/blog/")
         ("work" . "C:/Users/Nao/Dropbox/work/")
+        ("VDU" . "C:/VDU/")
         ("aアプリケーション" . "C:/Users/5630/Desktop/使用しないアプリケーション/")
         ("Delhi Metro 8（ローカル）" . "C:/Users/5630/DelhiMetro8/hascats/")
         ("Delhi Metro 8 (kk)" . "//KPFSV/kk/k04/03件名業務/02_海外/07_インド関連/デリーメトロ/11_ATS設計/hascats/")
