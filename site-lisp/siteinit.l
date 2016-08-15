@@ -19,10 +19,10 @@
 ;                 (call-process (or *git-bash*) :no-std-handles t :show :show
 ;                               :exec-directory (filer-get-directory))))
 
-(define-key ctl-x-map #\g 'run-git-bash)
-(defun run-git-bash ()
-  (interactive)
-  (launch-application (or *git-bash*)))
+; (define-key ctl-x-map #\g 'run-git-bash)
+; (defun run-git-bash ()
+;   (interactive)
+;   (launch-application (or *git-bash*)))
 
 ; HaskellでTAG Jumpする
 ; hasktagsをインストールしてパスを通す必要あり
