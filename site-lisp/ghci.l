@@ -64,8 +64,9 @@
         (set-process-outcode proc *encoding-utf8n*))) ;;
     (when file
       (end-of-buffer)
-      (ghci-send-string (concat ":cd " (string-right-trim bufname file)))
-      (ghci-send-string (concat ":l " bufname))
+      (ghci-send-string ":r")
+;       (ghci-send-string (concat ":cd " (string-right-trim bufname file)))
+;       (ghci-send-string (concat ":l " bufname))
       )
     (ghci-shell-mode)
     (end-of-buffer)))
