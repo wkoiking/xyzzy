@@ -1,28 +1,25 @@
-;; xig
-
-; (load-library "xig/xig")
-; (setq xig::*xig-git-path* (map-slash-to-backslash "C:/Program Files/Git/cmd/git.exe"))
+; Ispell
+(setq *ispell-command* (concat (user-homedir-pathname) "ispell/ispell.exe"))
 
 ;; diff
-; (setq ed::*diff-command-name*
-;       (map-slash-to-backslash "C:/Users/5630/xyzzy/diffutils-2.8.7-1-bin/bin/diff.exe"))
+(setq ed::*diff-command-name*
+      (map-slash-to-backslash (concat (user-homedir-pathname) "diffutils-2.8.7-1-bin/bin/diff.exe")))
 
 ;; C-x gでGit Bashを起動する
-; git for windows をインストールする必要あり
-; (setf *git-bash* "\"C:\\\\Program Files\\\\Git\\\\bin\\\\sh.exe\" --login -i")
+; 別途 git for windows をインストールする必要あり
 ; (setf *git-bash* (map-slash-to-backslash "\"C:/Program Files/Git/bin/sh.exe\" --login -i"))
-; (setf *git-bash* (map-slash-to-backslash "C:/Users/5630/xyzzy/bin/cmder/Cmder.exe"))
+(setf *git-bash* (map-slash-to-backslash (concat (user-homedir-pathname) "bin/cmder/Cmder.exe")))
 
-; (define-key filer-keymap '(#\C-x #\g)
-;             #'(lambda ()
-;                 (interactive)
-;                 (call-process (or *git-bash*) :no-std-handles t :show :show
-;                               :exec-directory (filer-get-directory))))
+(define-key filer-keymap '(#\C-x #\g)
+            #'(lambda ()
+                (interactive)
+                (call-process (or *git-bash*) :no-std-handles t :show :show
+                              :exec-directory (filer-get-directory))))
 
-; (define-key ctl-x-map #\g 'run-git-bash)
-; (defun run-git-bash ()
-;   (interactive)
-;   (launch-application (or *git-bash*)))
+(define-key ctl-x-map #\g 'run-git-bash)
+(defun run-git-bash ()
+  (interactive)
+  (launch-application (or *git-bash*)))
 
 ; HaskellでTAG Jumpする
 ; hasktagsをインストールしてパスを通す必要あり
@@ -507,12 +504,6 @@
 
 ; バッファタブの操作 separate-buffer-tab
 (require "buffer-tab-operation")
-
-; Ispell
-; (setq *ispell-command* "C:/Users/5630/xyzzy/ispell/ispell.exe")
-
-; デフォルトディレクトリ
-; (set-default-directory "C:/Users/Nao/Dropbox/")
 
 ; Windows 仕様
 (require "gates_kai")

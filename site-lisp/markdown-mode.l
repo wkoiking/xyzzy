@@ -128,7 +128,9 @@
            ("[\n\t ]_[^\n_]+_[\n\t ]" nil ,*italic-style*)
            ))))
 
-(defvar *markdown-command* "pandoc ")
+(defvar *markdown-command* (concat (user-homedir-pathname) "bin/pandoc.exe"))
+(defvar *pandoc-corssref-command* (concat (user-homedir-pathname) "bin/pandoc-crossref.exe"))
+  
 (defvar *markdown-window-height* 20)
 
 (defvar *markdown-default-horizontal-rule* "*****")
@@ -141,9 +143,10 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter pandoc-crossref "
+                              " "
+                              "--filter " *pandoc-corssref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
-                              "--webtex -s -S -N --toc --toc-depth=5 -H C:/Users/Nao/Dropbox/data/css/markdown7.css "
+                              "--webtex -s -S -N --toc --toc-depth=5 -H " (user-homedir-pathname) "css/markdown.css "
                               "\"" (buffer-name (selected-buffer)) "\"")))
 
 (defun pandoc-compile-to-simple-html ()
@@ -152,9 +155,9 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter pandoc-crossref "
+                              "--filter " *pandoc-corssref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
-                              "--webtex -s -S -N -H C:/Users/Nao/Dropbox/data/css/markdown7.css "
+                              "--webtex -s -S -N -H " (user-homedir-pathname) "css/markdown.css "
                               "\"" (buffer-name (selected-buffer)) "\"")))
 
 (defun pandoc-compile-to-blog ()
@@ -163,7 +166,7 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter pandoc-crossref "
+                              "--filter " *pandoc-corssref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
                               "--webtex -S "
                               "\"" (buffer-name (selected-buffer)) "\"")))
@@ -174,7 +177,7 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter pandoc-crossref "
+                              "--filter " *pandoc-corssref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "docx" "\" "
                               "--toc -N -f markdown -t docx "
                               "\"" (buffer-name (selected-buffer)) "\"")))

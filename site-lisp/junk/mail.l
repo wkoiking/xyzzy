@@ -62,6 +62,8 @@
     (and (mail-get-header-option-value "multipart" content-type)
 	 (mail-get-header-option-value "boundary" content-type))))
 
+(defvar *nkf-command* (concat (user-homedir-pathname) "nkfwin/vc2005/win32(98,Me,NT,2000,XP,Vista,7)Windows-31J/nkf32"))
+
 (defvar *mail-header-fields-only-one*
   '("date"
     "from"
@@ -251,7 +253,7 @@
 				  charset))
       (setq end (point-max)) ;; ’Ç‰Á
       (when (equalp mime-type "text/html")  ;; ’Ç‰Á
-	(filter-buffer "nkf32 -w | pandoc -f html -t plain")))  ;; ’Ç‰Á
+        (filter-buffer (concat *nkf-command* " -w | pandoc -f html -t plain"))))  ;; ’Ç‰Á
     encoding))
 
 ; (defun mail-decode-encoding (headers &optional beg end)
