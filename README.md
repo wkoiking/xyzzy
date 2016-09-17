@@ -1,25 +1,27 @@
-This is my xyzzy repository
+# Installation
 
-# ToDo
+環境変数XYZZYHOMEを設定する。
 
-Reconstruct from pure xyzzy to track history.
+## KamailV3
 
-# KamailV3
+パスを追加：
 
-## Installation
+`~\xyzzy\hyperestraier\`
 
-Add Path:
+データファイルを"C:/Mail"に置く。
 
-* `~\xyzzy\hyperestraier\`
-* `~\xyzzy\bin\`
-* `~\xyzzy\diffutils-2.8.7-1-bin\bin\`
-* `~\xyzzy\UnxUpdates\`
-* `~\xyzzy\nkfwin\vc2005\win32(98,Me,NT,2000,XP,Vista,7)Windows-31J`
+## ファイラ（アーカイバのインストール）
 
-アーカイバのインストール
+圧縮や解凍を行うには，統合アーカイバプロジェクトのライブラリが必要となり
+ます。これらを Windows の System ディレクトリ(`C:/Windows/system/` とか 
+`C:/WINNT/system32/` とか)に入れておいてください。
 
-## Modification
+DLL は，庄田さんの統合アーカイバプロジェクトからダウンロードできます。
 
-~~~
-site-lisp/kamail3/defs.l:48:(defvar *base-directory* "C:/Mail")
-~~~
+`http://www.csdinc.co.jp/archiver/`
+
+また，K.INABA さんの caldix を使うと簡単にまとめてインストールできます。
+
+`http://www.kmonos.net/lib/`
+
+現在使用できる状態にあるライブラリは，[ヘルプ]→[について] で確認することができます。
