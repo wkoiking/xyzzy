@@ -313,7 +313,7 @@
 ;; ƒtƒ@ƒCƒ‰RET
 (defvar *file-asoc*
   '(
-    ("*.svg" . "C:/Program Files/Google/Chrome/Application/chrome.exe")
+;     ("*.svg" . "C:/Program Files/Google/Chrome/Application/chrome.exe")
     ("*.pdf" . "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     ))
 

@@ -129,7 +129,7 @@
            ))))
 
 (defvar *markdown-command* (concat (user-homedir-pathname) "bin/pandoc.exe"))
-(defvar *pandoc-corssref-command* (concat (user-homedir-pathname) "bin/pandoc-crossref.exe"))
+(defvar *pandoc-crossref-command* (concat (user-homedir-pathname) "bin/pandoc-crossref.exe"))
   
 (defvar *markdown-window-height* 20)
 
@@ -144,7 +144,7 @@
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
                               " "
-                              "--filter " *pandoc-corssref-command* " "
+                              "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
                               "--webtex -s -S -N --toc --toc-depth=5 -H " (user-homedir-pathname) "css/markdown.css "
                               "\"" (buffer-name (selected-buffer)) "\"")))
@@ -155,7 +155,7 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter " *pandoc-corssref-command* " "
+                              "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
                               "--webtex -s -S -N -H " (user-homedir-pathname) "css/markdown.css "
                               "\"" (buffer-name (selected-buffer)) "\"")))
@@ -166,7 +166,7 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter " *pandoc-corssref-command* " "
+                              "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
                               "--webtex -S "
                               "\"" (buffer-name (selected-buffer)) "\"")))
@@ -177,7 +177,7 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
-                              "--filter " *pandoc-corssref-command* " "
+                              "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "docx" "\" "
                               "--toc -N -f markdown -t docx "
                               "\"" (buffer-name (selected-buffer)) "\"")))
