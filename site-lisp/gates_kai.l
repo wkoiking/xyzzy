@@ -3,6 +3,8 @@
 
 (in-package "editor")
 
+(export '(delete-eol-spaces-selection))
+
 ;; winkey
 (defvar *default-selection-keymap*
   (let ((keymap (make-sparse-keymap)))
@@ -130,6 +132,28 @@
   (interactive "p")
   (begin-selection)
   (my-backward-word))
+
+;; 行末のホワイトスペースを削除
+(defun delete-eol-spaces-selection ()
+  (interactive)
+  (exec-selection 'delete-eol-spaces
+                  "バッファ全体の行末のホワイトスペースを削除しますよ。"))
+(defun delete-eol-spaces ()
+  (goto-char (point-min))
+  (replace-regexp "[ \t]*$" "" t))
+
+(defun exec-selection (func &optional str)
+  (if (get-selection-type)
+      (selection-start-end (start end)
+        (save-excursion
+          (save-restriction
+            (narrow-to-region start end)
+            (funcall func)
+            (widen))))
+    (save-excursion
+      (if str
+          (and (yes-or-no-p str)(funcall func))
+        (funcall func)))))
 
 ;;; end of gate_kai.l
  

@@ -177,6 +177,7 @@
   (if (= (count-windows nil) 1)
       (split-window (- (screen-height) *markdown-window-height* 2)))
   (execute-subprocess (concat *markdown-command*
+                              " "
                               "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "docx" "\" "
                               "--toc -N -f markdown -t docx "

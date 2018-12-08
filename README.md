@@ -2,13 +2,26 @@
 
 環境変数XYZZYHOMEを設定する。
 
-## KamailV3
+## メーラー
+
+### KamailV3
 
 パスを追加：
 
 `~\xyzzy\hyperestraier\`
 
-データファイルを"C:/Mail"に置く。
+データファイルを`C:/Mail`に置く。
+
+設定は`C:\Mail\config.l`を書き換える
+
+※Gmailに添付したやつをコピペすると良い
+
+### stunnelの設定
+
+* googleでstunnelを検索してインストール
+* 設定は`C:\Program Files (x86)\stunnel\config\stunnel.conf`を書き換える
+
+※Gmailに添付したやつをコピペすると良い
 
 ## ファイラ（アーカイバのインストール）
 
