@@ -180,7 +180,7 @@
                               " "
                               "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "docx" "\" "
-                              "--toc -N -f markdown -t docx "
+                              "--toc -N -f markdown+tex_math_dollars -t docx "
                               "\"" (buffer-name (selected-buffer)) "\"")))
 
 ; (defun pandoc-compile-to-pdf-e ()
