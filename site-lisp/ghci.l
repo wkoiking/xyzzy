@@ -13,9 +13,34 @@
           *ghci-window-height*
           *ghci-shell-mode-map*))
 
+(require "hasktags") ; ghci-load-file時にhasktags-load-tags-fileしておきたいので追加
+
+; どうせいつもこれをロードするから関数用意しておく
+(defun hasktags-load-tags-file ()
+  (interactive)
+  (if (call-process (concat *hasktags-command* " " "-c" " " "C:/Users/wanag/VDU/app/ C:/Users/wanag/VDU/src/") :wait t :exec-directory "C:/Users/wanag/VDU/" :show :minimize)
+      (let* ((file-path (merge-pathnames "tags" "C:/Users/wanag/VDU/"))
+             (buf-name (concat " " file-path)))
+        (progn
+          (setf *hasktags-tags-buffer-name* buf-name)
+          (get-buffer-create buf-name)
+          (erase-buffer buf-name)
+          (save-excursion
+            (switch-to-buffer buf-name)
+            (make-local-variable 'need-not-save)
+            (setf need-not-save t)
+            (make-local-variable 'auto-save)
+            (setf auto-save nil)
+            (insert-file file-path)
+            (message "loaded tags"))
+          t))
+    (progn
+      (message "failed to loading tags")
+      nil)))
+
 ;;; ghci-mode（マイナーモード）
 (defvar-local ghci-mode nil)
-(defvar *ghci-command* (map-slash-to-backslash "C:/Users/wanag/VDU/stack.cmd ghci"))
+(defvar *ghci-command* (map-slash-to-backslash "C:/Users/wanag/VDU/stack.cmd --color=never ghci"))
 (defvar *ghci-buffer-name* "*GHCi*")
 (defvar *ghci-buffer* nil)
 (defvar *ghci-process* nil)
@@ -45,6 +70,7 @@
 ; ghciにバッファをロードする
 (defun ghci-load-file (&optional f)
   (interactive)
+  (hasktags-load-tags-file) ; タグをロードしておく
   (let ((buf (ghci-get-buffer))                      ; 出力バッファ
         (win (get-buffer-window *ghci-buffer-name*)) ; 出力ウィンドウ
         (file (get-buffer-file-name))                ; バッファの関連付けらたファイル（フルパス）

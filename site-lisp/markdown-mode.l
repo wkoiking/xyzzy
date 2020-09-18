@@ -179,8 +179,9 @@
   (execute-subprocess (concat *markdown-command*
                               " "
                               "--filter " *pandoc-crossref-command* " "
+                              "--reference-doc " (user-homedir-pathname) "reference.docx "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "docx" "\" "
-                              "--toc -N -f markdown+tex_math_dollars -t docx "
+                              "--toc -N -f markdown+tex_math_dollars+east_asian_line_breaks -t docx "
                               "\"" (buffer-name (selected-buffer)) "\"")))
 
 ; (defun pandoc-compile-to-pdf-e ()

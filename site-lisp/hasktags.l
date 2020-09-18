@@ -32,6 +32,7 @@
           hasktags-make-tags-file
           hasktags-jump-tag
           hasktags-back-tag-jump
+          hasktags-load-tags-file
           ))
 
 ; hasktags.exe 

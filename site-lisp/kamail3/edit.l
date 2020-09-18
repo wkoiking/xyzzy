@@ -75,11 +75,24 @@
 
 (defun edit-window-create (line)
   (edit-winconf-save)
-  (split-window line)
-  (refresh-screen)
-  (while (not (pos-visible-in-window-p (point-min)))
-    (scroll-window -1))
+  (if (> line (window-height))
+      (progn
+;         (split-window)
+        (refresh-screen))
+    (progn
+      (split-window line)
+      (refresh-screen)
+      (while (not (pos-visible-in-window-p (point-min)))
+        (scroll-window -1))))
   (other-window 1))
+
+; (defun edit-window-create (line)
+;   (edit-winconf-save)
+;   (split-window line)
+;   (refresh-screen)
+;   (while (not (pos-visible-in-window-p (point-min)))
+;     (scroll-window -1))
+;   (other-window 1))
 
 (defun edit-save ()
   (interactive)

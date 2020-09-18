@@ -26,7 +26,8 @@
 (load-library "hasktags")
 (global-set-key #\F4 'hasktags-jump-tag)
 (global-set-key #\S-F4 'hasktags-back-tag-jump)
-(global-set-key #\M-/ 'hasktags-make-tags-file)
+; (global-set-key #\M-/ 'hasktags-make-tags-file)
+; (global-set-key #\M-/ 'hasktags-load-tags-file)
 
 ; HTMLブラウザ
 (require "win-window")
@@ -47,6 +48,7 @@
         ("Home" . "C:/Users/wanag/Home/")
         ("VDU" . "C:/Users/wanag/VDU/")
         ("work" . "C:/Users/wanag/Home/work/")
+        ("Code" . "C:/Users/wanag/MyCode/")
         ("Google Drive" . "C:/Users/wanag/Google ドライブ/")
         ("Delhi（ローカル）" . "C:/Users/wanag/Home/DelhiMetro8/")
         ("Sao Paulo（ローカル）" . "C:/Users/wanag/Home/SP6/")
@@ -63,6 +65,7 @@
         ("All" "*")
         ("bak" "*~" "*.bak")
         ("Haskell" "*.hs" "*.lhs")
+        ("PureScript" "*.purs")
         ("CPP" "*.cpp")
         ("H" "*.h")
         ("Markdown" "*.md" "*.markdown")
@@ -81,6 +84,8 @@
         ("TIFF" "*.tif")
         ("Tex" "*.tex")
         ("PDF" "*.pdf")
+        ("PPT" "*.ppt" "*.pptx")
+        ("email" "*.eml")
         ("xls" "*.xls" "*.xlsx")
         ("doc" "*.doc" "*.docx")
         ("GIF" "*.gif")
@@ -387,7 +392,7 @@
       (if (file-directory-p file)
           (launch-application (concat "explorer /select," "\"" (map-slash-to-backslash (filer-get-current-file)) "\""))
         (progn
-          (filer-forward-line 1)
+;           (filer-forward-line 1)
           (shell-execute file (filer-get-directory)))))))
 
 (define-key filer-keymap #\X 'my-filer-shell-execute)
@@ -502,6 +507,16 @@
                       (haskell-mode)
                       (ghci-mode)
                       )) *auto-mode-alist*)
+(push '("\\.elm$" . (lambda ()
+                      (haskell-mode)
+                      )) *auto-mode-alist*)
+(push '("\\.purs$" . (lambda ()
+                      (haskell-mode)
+                      )) *auto-mode-alist*)
+(push '("\\.dhall$" . (lambda ()
+                      (haskell-mode)
+                      )) *auto-mode-alist*)
+(global-set-key #\M-/ 'hasktags-load-tags-file)
 
 ; セッション
 (add-hook '*before-find-file-hook*
