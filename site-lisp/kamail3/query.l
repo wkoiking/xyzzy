@@ -23,7 +23,7 @@
 (defvar *query-last-result* nil)
 (defvar *query-last-folder* nil)
 
-(defvar *query-result-max* 200)
+(defvar *query-result-max* 50)
 (defvar *query-result-offset* 0)
 
 (defvar *query-history-file*

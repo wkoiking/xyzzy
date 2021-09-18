@@ -1,6 +1,10 @@
 ; Ispell
 (setq *ispell-command* (concat (user-homedir-pathname) "ispell/ispell.exe"))
 
+; デフォルトファイルエンコーディングをUTF8Nにする
+(setq *default-fileio-encoding* *encoding-utf8n*)
+(setq *default-eol-code* *eol-lf*)
+
 ;; diff
 (setq ed::*diff-command-name*
       (map-slash-to-backslash (concat (user-homedir-pathname) "diffutils-2.8.7-1-bin/bin/diff.exe")))
@@ -50,6 +54,7 @@
         ("work" . "C:/Users/wanag/Home/work/")
         ("Code" . "C:/Users/wanag/MyCode/")
         ("Google Drive" . "C:/Users/wanag/Google ドライブ/")
+        ("Bin" . "C:/Users/wanag/AppData/Roaming/local/bin/")
         ("Delhi（ローカル）" . "C:/Users/wanag/Home/DelhiMetro8/")
         ("Sao Paulo（ローカル）" . "C:/Users/wanag/Home/SP6/")
         ("Delhi Office Server" . "//192.168.1.10/Fileserver/Common/01_Technical")
@@ -65,6 +70,7 @@
         ("All" "*")
         ("bak" "*~" "*.bak")
         ("Haskell" "*.hs" "*.lhs")
+        ("Haskell Dump" "*.dump-hi" "*.hie")
         ("PureScript" "*.purs")
         ("CPP" "*.cpp")
         ("H" "*.h")
@@ -77,8 +83,8 @@
         ("PNG" "*.png")
         ("BMP" "*.bmp")
         ("DWG" "*.dwg" ".dxf")
-        ("JPG" "*.jpg")
-        ("Image" "*.bmp" "*.jpg" "*.png" "*.tif" "*.gif")
+        ("JPG" "*.jpg" "*.jpeg")
+        ("Image" "*.bmp" "*.jpg" "*.jpeg" "*.png" "*.tif" "*.gif")
         ("Lisp" "*.l")
         ("lc" "*.lc")
         ("TIFF" "*.tif")
@@ -91,9 +97,9 @@
         ("GIF" "*.gif")
         ("EXE" "*.exe")
         ("vsd" "*.vsd")
-        ("ZIP" "*.zip")
-        ("MOV" "*.MOV")
-        ("Railway" "*.rail")))
+        ("ZIP" "*.zip" "*.7z")
+        ("Link" "*.lnk")
+        ("MOV" "*.MOV")))
 
 ;; ファイラでファイル名をコピーする
 (defvar *get-filenamestring-menu* nil)
