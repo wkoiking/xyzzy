@@ -1,16 +1,19 @@
 ; セッションの保存と回復
-(setq *previous-session-dir* (concat (user-homedir-pathname) "previous-session.session"))
-(defun save-current-session ()
+(setq *marked-session-file* (concat (user-homedir-pathname) "marked-session.session"))
+(setq *temp-session-file* (concat (user-homedir-pathname) "temp-session.session"))
+(defun mark-session ()
   (interactive)
-  (save-session *previous-session-dir* t)
-  (message "セッションを記録しました"))
-(defun restore-session ()
+  (save-session *marked-session-file* t)
+  (message "Session Marked"))
+(defun exchange-session ()
   (interactive)
-  (load-session *previous-session-dir* t)
-  (message "セッションを復帰しました"))
+  (save-session *temp-session-file* t)
+  (load-session *marked-session-file* t)
+  (rename-file *temp-session-file* *marked-session-file* :if-exists :overwrite)
+  (message "Session Exchanged"))
 
-(global-set-key '(#\C-x #\SPC) 'save-current-session)
-(global-set-key '(#\C-x #\x) 'restore-session)
+(global-set-key '(#\C-x #\SPC) 'mark-session)
+(global-set-key '(#\C-x #\x) 'exchange-session)
 
 ; Hexl バイナリエディタ
 (require "hexl/hexl")
