@@ -156,7 +156,7 @@
 
 (defun align-equation ()
   (interactive)
-  (indent-to-token+ "="))
+  (indent-to-token+ " = "))
 
 (defun runhaskell ()
   (interactive)

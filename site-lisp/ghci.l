@@ -70,7 +70,7 @@
 ; ghciにバッファをロードする
 (defun ghci-load-file (&optional f)
   (interactive)
-  (hasktags-load-tags-file) ; タグをロードしておく
+;   (hasktags-load-tags-file) ; タグをロードしておく
   (let ((buf (ghci-get-buffer))                      ; 出力バッファ
         (win (get-buffer-window *ghci-buffer-name*)) ; 出力ウィンドウ
         (file (get-buffer-file-name))                ; バッファの関連付けらたファイル（フルパス）
@@ -79,6 +79,7 @@
     (save-buffer-dialog)
     (if (= (count-windows nil) 1)
         (split-window))
+;         (split-window 20 nil))
     (switch-to-buffer-other-window buf)
     (setq proc (buffer-process buf))
     (if (and proc (eq (process-status proc) ':run))
