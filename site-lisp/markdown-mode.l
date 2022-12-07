@@ -63,10 +63,16 @@
   (set-syntax-match *markdown-mode-syntax-table* #\( #\))
   (set-syntax-match *markdown-mode-syntax-table* #\[ #\])
   (set-syntax-match *markdown-mode-syntax-table* #\{ #\})
-  (set-syntax-start-multi-comment *markdown-mode-syntax-table* "<!")
-  (set-syntax-end-multi-comment *markdown-mode-syntax-table* "->")
-  (set-syntax-start-c++-comment *markdown-mode-syntax-table* #\>)
-  (set-syntax-end-c++-comment *markdown-mode-syntax-table* #\LFD)
+;   (set-syntax-start-multi-comment *markdown-mode-syntax-table* "<!")
+;   (set-syntax-end-multi-comment *markdown-mode-syntax-table* "->")
+;   (set-syntax-start-c++-comment *markdown-mode-syntax-table* #\> nil)
+;   (set-syntax-end-c++-comment *markdown-mode-syntax-table* #\LFD nil t)
+;   (set-syntax-whitespace *markdown-mode-syntax-table* #\SPC)
+;   (set-syntax-whitespace *markdown-mode-syntax-table* #\TAB)
+;   (set-syntax-whitespace *markdown-mode-syntax-table* #\C-l)
+;   (set-syntax-whitespace *markdown-mode-syntax-table* #\RET)
+  (set-syntax-start-comment *markdown-mode-syntax-table* #\> nil)
+  (set-syntax-end-comment *markdown-mode-syntax-table* #\LFD nil t)
   )
 
 (defvar *markdown-mode-map* nil)
@@ -78,6 +84,9 @@
 ;   (define-key *markdown-mode-map* '(#\C-c #\j) 'pandoc-compile-to-pdf-j)
   (define-key *markdown-mode-map* '(#\C-c #\d) 'pandoc-compile-to-docx)
   (define-key *markdown-mode-map* '(#\C-c #\b) 'pandoc-compile-to-blog)
+  (define-key *markdown-mode-map* #\C-p 'tabulate-itemization-pipe-table)
+  (define-key *markdown-mode-map* #\C-u 'itemize-pipe-table)
+;   (define-key *markdown-mode-map* #\C-t 'tabulate-itemization-tab-table)
   (define-key *markdown-mode-map* #\C-e 'align-table)
   (define-key *markdown-mode-map* #\C-- 'make-line)
   (define-key *markdown-mode-map* #\C-= 'make-double-line)
@@ -130,6 +139,9 @@
 
 (defvar *markdown-command* (concat (user-homedir-pathname) "bin/pandoc.exe"))
 (defvar *pandoc-crossref-command* (concat (user-homedir-pathname) "bin/pandoc-crossref.exe"))
+(defvar *tabulate-itemization-pipe-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/tabulate-itemization-pipe-table.exe")
+(defvar *tabulate-itemization-tab-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/tabulate-itemization-tab-table.exe")
+(defvar *itemize-pipe-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/itemize-pipe-table.exe")
   
 (defvar *markdown-window-height* 20)
 
@@ -146,7 +158,7 @@
                               " "
                               "--filter " *pandoc-crossref-command* " "
                               "-o \"" (string-right-trim "md" (get-buffer-file-name)) "html" "\" "
-                              "--webtex -s -S -N --toc --toc-depth=5 -H " (user-homedir-pathname) "css/markdown.css "
+                              "-f markdown -t html5 --webtex -s -N --toc --toc-depth=5 -c " (user-homedir-pathname) "css/markdown.css "
                               "\"" (buffer-name (selected-buffer)) "\"")))
 
 (defun pandoc-compile-to-simple-html ()
@@ -274,6 +286,40 @@
   (delete-trailing-spaces)
   (insert #\LFD arg)
   (markdown-indent-line))
+
+(defun itemize-pipe-table ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (if (narrow-selection)
+          (filter-buffer *itemize-pipe-table-command*)
+        (plain-error "有効範囲が指定できてないっす")
+        ))))
+
+(defun tabulate-itemization-pipe-table ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (if (narrow-selection)
+          (filter-buffer *tabulate-itemization-pipe-table-command*)
+        (plain-error "有効範囲が指定できてないっす")
+        ))))
+
+(defun tabulate-itemization-tab-table ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (if (narrow-selection)
+          (filter-buffer *tabulate-itemization-tab-table-command*)
+        (plain-error "有効範囲が指定できてないっす")
+        ))))
+
+(defun narrow-selection ()
+  "セレクション範囲をナローイングする"
+  (and (pre-selection-p)
+       (narrow-to-region (selection-mark) (selection-point))
+       (return-from narrow-selection t))
+  nil)
 
 ; mode definition
 (defun markdown-mode ()

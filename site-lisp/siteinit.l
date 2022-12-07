@@ -1,6 +1,6 @@
 ; ƒZƒbƒVƒ‡ƒ“‚Ì•Û‘¶‚Æ‰ñ•œ
-(setq *marked-session-file* (concat (user-homedir-pathname) "marked-session.session"))
-(setq *temp-session-file* (concat (user-homedir-pathname) "temp-session.session"))
+(setq *marked-session-file* (concat (user-homedir-pathname) "marked-session.ssn"))
+(setq *temp-session-file* (concat (user-homedir-pathname) "temp-session.ssn"))
 (defun mark-session ()
   (interactive)
   (save-session *marked-session-file* t)
@@ -8,7 +8,7 @@
 (defun exchange-session ()
   (interactive)
   (save-session *temp-session-file* t)
-  (load-session *marked-session-file* t)
+  (load-session *marked-session-file* nil) ; t‚É‚·‚é‚Æghci-mode‚ª‰½ŒÌ‚©“Ç‚Ü‚ê‚È‚¢‚±‚Æ‚ª‚ ‚é‚Ì‚Ånil‚É‚µ‚½
   (rename-file *temp-session-file* *marked-session-file* :if-exists :overwrite)
   (message "Session Exchanged"))
 

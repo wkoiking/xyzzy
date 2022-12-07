@@ -155,6 +155,7 @@
   )
 
 (defvar *ghci-shell-prompt-regex* "^\\*?\\([A-Z]\\(\\w\\|_\\)*'*\\.\\)*[A-Z]\\(\\w\\|_\\)*'*\\( \\([A-Z]\\(\\w\\|_\\)*'*\\.\\)*[A-Z]\\(\\w\\|_\\)*'*\\)*>")
+(defvar *new-ghci-shell-prompt-regex* (concat "\\(^ghci>\\)\\|" "\\(" *ghci-shell-prompt-regex* "\\)"))
 (defvar-local *ghci-shell-ret* "\n")
 (defvar-local *ghci-shell-echo* nil)
 (defvar *ghci-shell-history-backward* nil)
@@ -181,7 +182,7 @@
 
 (defun ghci-shell-home ()
   (interactive)
-  (if (save-excursion (goto-bol) (looking-at *ghci-shell-prompt-regex*))
+  (if (save-excursion (goto-bol) (looking-at *new-ghci-shell-prompt-regex*))
       (goto-char (+ (match-end 0) 1))
     (goto-bol)))
 

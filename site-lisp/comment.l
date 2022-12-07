@@ -83,7 +83,7 @@
     (ed::ruby-mode             #\#   1         " ")
     (ed::haskell-mode               "-- ")
     (ed::textedit-mode               "> ")
-    (ed::markdown-mode            nil   "<!--\n"  "\n-->")
+    (ed::markdown-mode         #\>   1         " ")
     )
   "Association between major mode and types of comment characters.
 This variable is a list of lists; each list consists of a major mode

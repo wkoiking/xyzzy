@@ -164,7 +164,7 @@
 (defun rfc822-addr-spec (stream)
   (loop
     (unless (member (rfc822-next-token) '(atom quoted-string))
-      (error "bad addr-spec"))
+      (error "bad addr-spec1"))
     (princ (rfc822-last-token-string) stream)
     (case (rfc822-next-token)
       (#\.
@@ -175,9 +175,9 @@
        (return))
       (t
        (when *rfc822-allow-local*
-	 (rfc822-backup-token)
-	 (return))
-       (error "bad addr-spec")))))
+         (rfc822-backup-token)
+         (return))
+       (error "bad addr-spec2")))))
 
 (defun rfc822-route (stream)
   (loop
@@ -205,75 +205,87 @@
   (unless (eql (rfc822-next-token) #\>)
     (error "missing >")))
 
+; (.)をスキップするように書き換えました
 (defun rfc822-parse-address-1 (parse-groups)
   (loop
     (let ((nwords 0)
-	  (tok (rfc822-next-token))
-	  (tokb *rfc822-lex-tokb*)
-	  (toke *rfc822-lex-toke*)
-	  addr)
-      (while (or (eq tok 'quoted-string)
-		 (eq tok 'atom))
-	(incf nwords)
-	(setq tok (rfc822-next-token)))
+          (tok (rfc822-next-token))
+          (tokb *rfc822-lex-tokb*)
+;           (toke *rfc822-lex-toke*)
+          addr)
+      (while (or
+              (eq tok 'quoted-string)
+              (eq tok 'atom)
+              (eql tok #\.) ; 追加
+              )
+        (incf nwords)
+        (setq tok (rfc822-next-token)))
       (setq addr (cond ((or (eq tok 'domain-literal)
-			    (eql tok #\>))
-			(error "unexpected ~a" tok))
-		       ((eql tok #\<)
-			(with-output-to-string (stream)
-			  (rfc822-route-addr stream)))
-		       ((eql tok #\@)
-			(unless (= nwords 1)
-			  (error "missing comma"))
-			(with-output-to-string (stream)
-			  (princ (rfc822-last-token-string tokb toke) stream)
-			  (write-char tok stream)
-			  (rfc822-domain stream)))
-		       ((eql tok #\:)
-			(when parse-groups
-			  (error "unexpected :"))
-			(unless *rfc822-allow-group*
-			  (error "group may not allowed"))
-			(when (zerop nwords)
-			  (error "no phrases for group"))
-			(rfc822-parse-address-1 t))
-		       ((eql tok #\.)
-			(unless (= nwords 1)
-			  (error "Unexpected ."))
-			(with-output-to-string (stream)
-			  (princ (rfc822-last-token-string tokb toke) stream)
-			  (write-char tok stream)
-			  (rfc822-addr-spec stream)))
-		       (t
-			(rfc822-backup-token)
-			(cond ((null tok)
-			       (when parse-groups
-				 (error "Missing ;")))
-			      ((eql tok #\;)
-			       (unless parse-groups
-				 (error "unexpected ;")))
-			      (t
-			       (when (zerop nwords)
-				 (error "empty address"))))
-			(case nwords
-			  (0 nil)
-			  (1
-			   (unless *rfc822-allow-local*
-			     (error "bad address format"))
-			   (rfc822-last-token-string))
-			  (t
-			   (error "missing ,"))))))
+                            (eql tok #\>))
+                        (error "unexpected ~a" tok))
+                       ((eql tok #\<)
+                        (with-output-to-string (stream)
+                          (rfc822-route-addr stream)))
+;                        ((eql tok #\@)
+;                         (unless (= nwords 1)
+;                           (error "missing comma"))
+;                         (with-output-to-string (stream)
+;                           (princ (rfc822-last-token-string tokb toke) stream)
+;                           (write-char tok stream)
+;                           (rfc822-domain stream)))
+                       ((eql tok #\@)
+                        (when (= nwords 0)
+                          (error "empty local-part"))
+                        (let ((toke *rfc822-lex-toke*))
+                          (with-output-to-string (stream)
+                            (princ (rfc822-last-token-string tokb toke) stream)
+                            (write-char tok stream)
+                            (rfc822-domain stream))))
+                       ((eql tok #\:)
+                        (when parse-groups
+                          (error "unexpected :"))
+                        (unless *rfc822-allow-group*
+                          (error "group may not allowed"))
+                        (when (zerop nwords)
+                          (error "no phrases for group"))
+                        (rfc822-parse-address-1 t))
+;                        ((eql tok #\.)
+;                         (unless (= nwords 1)
+;                           (error "Unexpected ."))
+;                         (with-output-to-string (stream)
+;                           (princ (rfc822-last-token-string tokb toke) stream)
+;                           (write-char tok stream)
+;                           (rfc822-addr-spec stream)))
+                       (t
+                        (rfc822-backup-token)
+                        (cond ((null tok)
+                               (when parse-groups
+                                 (error "Missing ;")))
+                              ((eql tok #\;)
+                               (unless parse-groups
+                                 (error "unexpected ;")))
+                              (t
+                               (when (zerop nwords)
+                                 (error "empty address"))))
+                        (case nwords
+                          (0 nil)
+                          (1
+                           (unless *rfc822-allow-local*
+                             (error "bad address format"))
+                           (rfc822-last-token-string))
+                          (t
+                           (error "missing ,"))))))
       (when addr
-	(push addr *rfc822-addr-list*))
+        (push addr *rfc822-addr-list*))
       (setq tok (rfc822-next-token))
       (cond ((or (null tok)
-		 (and parse-groups (eql tok #\;)))
-	     (return))
-	    ((eql tok #\,)
-	     (unless *rfc822-allow-list*
-	       (error "list may not allowed")))
-	    (t
-	     (error "missing ,"))))))
+                 (and parse-groups (eql tok #\;)))
+             (return))
+            ((eql tok #\,)
+             (unless *rfc822-allow-list*
+               (error "list may not allowed")))
+            (t
+             (error "missing ,"))))))
 
 (defun rfc822-parse-address (string &key strict allow-local allow-group allow-list allow-source-route)
   (let ((*rfc822-lex-last-token* nil)
