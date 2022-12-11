@@ -87,7 +87,8 @@
   (define-key *markdown-mode-map* #\C-p 'tabulate-itemization-pipe-table)
   (define-key *markdown-mode-map* #\C-u 'itemize-pipe-table)
 ;   (define-key *markdown-mode-map* #\C-t 'tabulate-itemization-tab-table)
-  (define-key *markdown-mode-map* #\C-e 'align-table)
+  (define-key *markdown-mode-map* #\C-e 'align-pipe-table)
+  (define-key *markdown-mode-map* #\C-l 'add-labels)
   (define-key *markdown-mode-map* #\C-- 'make-line)
   (define-key *markdown-mode-map* #\C-= 'make-double-line)
   (define-key *markdown-mode-map* #\TAB 'markdown-tab-indent-toggle)
@@ -142,7 +143,9 @@
 (defvar *tabulate-itemization-pipe-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/tabulate-itemization-pipe-table.exe")
 (defvar *tabulate-itemization-tab-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/tabulate-itemization-tab-table.exe")
 (defvar *itemize-pipe-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/itemize-pipe-table.exe")
-  
+(defvar *align-pipe-table-command* "C:/Users/wanag/AppData/Roaming/local/bin/align-pipe-table.exe")
+(defvar *add-labels-command* "C:/Users/wanag/AppData/Roaming/local/bin/add-labels.exe")
+
 (defvar *markdown-window-height* 20)
 
 (defvar *markdown-default-horizontal-rule* "*****")
@@ -289,28 +292,30 @@
 
 (defun itemize-pipe-table ()
   (interactive)
-  (save-excursion
-    (save-restriction
-      (if (narrow-selection)
-          (filter-buffer *itemize-pipe-table-command*)
-        (plain-error "有効範囲が指定できてないっす")
-        ))))
+  (filter-selection *itemize-pipe-table-command*))
 
 (defun tabulate-itemization-pipe-table ()
   (interactive)
-  (save-excursion
-    (save-restriction
-      (if (narrow-selection)
-          (filter-buffer *tabulate-itemization-pipe-table-command*)
-        (plain-error "有効範囲が指定できてないっす")
-        ))))
+  (filter-selection *tabulate-itemization-pipe-table-command*))
 
 (defun tabulate-itemization-tab-table ()
+  (interactive)
+  (filter-selection *tabulate-itemization-tab-table-command*))
+
+(defun align-pipe-table ()
+  (interactive)
+  (filter-selection *align-pipe-table-command*))
+
+(defun add-labels ()
+  (interactive)
+  (filter-selection *add-labels-command*))
+
+(defun filter-selection (command)
   (interactive)
   (save-excursion
     (save-restriction
       (if (narrow-selection)
-          (filter-buffer *tabulate-itemization-tab-table-command*)
+          (filter-buffer command)
         (plain-error "有効範囲が指定できてないっす")
         ))))
 
