@@ -80,6 +80,16 @@ DLL は，庄田さんの統合アーカイバプロジェクトからダウンロードできます。
 
 現在使用できる状態にあるライブラリは，[ヘルプ]→[について] で確認することができます。
 
+## Graphics Magikのインストール
+
+1.3.36は動かなかったので1.3.31を下記からインストールする：
+
+https://sourceforge.net/projects/graphicsmagick/files/graphicsmagick-binaries/1.3.31/
+
+## filter-for-xyzzyのインストール
+
+`stack install`する
+
 ## その他
 
 以下を`stack install`する

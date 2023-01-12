@@ -149,6 +149,8 @@
                            #'(lambda () (interactive) (filer-get-pandoc-image2)))
                           (:item nil "pandocのimgとしてコピー3(&N)"
                            #'(lambda () (interactive) (filer-get-pandoc-image3)))
+                          (:item nil "空白をアンダースコアにしてリネーム(&R)"
+                           #'(lambda () (interactive) (rename-with-underscore)))
                           )))
                 (track-popup-menu *get-filenamestring-menu*)))
 
@@ -224,6 +226,15 @@
                         "\n" "" "" "" ""))
     (message "ファイル名をコピーしました")))
 
+(defun rename-with-underscore ()
+  (interactive)
+  (let* ((fullpaths (or (filer-get-mark-files)
+                            (list (filer-get-current-file))))
+         (filenames (mapcar #'(lambda (filename) (pathname-name filename)) fullpaths))
+         (working-dir (get-buffer-file-name)))
+    (dolist (fullpath fullpaths) (rename-file fullpath (concat (directory-namestring fullpath) (substitute-string (file-namestring fullpath) " " "_"))))
+    (message "空白をアンダースコアに置き換えてリネームしました")))
+
 (defun filer-get-attach-format ()
   (interactive)
   (let* ((selected-files (or (filer-get-mark-files)
@@ -241,20 +252,22 @@
                 (unless *graphics-magick-convert-menu*
                   (setq *graphics-magick-convert-menu*
                         (define-popup-menu
-                          (:item nil "印刷用(L)(&L)"
+                          (:item nil "印刷用(L)16cm(&L)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 1)))
-                          (:item nil "印刷用(M)(&M)"
+                          (:item nil "印刷用(M)14cm(&M)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 2)))
-                          (:item nil "印刷用(S)(&S)"
+                          (:item nil "印刷用(S)3cm(&S)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 3)))
-                          (:item nil "HTML用(L)(&B)"
+                          (:item nil "HTML用(B)20cm(&B)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 4)))
-                          (:item nil "HTML用(M)(&N)"
+                          (:item nil "HTML用(N)12cm(&N)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 5)))
-                          (:item nil "HTML用(S)(&T)"
+                          (:item nil "HTML用(T)4cm(&T)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 6)))
                           (:item nil "詳細表示(D)(&D)"
                            #'(lambda () (interactive) (graphics-magick-convert-files 7)))
+                          (:item nil "50ppiに設定(P)(&P)"
+                           #'(lambda () (interactive) (graphics-magick-convert-files 8)))
                           )))
                 (track-popup-menu *graphics-magick-convert-menu*)))
 
@@ -271,12 +284,14 @@
   (interactive)
   (cond
    ((= type 1) (resize-with-centimeter 16 filename))
-   ((= type 2) (resize-with-centimeter 10 filename))
+   ((= type 2) (resize-with-centimeter 14 filename))
    ((= type 3) (resize-with-centimeter 3 filename))
    ((= type 4) (pixel-resize 20 filename))
    ((= type 5) (pixel-resize 12 filename))
    ((= type 6) (pixel-resize 4 filename))
-   ((= type 7) (identify filename))))
+   ((= type 7) (identify filename))
+   ((= type 8) (set-pixel-density100 filename))
+   ))
 
 (defun get-image-size (filename)
   (interactive)
@@ -307,6 +322,15 @@
                       :wait t)
         ))))
 
+(defun set-pixel-density100 (filename)
+  (interactive)
+  (let*
+      ((ppc "100")
+       (density (concat ppc "x" ppc)))
+    (call-process (concat "gm convert -density " density " -units pixelspercentimeter " filename " " (pathname-name filename) ".png")
+                  :exec-directory (filer-get-directory)
+                  :wait t)
+    ))
 
 (defun pixel-resize (centimeter filename)
   (interactive)
