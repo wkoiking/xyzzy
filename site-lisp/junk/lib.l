@@ -242,10 +242,21 @@
    (concat user " " (si:hmac-md5 pass (si:base64-decode challenge)))
    nil t))
 
-(defun file-content-type (file)
-  (or (let ((ext (pathname-type file)))
-	(and ext (read-registry (concat "." ext)
-				"Content Type" :classes-root)))
+; (defun file-content-type (file)
+;   (or (let ((ext (pathname-type file)))
+; 	(and ext (read-registry (concat "." ext)
+; 				"Content Type" :classes-root)))
+;       "application/octet-stream"))
+
+(defun file-content-type (file) ; 自作 2023-01-26
+  (or
+;    (let ((ext (pathname-type file)))
+;         (and ext (read-registry (concat "." ext)
+;                                 "Content Type" :classes-root)))
+      (let ((name (file-namestring file)))
+        (and (equal name "invite.ics") "application/ics"))
+      (let ((name (file-namestring file)))
+        (and (equal name "calendar.ics") "text/calendar"))
       "application/octet-stream"))
 
 (defun insert-file-noconv (file)
@@ -283,16 +294,17 @@
 	email)
     (when (string-match *parse-address-regexp* addr-string)
       (setq email (match-string 1))
-      (setq name (concat
-		  (string-trim " \n\t" (substring addr-string 0 (match-beginning 0)))
-		  " "
-		  (string-trim " \n\t" (substring addr-string (match-end 0) (length addr-string))))))
-    (when name
-      (setq name (string-trim " \n\t" name))
-      (when (string-match "^[(（\"'].*[)）\"']$" name)
-	(setq name (substring name 1 (1- (length name)))))
-      (when (equal name "")
-	(setq name nil)))
+      (setq name (string-trim "\"' \n\t" (substring addr-string 0 (match-beginning 0)))))
+;       (setq name (concat
+; 		  (string-trim " \n\t" (substring addr-string 0 (match-beginning 0)))
+; 		  " "
+; 		  (string-trim " \n\t" (substring addr-string (match-end 0) (length addr-string))))))
+;     (when name
+;       (setq name (string-trim " \n\t" name))
+;       (when (string-match "^[(（\"'].*[)）\"']$" name)
+; 	(setq name (substring name 1 (1- (length name)))))
+;       (when (equal name "")
+; 	(setq name nil)))
     (values email name)))
 
 (defun format-address (email name)

@@ -21,6 +21,9 @@
 * googleでstunnelを検索してインストール
 * 設定は`C:\Program Files (x86)\stunnel\config\stunnel.conf`を書き換える
 
+* stunnelでエラーが出る場合
+    * stunnelをアップデートしてみる
+
 ※Gmailに添付したやつをコピペすると良い
 
 ### Gmailとの同期速度を上げる
@@ -33,8 +36,12 @@
 ### Mailフォルダの概要
 
 * Main
+    * attachments
+        * メッセージの転送を行う場合に、元のメッセージの添付ファイルが自動的に保存される場所
+        * M-x: km3::message-cleanup-attachmentsで削除できる
     * mail
         * 今までfetchしたすべてメールの実体が保管されている
+        * 添付ファイルの情報もMIMEとして埋め込まれている
     * data
         * fetch-count.dat
             * 今までfetchしたメールの総数
@@ -53,7 +60,9 @@
 * 同じメールが重複しまう等、不整合が生じた場合はkamail-analyseなどを使ってメールを解析・整理する
     * Mail/mailのメール本体よりもMail/hedumpのメールのダイジェストを解析した方が楽
     * 特にdigestでメールの実体が同一かどうか判定できる
-* 解析・整理が終わったら下記のコマンドで整理後のメールの実体からMail/mailおよびMail/casketを再構築する
+* 解析・整理が終わったら
+    * mailとcasketをバックアップして
+    * 下記のコマンドで整理後のメールの実体からMail/mailおよびMail/casketを再構築する
 
 ~~~
 M-x: kamail3                       <= KaMailV3を起動しておく
@@ -63,6 +72,8 @@ M-x: import-mh-folder
 Folder: C:/some/backup/mail        <= 整理した後のメールが格納されたフォルダ
 Ignore Folders: trash spam draft   <= インポートしないフォルダをスペース区切りで指定（正規表現可）
 ~~~
+
+4時間くらいかかるので夜にやるべし！
 
 ## ファイラ（アーカイバのインストール）
 

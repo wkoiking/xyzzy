@@ -73,7 +73,8 @@
         ("VDU" . "C:/Users/wanag/VDU/")
         ("work" . "C:/Users/wanag/Home/work/")
         ("Code" . "C:/Users/wanag/MyCode/")
-        ("Google Drive" . "C:/Users/wanag/Google ドライブ/")
+        ("OneDrive" . "C:/Users/wanag/OneDrive/")
+        ("Google Drive" . "G:/マイドライブ/")
         ("Bin" . "C:/Users/wanag/AppData/Roaming/local/bin/")
         ("Delhi（ローカル）" . "C:/Users/wanag/Home/DelhiMetro8/")
         ("Sao Paulo（ローカル）" . "C:/Users/wanag/Home/SP6/")
@@ -91,7 +92,7 @@
         ("bak" "*~" "*.bak")
         ("Haskell" "*.hs" "*.lhs")
         ("TXT" "*.txt")
-        ("xls" "*.xls" "*.xlsx")
+        ("xls" "*.xls" "*.xlsx" "*.xlsm")
         ("doc" "*.doc" "*.docx")
         ("PDF" "*.pdf")
         ("PPT" "*.ppt" "*.pptx")
@@ -621,7 +622,7 @@
 (defun ghci-get-buffer ()
   (setq *ghci-buffer* (get-buffer-create *ghci-buffer-name*)))
 
-(defvar *ghci-command* "stack exec ghci")
+(defvar *ghci-command* (map-slash-to-backslash "C:/Users/wanag/VDU/stack.cmd --color=never ghci"))
 (defvar *ghci-buffer-name* "*GHCi*")
 (defvar *ghci-buffer* nil)
 
@@ -638,7 +639,8 @@
                     (progn
                       (erase-buffer buf)
                       (setq proc (make-process *ghci-command*
-                                               :output buf))))
+                                               :output buf))
+                      (set-process-outcode proc *encoding-utf8n*)))
                   (ghci-shell-mode)
                   (end-of-buffer))))
 

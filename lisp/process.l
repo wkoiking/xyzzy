@@ -10,7 +10,7 @@
 (export '(*shell* *eshell* *shell-command-option* *shell-chdir-option-alist*
 	  execute-shell-command
 	  launch-application run-console run-admin-console pipe-command
-	  filter-buffer filter-region execute-subprocess kill-subprocess
+	  filter-buffer filter-buffer-to-file filter-region execute-subprocess kill-subprocess
 	  command-output-mode *command-output-mode-hook*
 	  command-output-send-input command-output-alternate-send-input
 	  process-send-y process-send-n execute-region))
@@ -149,6 +149,28 @@
 	(delete-file infile))
       (delete-file outfile))))
 
+(defun filter-buffer-to-file (command file) ; é©çÏ 2023-01-29
+  (interactive "*e# " :history0 'execute)
+  (filter-region-to-file command file (point-min) (point-max)))
+
+(defun filter-region-to-file (command outfile &optional start end) ; é©çÏ 2023-01-29
+  (interactive "*e| \nr" :history0 'execute)
+  (let (infile)
+    (when (and start end)
+      (setq infile (make-temp-file-name))
+      (write-region start end infile nil *encoding-utf8n*))
+    (unwind-protect
+        (prog1
+            (multiple-value-bind (cmdline dir)
+                (shell-command-line command (default-directory))
+              (call-process cmdline
+                            :input infile
+                            :output outfile
+                            :exec-directory dir
+                            :show :minimize
+                            :wait t)))
+      (when infile
+        (delete-file infile)))))
 
 (defvar *command-output-mode-hook* nil)
 (defvar *command-output-mode-map* nil)

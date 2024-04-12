@@ -207,23 +207,28 @@
     (nreverse addrs)))
 
 (defun parse-address (addr-string)
-  (unless (stringp addr-string)
-    (return-from parse-address))
-  (let (name
-	email)
-    (when (string-match *parse-address-regexp* addr-string)
-      (setq email (match-string 1))
-      (setq name (concat
-		  (string-trim " \n\t" (substring addr-string 0 (match-beginning 0)))
-		  " "
-		  (string-trim " \n\t" (substring addr-string (match-end 0) (length addr-string))))))
-    (when name
-      (setq name (string-trim " \n\t" name))
-      (when (string-match "^[(（\"'].*[)）\"']$" name)
-	(setq name (substring name 1 (1- (length name)))))
-      (when (equal name "")
-	(setq name nil)))
-    (values email name)))
+  (when (and (stringp addr-string) (string-match *parse-address-regexp* addr-string))
+    (let ((name (string-trim "\"' \n\t" (substring addr-string 0 (match-beginning 0)))))
+      (values (match-string 1) (and (not (string= "" name)) name)))))
+
+; (defun parse-address (addr-string)
+;   (unless (stringp addr-string)
+;     (return-from parse-address))
+;   (let (name
+; 	email)
+;     (when (string-match *parse-address-regexp* addr-string)
+;       (setq email (match-string 1))
+;       (setq name (concat
+; 		  (string-trim " \n\t" (substring addr-string 0 (match-beginning 0)))
+; 		  " "
+; 		  (string-trim " \n\t" (substring addr-string (match-end 0) (length addr-string))))))
+;     (when name
+;       (setq name (string-trim " \n\t" name))
+;       (when (string-match "^[(（\"'].*[)）\"']$" name)
+; 	(setq name (substring name 1 (1- (length name)))))
+;       (when (equal name "")
+; 	(setq name nil)))
+;     (values email name)))
 
 (defun format-address (email name)
   (if name
