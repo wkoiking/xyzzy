@@ -39,7 +39,7 @@
 	<li><a href="#others">その他</a>
 	  <ul>
 	    <li><a href="#import">KaMailからメールをインポート</a></li>
-	    <li><a href="#mhtml">browser.dll、browserex を利用したHTML表示</a></li>
+            <li><a href="#mhtml">外部ブラウザ（Chrome / Edge）を利用したHTML表示</a></li>
 	    <li><a href="#popfile">POPFileとの連携</a></li>
 	    <li><a href="#upgrade">アップグレード時の注意事項</a></li>
 	    <li><a href="#pindex">疑似インデックス</a></li>
@@ -79,7 +79,6 @@
 	<li><a href="http://hyperestraier.sourceforge.net/">Hyper Estraier</a>1.4.5以降</li>
 	<li><a href="http://www.jsdlab.co.jp/~kamei/">xyzzy</a>-0.2.2.235 以降</li>
 	<li><a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#junk-library">junk-library</a>/0.0.0.4 以降</li>
-	<li><a href="http://www.osk.3web.ne.jp/~usitukai/">browser.dll拡張版</a> (option)</li>
 	<li><a href="http://ohkubo.s53.xrea.com/xyzzy/#browserex">browserex</a> (option)</li>
 	<li><a href="http://www7a.biglobe.ne.jp/~hat/xyzzy/dl.html#xml-rpc-modoki">xml-rpc-modoki</a>/0.0.0.5 以降 (option)</li>
 	<li><a href="http://www.csdinc.co.jp/archiver/">統合アーカイバ・プロジェクト</a>の各種DLL (option)</li>
@@ -153,14 +152,33 @@
 <span class="prompt">Query:</span> [RX] (xyzzy|windows)</pre>
 	  </li>
 	  <li>
-	    日付の範囲指定をする場合は以下のように指定します。
-	    <pre>例："xyzzy" を含んだ2006/01/01 以降のメールを検索
-<span class="prompt">Query:</span> xyzzy date&gt;=20060101</pre>
+	    日付の指定（年・年月・年月日・期間指定）<br>
+	    <code>date:</code> に続けて年（4桁）、年月（6桁）、年月日（8桁）を指定すると、該当期間の範囲検索へ自動展開されます。区切り文字としてハイフン（<code>-</code>）、スラッシュ（<code>/</code>）、ドット（<code>.</code>）も使用できます。また、<code>..</code> で開始?終了の期間指定ができます。
+	    <table class="data_list">
+	      <tr><th>書式</th><th>入力例</th><th>意味</th></tr>
+	      <tr><td>年指定</td><td><code>date:2006</code></td><td>2006年のメール（2006/01/01?2006/12/31）</td></tr>
+	      <tr><td>年月指定</td><td><code>date:200602</code> / <code>date:2006-02</code></td><td>2006年2月のメール（2006/02/01-月末）</td></tr>
+	      <tr><td>年月日指定</td><td><code>date:20060215</code> / <code>date:2006/02/15</code></td><td>2006年2月15日のメール（当日23:59まで）</td></tr>
+	      <tr><td>期間指定</td><td><code>date:200602..200604</code></td><td>2006年2月-4月のメール</td></tr>
+	      <tr><td>開始のみ指定</td><td><code>date:200602..</code></td><td>2006年2月1日以降のメール</td></tr>
+	      <tr><td>終了のみ指定</td><td><code>date:..200602</code></td><td>2006年2月末以前のメール</td></tr>
+	    </table>
 	    <pre>例："xyzzy" を含んだ2006年2月のメールを検索
-<span class="prompt">Query:</span> xyzzy date&gt;=20060201 date&lt;20060301</pre>
+<span class="prompt">Query:</span> xyzzy date:200602</pre>
+	    <pre>例："xyzzy" を含んだ2006年2月?4月のメールを検索
+<span class="prompt">Query:</span> xyzzy date:2006-02..2006-04</pre>
 	  </li>
 	  <li>
-	    日付の範囲指定は現在からの相対指定を行うこともできます。検索フォルダとして保存する場合に便利です。
+	    日付の比較演算子指定<br>
+	    <code>&lt;</code>、<code>&lt;=</code>（<code>=&lt;</code>）、<code>&gt;</code>、<code>&gt;=</code>（<code>=&gt;</code>）と年・年月・年月日（ハイフン・スラッシュ区切り可）を組み合わせて指定できます。<code>&lt;=</code> 指定時は指定した日・月・年の末尾まで含まれます。
+	    <pre>例："xyzzy" を含んだ2006/01/01 以降のメールを検索
+<span class="prompt">Query:</span> xyzzy date&gt;=20060101</pre>
+	    <pre>例：2006年2月以前のメールを検索（2月末まで含む）
+<span class="prompt">Query:</span> date&lt;=200602</pre>
+	  </li>
+	  <li>
+	    日付の相対指定<br>
+	    現在日時からの相対期間を指定できます。検索フォルダとして保存する場合に便利です。単位は <code>d</code>（日）、<code>w</code>（週）、<code>m</code>（30日）、<code>y</code>（365日）が使えます。マイナスを付けると「?以前」になります。
 	    <pre>例："xyzzy" を含んだ3日以内のメールを検索
 <span class="prompt">Query:</span> xyzzy date:3d</pre>
 	    <pre>例："xyzzy" を含んだ1週間以内のメールを検索
@@ -169,7 +187,8 @@
 <span class="prompt">Query:</span> xyzzy date:-1y</pre>
 	  </li>
 	  <li>
-	    日付以外の属性の検索を行う場合。
+	    日付以外の属性の検索を行う場合。<br>
+	    <code>from</code>、<code>to</code>、<code>cc</code>、<code>subject</code>（およびカンマ区切りでの組み合わせ）に2文字以上の検索語を指定した場合は、全文インデックス（隠しテキスト）による自動絞り込みが併用され高速に検索されます。
 	    <pre>例：xyzzy@example.com から来たメールを検索（From に xyzzy@example.com を含むメール）
 <span class="prompt">Query:</span> from:xyzzy@example.com</pre>
 	    <pre>例：Subjectに xyzzy を含むメールを検索
@@ -182,11 +201,12 @@
 <span class="prompt">Query:</span> from,to,cc:xyzzy@example.com</pre>
 	  </li>
 	  <li>
-	    表示順を指定する場合。（指定しなければ Date の昇順）
+	    表示順を指定する場合。（指定しなければ Date の昇順。数値属性 <code>date</code> / <code>size</code> / <code>score</code> は数値順、それ以外は文字列順）
 	    <pre>例："xyzzy" を含んだメールを Date の降順で表示
 <span class="prompt">Query:</span> xyzzy order&gt;date</pre>
 	    <pre>例："xyzzy" を含んだメールを Subject の昇順で表示
 <span class="prompt">Query:</span> xyzzy order&lt;subject</pre>
+	  </li>
 	</ul>
       </dd>
       <dt>詳細検索 （キー：<strong>?</strong>）</dt>
@@ -356,13 +376,16 @@
 <span class="prompt">Folder:</span> C:/xyzzy/KaMail/Mail       &lt;= MHフォルダの場所を指定
 <span class="prompt">Ignore Folders:</span> trash spam draft   &lt;= インポートしないフォルダをスペース区切りで指定（正規表現可）</pre>
       </p>
-      <h3 id=mhtml>browser.dll、browserex を利用したHTML表示</h3>
+      <h3 id=mhtml>外部ブラウザ（Chrome / Edge）を利用したHTML表示</h3>
       <p class="doc">
-	config.l で 設定を行うと、summary buffer で以下のキーバインドが有効になります。
+	<code>kamail3/mhtml.l</code> を読み込むと、summary buffer で以下のキーバインドが有効になります。HTML パートとインライン画像（<code>cid:</code> 参照）を一時フォルダ（<code>*mhtml-temp-directory*</code>）へ展開し、外部ブラウザで表示します。
       </p>
+      <p class="doc">
+	起動するブラウザは Chrome（見つからない場合は Edge）を自動検出します。任意のブラウザを指定したい場合は、<code>config.l</code> で <code>*mhtml-browser*</code> に実行ファイルのフルパスを設定してください。
+      </p>
+      <pre>(setq kamail3::*mhtml-browser* "C:/Program Files/Google/Chrome/Application/chrome.exe")</pre>
       <table class="data_list">
-	<tr><th rowspan=2>HTMLメール表示</th><td align="center"><strong>,</strong></td><td>HTMLメールを browser.dll で表示</td></tr>
-	<tr><td align="center"><strong>q</strong></td><td>browserを閉じる/メッセージを閉じる/終了</td></tr>
+	<tr><th>HTMLメール表示</th><td align="center"><strong>,</strong></td><td>HTMLメールを外部ブラウザで表示（<code>C-u ,</code> で関連付け実行）</td></tr>
       </table>
       <h3 id=popfile>POPFileとの連携</h3>
       <p class="doc">
@@ -397,6 +420,16 @@
     </p>
     <h2 id=changelog>ChangeLog</h2>
     <dl>
+      <dt>2026/11/24: カスタム改修</dt>
+      <dd>
+	<ul>
+	  <li>RFC 2047 の折り返しデコードおよびドラフト生成処理を修正し、件名・添付ファイル名に不要なスペースが混入する不具合を解消。（<code>junk/mime-encode.l</code>, <code>junk/mail.l</code>, <code>kamail3/fetch.l</code>）</li>
+	  <li>中国語（GB2312 / GBK / CP936 等）および韓国語（EUC-KR / KS_C_5601-1987 / CP949 等）のメールについて、Windows API（<code>MultiByteToWideChar</code> / <code>WideCharToMultiByte</code>）経由の変換を導入し、ヘッダ・本文および新規受信メールの Summary 表示の文字化けを解消。（<code>junk/mail.l</code>, <code>kamail3/fetch.l</code>）</li>
+	  <li><code>from</code> / <code>to</code> / <code>cc</code> / <code>subject</code> の属性検索を高速化。ドラフトへの隠しテキスト（Hidden Text）追記と、検索時の全文検索フレーズ自動併用に対応。（<code>kamail3/fetch.l</code>, <code>kamail3/query.l</code>）</li>
+	  <li>日付検索の短縮記法および期間指定（<code>date:2006</code>, <code>date:200602</code>, <code>date:20060215</code>, <code>date:200602..200604</code>, <code>date&lt;=200602</code> 等）を追加。（<code>kamail3/query.l</code>）</li>
+	  <li>HTML メール表示（<code>,</code> キー）を <code>browser.dll</code> から外部ブラウザ（Chrome / Edge 自動検出）へ変更。HTML パートとインライン画像を一時フォルダへ展開して描画するように改修。（<code>kamail3/mhtml.l</code>）</li>
+	</ul>
+      </dd>
       <dt>2007/12/12: 0.0.1.4beta6</dt>
       <dd>
 	<ul>

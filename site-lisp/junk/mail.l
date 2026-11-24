@@ -22,6 +22,209 @@
 
 (in-package "junk")
 
+(require "foreign")
+
+(c:define-dll-entry c:int MultiByteToWideChar
+  (c:int c:int (c:void *) c:int (c:void *) c:int)
+  "kernel32")
+
+(c:define-dll-entry c:int WideCharToMultiByte
+  (c:int c:int (c:void *) c:int (c:void *) c:int c:int c:int)
+  "kernel32")
+
+(c:define-dll-entry c:int fopen
+  ((c:char *) (c:char *))
+  "msvcrt")
+
+(c:define-dll-entry c:int fseek
+  (c:int c:int c:int)
+  "msvcrt")
+
+(c:define-dll-entry c:int ftell
+  (c:int)
+  "msvcrt")
+
+(c:define-dll-entry c:int fread
+  ((c:void *) c:int c:int c:int)
+  "msvcrt")
+
+(c:define-dll-entry c:int fwrite
+  ((c:void *) c:int c:int c:int)
+  "msvcrt")
+
+(c:define-dll-entry c:int fclose
+  (c:int)
+  "msvcrt")
+
+(defun mail-convert-file-cp-to-utf8 (in-file out-file cp)
+  (let* ((in-path (si:make-string-chunk (map-slash-to-backslash in-file)))
+	 (out-path (si:make-string-chunk (map-slash-to-backslash out-file)))
+	 (mode-rb (si:make-string-chunk "rb"))
+	 (mode-wb (si:make-string-chunk "wb"))
+	 (fp (fopen in-path mode-rb)))
+    (when (zerop fp)
+      (return-from mail-convert-file-cp-to-utf8 nil))
+    (let (src read-bytes)
+      (unwind-protect
+	  (progn
+	    (fseek fp 0 2)
+	    (let ((size (ftell fp)))
+	      (fseek fp 0 0)
+	      (when (<= size 0)
+		(let ((out-fp (fopen out-path mode-wb)))
+		  (unless (zerop out-fp)
+		    (fclose out-fp)
+		    (return-from mail-convert-file-cp-to-utf8 t)))
+		(return-from mail-convert-file-cp-to-utf8 nil))
+	      (setq src (si:make-chunk nil size))
+	      (setq read-bytes (fread src 1 size fp))))
+	(fclose fp))
+      (when (and src (plusp read-bytes))
+	(let ((wlen (MultiByteToWideChar cp 0 src read-bytes 0 0)))
+	  (when (plusp wlen)
+	    (let* ((dst (si:make-chunk nil (* wlen 2)))
+		   (actual (MultiByteToWideChar cp 0 src read-bytes dst wlen))
+		   (u8len (WideCharToMultiByte 65001 0 dst actual 0 0 0 0)))
+	      (when (plusp u8len)
+		(let* ((out (si:make-chunk nil u8len))
+		       (u8actual (WideCharToMultiByte 65001 0 dst actual out u8len 0 0))
+		       (out-fp (fopen out-path mode-wb)))
+		  (unless (zerop out-fp)
+		    (unwind-protect
+			(fwrite out 1 u8actual out-fp)
+		      (fclose out-fp))
+		    (return-from mail-convert-file-cp-to-utf8 t))))))))
+      nil)))
+
+(defvar *mail-windows-codepage-alist*
+  '(("gb2312"         . 936)
+    ("csgb2312"       . 936)
+    ("gbk"            . 936)
+    ("cp936"          . 936)
+    ("windows-936"    . 936)
+    ("gb18030"        . 54936)
+    ("euc-kr"         . 949)
+    ("cseuckr"        . 949)
+    ("ks_c_5601-1987" . 949)
+    ("ksc5601"        . 949)
+    ("korean"         . 949)
+    ("cp949"          . 949)
+    ("windows-949"    . 949)
+    ("uhc"            . 949)
+    ("big5"           . 950)
+    ("cp950"          . 950)))
+
+(defun mail-windows-codepage (charset)
+  (and (stringp charset)
+       (cdr (assoc (string-downcase (string-trim " \t\"" charset))
+		   *mail-windows-codepage-alist*
+		   :test #'string=))))
+
+; (defun mail-cp-bytes-to-string (bytes cp)
+;   (let ((len (length bytes)))
+;     (when (zerop len)
+;       (return-from mail-cp-bytes-to-string ""))
+;     (let ((src (si:make-chunk nil len)))
+;       (dotimes (i len)
+; 	(si:pack-uint8 src i (aref bytes i)))
+;       (let ((wlen (MultiByteToWideChar cp 0 src len 0 0)))
+; 	(if (<= wlen 0)
+; 	    ""
+; 	  (let ((dst (si:make-chunk nil (* wlen 2))))
+; 	    (let ((actual (MultiByteToWideChar cp 0 src len dst wlen)))
+; 	      (with-output-to-string (s)
+; 		(dotimes (i actual)
+; 		  (let* ((u (si:unpack-uint16 dst (* i 2)))
+; 			 (c (unicode-char u)))
+; 		    (write-char (or c #\?) s)))))))))))
+
+(defun mail-cp-bytes-to-string (bytes cp)
+  (let ((len (length bytes)))
+    (when (zerop len)
+      (return-from mail-cp-bytes-to-string ""))
+    (let ((src (si:make-chunk nil len)))
+      (dotimes (i len)
+	(si:pack-uint8 src i (aref bytes i)))
+      (let ((wlen (MultiByteToWideChar cp 0 src len 0 0)))
+	(if (<= wlen 0)
+	    ""
+	  (let ((dst (si:make-chunk nil (* wlen 2))))
+	    (let ((actual (MultiByteToWideChar cp 0 src len dst wlen)))
+	      (with-output-to-string (s)
+		(dotimes (i actual)
+		  (let* ((u (si:unpack-uint16 dst (* i 2)))
+			 (c (unicode-char u)))
+		    (cond ((characterp c) (write-char c s))
+			  ((stringp c) (princ c s))
+			  (t (write-char #\? s)))))))))))))
+
+(defun mail-decode-b-to-bytes (str)
+  (let ((table "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+	(buf 0)
+	(bits 0)
+	(out nil))
+    (dotimes (i (length str))
+      (let* ((ch (char str i))
+	     (pos (position ch table)))
+	(when pos
+	  (setq buf (logior (ash buf 6) pos))
+	  (incf bits 6)
+	  (when (>= bits 8)
+	    (decf bits 8)
+	    (push (logand (ash buf (- bits)) #xff) out)))))
+    (coerce (nreverse out) 'vector)))
+
+(defun mail-decode-q-to-bytes (str)
+  (let ((len (length str))
+	(i 0)
+	(out nil))
+    (while (< i len)
+      (let ((ch (char str i)))
+	(cond ((char= ch #\_)
+	       (push 32 out)
+	       (incf i))
+	      ((and (char= ch #\=)
+		    (<= (+ i 3) len)
+		    (string-match "^[0-9a-fA-F]\\{2\\}$" (subseq str (1+ i) (+ i 3))))
+	       (push (parse-integer str :start (1+ i) :end (+ i 3) :radix 16) out)
+	       (incf i 3))
+	      (t
+	       (push (logand (char-code ch) #xff) out)
+	       (incf i)))))
+    (coerce (nreverse out) 'vector)))
+
+(defun mail-decode-cp-mime-words ()
+  (goto-char (point-min))
+  (let ((re "=\\?\\([^? \t\r\n]+\\)\\?\\([BbQq]\\)\\?\\([^? \t\r\n]*\\)\\?="))
+    (while (scan-buffer re :regexp t)
+      (let* ((beg (match-beginning 0))
+	     (end (match-end 0))
+	     (cp (mail-windows-codepage (match-string 1)))
+	     (enc (string-upcase (match-string 2)))
+	     (payload (match-string 3)))
+	(if (not cp)
+	    (goto-char end)
+	  (let ((chunks (list (if (string= enc "B")
+				  (mail-decode-b-to-bytes payload)
+				(mail-decode-q-to-bytes payload)))))
+	    (goto-char end)
+	    ;; 同じコードページの連続する encoded-word はマルチバイト分断防止のため結合してから変換
+	    (while (and (looking-at re)
+			(eql (mail-windows-codepage (match-string 1)) cp))
+	      (let ((next-enc (string-upcase (match-string 2)))
+		    (next-payload (match-string 3)))
+		(push (if (string= next-enc "B")
+			  (mail-decode-b-to-bytes next-payload)
+			(mail-decode-q-to-bytes next-payload))
+		      chunks)
+		(setq end (match-end 0))
+		(goto-char end)))
+	    (let* ((all-bytes (apply #'concatenate 'vector (nreverse chunks)))
+		   (decoded (mail-cp-bytes-to-string all-bytes cp)))
+	      (delete-region beg end)
+	      (goto-char beg)
+	      (insert decoded))))))))
+
 (defstruct mailstructure
   number
   headers
@@ -47,7 +250,30 @@
     (save-excursion
       (when (scan-buffer "^X-Mailer :" :regexp t :tail t)
 	(delete-region (- (point) 2) (- (point) 1))))
+    ;; 追加：ヘッダ領域内の連続する encoded-word 間の空白・改行を除去 (RFC 2047)
+    (save-excursion
+      (save-restriction
+	(let ((hbeg (point))
+	      (hend (save-excursion
+		      (if (scan-buffer "^$" :regexp t)
+			  (point)
+			(point-max)))))
+	  (narrow-to-region hbeg hend)
+	  (goto-char (point-min))
+	  (replace-buffer "\\?=\\(?:[ \t]*\r?\n[ \t]+\\|[ \t]+\\)=\\?" "?==?" :regexp t)
+	  (mail-decode-cp-mime-words)))) ; 追加
     (decode-mime-header)))
+
+; (defun mail-decode-mime-header ()
+;   (save-excursion
+;     (while (or (looking-for "From ")
+; 	       (looking-for ">From ")
+; 	       (looking-for "X-KaMail-Status"))
+;       (or (forward-line 1) (return)))
+;     (save-excursion
+;       (when (scan-buffer "^X-Mailer :" :regexp t :tail t)
+; 	(delete-region (- (point) 2) (- (point) 1))))
+;     (decode-mime-header)))
 
 (defun mail-encode-mime-header (&optional charset)
   (setq charset (or charset *encode-mime-charset-name*))
@@ -236,6 +462,8 @@
   (let* ((charset (mail-get-content-type-charset headers))
          (encoding (mail-get-transfer-encoding headers))
          (content-type (mail-get-header-content "content-type" headers))
+         (raw-charset (mail-get-content-charset content-type))
+         (cp (mail-windows-codepage raw-charset))
          (mime-type (mail-get-content-mime-type content-type)))
     (setq beg (or beg (point)))
     (setq end (or end (point-max)))
@@ -247,19 +475,46 @@
       (when (equalp encoding "base64")
 	(base64-decode-region beg end))
       (setq end (point-max))
-      (if (eq charset *encoding-auto*)
+      (if cp
+	  (let ((tmp-in (make-temp-file-name "km3in"))
+		(tmp-out (make-temp-file-name "km3out")))
+	    (unwind-protect
+		(progn
+		  (write-region beg end tmp-in nil *encoding-binary* *eol-lf*)
+		  (when (mail-convert-file-cp-to-utf8 tmp-in tmp-out cp)
+		    (delete-region beg end)
+		    (goto-char beg)
+		    (insert-file-noconv tmp-out)
+		    (map-utf-8-region beg (point-max))
+		    (goto-char beg)
+		    (replace-buffer "\r\n" "\n")))
+	      (when (file-exist-p tmp-in) (delete-file tmp-in))
+	      (when (file-exist-p tmp-out) (delete-file tmp-out))))
+	(if (eq charset *encoding-auto*)
+	    (map-char-encoding-region (or beg (point))
+				      (or end (point-max)))
 	  (map-char-encoding-region (or beg (point))
-				    (or end (point-max)))
-	(map-char-encoding-region (or beg (point))
-				  (or end (point-max))
-				  charset))
-      (setq end (point-max)) ;; 追加
-;       (when (equalp mime-type "text/html")  ;; 追加
-;         (filter-buffer (concat *nkf-command* " -w"))
-;         (filter-buffer (concat *pandoc-command* " -f html -t plain")))
-      (when (equalp mime-type "text/html")  ;; 追加
+				    (or end (point-max))
+				    charset)))
+;       (if cp
+; 	  (let* ((raw (buffer-substring beg end))
+; 		 (len (length raw))
+; 		 (bytes (make-array len)))
+; 	    (dotimes (i len)
+; 	      (setf (aref bytes i) (logand (char-code (char raw i)) #xff)))
+; 	    (delete-region beg end)
+; 	    (goto-char beg)
+; 	    (insert (substitute-string (mail-cp-bytes-to-string bytes cp) "\r\n" "\n")))
+; 	(if (eq charset *encoding-auto*)
+; 	    (map-char-encoding-region (or beg (point))
+; 				      (or end (point-max)))
+; 	  (map-char-encoding-region (or beg (point))
+; 				    (or end (point-max))
+; 				    charset)))
+      (setq end (point-max))
+      (when (equalp mime-type "text/html")
         (filter-buffer (concat *nkf-command* " -w | " *pandoc-command* " -f html -t plain")))
-      )  ;; 追加
+      )
     encoding))
 
 ; (defun mail-decode-encoding (headers &optional beg end)

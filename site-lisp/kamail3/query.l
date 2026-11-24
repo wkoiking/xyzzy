@@ -174,16 +174,74 @@
 (defun query-date-operator (type)
   (cdr (assoc type *query-date-operator-list* :test #'equal)))
 
+; (defun query-parse-date-condition (type datestr)
+;   (let ((operator (query-date-operator type)))
+;     (when operator
+;       (let ((y (parse-integer (substring datestr 0 4)))
+; 	    (m (parse-integer (substring datestr 4 6)))
+; 	    (d (parse-integer (substring datestr 6 8))))
+; 	(format nil "date ~A ~A"
+; 		operator
+; 		(format-date-string *query-date-format*
+; 				    (encode-universal-time 0 0 0 d m y)))))))
+
+(defun query-date-token-bounds (token)
+  (cond ((string-match "^\\([0-9]\\{4\\}\\)$" token)
+	 (let ((y (parse-integer (match-string 1))))
+	   (values (format nil "~4,'0D-01-01" y)
+		   (format nil "~4,'0D-01-01" (1+ y)))))
+	((string-match "^\\([0-9]\\{4\\}\\)[-/.]?\\([0-9]\\{2\\}\\)$" token)
+	 (let ((y (parse-integer (match-string 1)))
+	       (m (parse-integer (match-string 2))))
+	   (when (<= 1 m 12)
+	     (let ((ny (if (= m 12) (1+ y) y))
+		   (nm (if (= m 12) 1 (1+ m))))
+	       (values (format nil "~4,'0D-~2,'0D-01" y m)
+		       (format nil "~4,'0D-~2,'0D-01" ny nm))))))
+	((string-match "^\\([0-9]\\{4\\}\\)[-/.]?\\([0-9]\\{2\\}\\)[-/.]?\\([0-9]\\{2\\}\\)$" token)
+	 (let ((y (parse-integer (match-string 1)))
+	       (m (parse-integer (match-string 2)))
+	       (d (parse-integer (match-string 3))))
+	   (when (and (<= 1 m 12) (<= 1 d 31))
+	     (let ((t-noon (encode-universal-time 0 0 12 d m y)))
+	       (values (format-date-string *query-date-format* t-noon)
+		       (format-date-string *query-date-format* (+ t-noon 86400)))))))))
+
 (defun query-parse-date-condition (type datestr)
-  (let ((operator (query-date-operator type)))
-    (when operator
-      (let ((y (parse-integer (substring datestr 0 4)))
-	    (m (parse-integer (substring datestr 4 6)))
-	    (d (parse-integer (substring datestr 6 8))))
-	(format nil "date ~A ~A"
-		operator
-		(format-date-string *query-date-format*
-				    (encode-universal-time 0 0 0 d m y)))))))
+  (multiple-value-bind (start next)
+      (query-date-token-bounds datestr)
+    (when start
+      (cond ((equal type "<")
+	     (format nil "date NUMLT ~A" start))
+	    ((or (equal type "<=") (equal type "=<"))
+	     (format nil "date NUMLT ~A" next))
+	    ((or (equal type ">=") (equal type "=>"))
+	     (format nil "date NUMGE ~A" start))
+	    ((equal type ">")
+	     (format nil "date NUMGE ~A" next))))))
+
+(defun query-parse-date-shorthand (spec)
+  (cond ((string-match "^\\([^.]*\\)\\.\\.\\([^.]*\\)$" spec)
+	 (let ((s1 (match-string 1))
+	       (s2 (match-string 2))
+	       conds)
+	   (when (plusp (length s1))
+	     (multiple-value-bind (start next)
+		 (query-date-token-bounds s1)
+	       (when start
+		 (push (format nil "date NUMGE ~A" start) conds))))
+	   (when (plusp (length s2))
+	     (multiple-value-bind (start next)
+		 (query-date-token-bounds s2)
+	       (when next
+		 (push (format nil "date NUMLT ~A" next) conds))))
+	   (nreverse conds)))
+	(t
+	 (multiple-value-bind (start next)
+	     (query-date-token-bounds spec)
+	   (when start
+	     (list (format nil "date NUMGE ~A" start)
+		   (format nil "date NUMLT ~A" next)))))))
 
 (defvar *query-attr-number-list*
   '("size" "date" "score"))
@@ -192,6 +250,19 @@
   (member-if #'(lambda (x)
 		 (string-match x attr))
 	     *query-attr-number-list*))
+
+(defvar *query-indexed-header-fields* '("from" "to" "cc" "subject"))
+
+(defun query-indexed-header-field-p (field-spec)
+  (let ((fields (split-string (string-downcase field-spec) ",")))
+    (and fields
+	 (every #'(lambda (f)
+		    (member f *query-indexed-header-fields* :test #'equal))
+		fields))))
+
+(defun query-prefilter-word-p (val)
+  (and (>= (length val) 2)
+       (not (member (string-upcase val) '("AND" "OR" "ANDNOT" "[RX]" "[UVSET]") :test #'equal))))
 
 (defun query-string-parse (query-string)
   (let (rest
@@ -209,12 +280,28 @@
 				   (if (equal ope "<")
 				       (if num-p "NUMA" "STRA")
 				     (if num-p "NUMD" "STRD"))))))
-	    ((string-match "date:\\(-?[0-9]+\\)\\([dwmy]\\)" part)
+; 	    ((string-match "date:\\(-?[0-9]+\\)\\([dwmy]\\)" part)
+; 	     (let ((cond (query-parse-date-range (parse-integer (match-string 1))
+; 						 (match-string 2))))
+; 	       (when cond
+; 		 (push cond attr-list))))
+; 	    ((string-match "date\\([<>=]+\\)\\([0-9]\\{8\\}\\)" part)
+; 	     (let ((cond (query-parse-date-condition (match-string 1)
+; 						     (match-string 2))))
+; 	       (when cond
+; 		 (push cond attr-list))))
+            ((string-match "^date:\\(-?[0-9]+\\)\\([dwmy]\\)$" part)
 	     (let ((cond (query-parse-date-range (parse-integer (match-string 1))
 						 (match-string 2))))
 	       (when cond
 		 (push cond attr-list))))
-	    ((string-match "date\\([<>=]+\\)\\([0-9]\\{8\\}\\)" part)
+	    ((string-match "^date:\\([0-9./-]+\\)$" part)
+	     (let ((conds (query-parse-date-shorthand (match-string 1))))
+	       (if conds
+		   (dolist (c conds)
+		     (push c attr-list))
+		 (push (format nil "date STRINC ~A" (match-string 1)) attr-list))))
+	    ((string-match "^date\\([<>=]+\\)\\([0-9/-]+\\)$" part)
 	     (let ((cond (query-parse-date-condition (match-string 1)
 						     (match-string 2))))
 	       (when cond
@@ -223,7 +310,8 @@
 	     (push (format nil "~A STRRX ~A"
 			   (match-string 1)
 			   (match-string 2)) attr-list))
-	    ((string-match "\\([-0-9a-z,@]+\\)=\\([^ ]+\\)" part)
+;; query-string-parse ì‡ÇÃäYìñâ”èäÇèëÇ´ä∑Ç¶
+	    ((string-match "^\\([-0-9a-z,@]+\\)=\\([^ ]+\\)$" part)
 	     (let* ((ope (match-string 1))
 		    (at (match-string 2))
 		    (num-p (query-attr-number-p ope)))
@@ -231,11 +319,30 @@
 			     ope
 			     num-p
 			     at)
-		     attr-list)))
-	    ((string-match "\\([-0-9a-z,@]+\\):\\([^ ]+\\)" part)
-	     (push (format nil "~A STRINC ~A"
-			   (match-string 1)
-			   (match-string 2)) attr-list))
+		     attr-list)
+	       (when (and (query-indexed-header-field-p ope)
+			  (query-prefilter-word-p at))
+		 (push at query-list))))
+	    ((string-match "^\\([-0-9a-z,@]+\\):\\([^ ]+\\)$" part)
+	     (let ((ope (match-string 1))
+		   (at (match-string 2)))
+	       (push (format nil "~A STRINC ~A" ope at) attr-list)
+	       (when (and (query-indexed-header-field-p ope)
+			  (query-prefilter-word-p at))
+		 (push at query-list))))
+; 	    ((string-match "\\([-0-9a-z,@]+\\)=\\([^ ]+\\)" part)
+; 	     (let* ((ope (match-string 1))
+; 		    (at (match-string 2))
+; 		    (num-p (query-attr-number-p ope)))
+; 	       (push (format nil "~A ~:[STREQ~;NUMEQ~] ~A"
+; 			     ope
+; 			     num-p
+; 			     at)
+; 		     attr-list)))
+; 	    ((string-match "\\([-0-9a-z,@]+\\):\\([^ ]+\\)" part)
+; 	     (push (format nil "~A STRINC ~A"
+; 			   (match-string 1)
+; 			   (match-string 2)) attr-list))
 	    (t
 	     (push part query-list))))
     (when (or query-list attr-list)

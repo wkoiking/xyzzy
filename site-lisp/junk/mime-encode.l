@@ -316,9 +316,15 @@
 		  (mapc #'(lambda (x)
 			    (cond ((stringp x)
 				   (encode-mime-output x 0 (length x) nil nil no-folding))
-				  ((eq (car x) 'qtext)
-				   (encode-mime-output-qtext (cdr x) 0 (length (cdr x))
-							     no-folding))
+; 				  ((eq (car x) 'qtext)
+; 				   (encode-mime-output-qtext (cdr x) 0 (length (cdr x))
+; 							     no-folding))
+                                  ((eq (car x) 'qtext)
+				   (let ((*encode-mime-max-width* 900)
+					 (val (cdr x)))
+				     (if (string-match "[^\000-\177]" val)
+					 (encode-mime-output-b-ecoding val 0 (length val) "\"" "\"")
+				       (encode-mime-output-qtext val 0 (length val) t))))
 				  (t
 				   (setq *encode-mime-preceding-white* t)
 				   (encode-mime-output (cdr x) 0 (length (cdr x))
@@ -327,9 +333,16 @@
 			param))))
 	  params)))
 
+; (defun encode-mime-field-body (string)
+;   (let ((*encode-mime-preceding-white* t))
+;     (encode-mime-output string 0 (length string) nil nil nil)))
+
 (defun encode-mime-field-body (string)
-  (let ((*encode-mime-preceding-white* t))
-    (encode-mime-output string 0 (length string) nil nil nil)))
+  (let* ((*encode-mime-preceding-white* t)
+	 (*encode-mime-max-width* 900)
+	 (s (substitute-string (string-trim " \t\r\n" string) "\r?\n[ \t]+" " ")))
+    (when (plusp (length s))
+      (encode-mime-output-b-ecoding s 0 (length s) nil nil))))
 
 (defvar *encode-mime-header-type*
   (let ((h (make-hash-table :test #'equalp)))

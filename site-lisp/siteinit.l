@@ -797,3 +797,162 @@
             (filer-clear-all-marks)))))))
 
 (define-key filer-keymap #\O 'my-filer-create-archive)
+
+;;; ============================================================
+;;; Windows 11 標準 tar.exe のみを使った圧縮(.tar.zst)・自動解凍
+;;; （モーダルファイラ対応版）
+;;; ============================================================
+
+;; Windows 標準の tar.exe を取得（32bit xyzzy からは Sysnative を優先）
+(defun my-find-win-tar ()
+  (let ((sysnative (merge-pathnames "Sysnative/tar.exe"
+                                    (append-trail-slash (get-windows-directory)))))
+    (map-slash-to-backslash
+     (if (file-exist-p sysnative)
+         sysnative
+       (merge-pathnames "tar.exe"
+                        (append-trail-slash (get-system-directory)))))))
+
+(defvar *my-win-tar-command* (my-find-win-tar))
+
+;; Zstandard 圧縮レベル（nil でデフォルト / 1-19 の整数を指定可）
+(defvar *my-zstd-compression-level* 9)
+
+;; 2画面ファイラで反対側の窓に出力するか（t: 反対窓 / nil: カレント窓）
+(defvar *my-archive-to-other-window* t)
+
+;; 解凍時に書庫名のサブフォルダを自動作成するか（t: 作成 / nil: 直下に展開）
+(defvar *my-extract-create-subdir* nil)
+
+;; Windows 11 標準 tar.exe (libarchive) 対応の拡張子一覧
+(defvar *my-tar-archive-regexp*
+  "\\(\\.tar\\.\\(zst\\|gz\\|bz2\\|xz\\|lz4\\|z\\)\\|\\.\\(zip\\|7z\\|rar\\|tar\\|tzst\\|tgz\\|tbz2\\|tbz\\|txz\\|cab\\|iso\\|lzh\\|lha\\|cpio\\|ar\\|xar\\)\\)$")
+
+;; モーダルファイラでも使える文字列入力ダイアログ
+(defun my-filer-prompt-string (caption label default)
+  (multiple-value-bind (result data)
+      (dialog-box
+       `(dialog 0 0 240 68
+         (:caption ,caption)
+         (:font 9 "ＭＳ Ｐゴシック")
+         (:control
+          (:static nil ,label #x50020000 7 9 226 10)
+          (:edit text nil #x50810080 7 22 226 14)
+          (:button IDOK "OK" #x50010001 124 46 50 14)
+          (:button IDCANCEL "キャンセル" #x50010000 183 46 50 14)))
+       (list (cons 'text default))
+       '((text :non-null "名前を入力してください" :enable (IDOK))))
+    (when result
+      (cdr (assoc 'text data)))))
+
+;; 出力先ディレクトリを取得
+(defun my-filer-dest-dir ()
+  (if (and *my-archive-to-other-window* (filer-dual-window-p))
+      (let ((left (filer-left-window-p)))
+        (unwind-protect
+            (progn
+              (if left (filer-right-window) (filer-left-window))
+              (filer-get-directory))
+          (if left (filer-left-window) (filer-right-window))))
+    (filer-get-directory)))
+
+;; 2画面ファイラの両窓をリロード
+(defun my-filer-reload-both ()
+  (filer-reload)
+  (when (filer-dual-window-p)
+    (let ((left (filer-left-window-p)))
+      (unwind-protect
+          (progn
+            (if left (filer-right-window) (filer-left-window))
+            (filer-reload))
+        (if left (filer-left-window) (filer-right-window))))))
+
+;; tar -C に渡すディレクトリパスを整形
+(defun my-normalize-dir-arg (dir)
+  (let ((d (remove-trail-slash dir)))
+    (if (and (= (length d) 2) (eql (char d 1) #\:))
+        (concat d "/")
+      d)))
+
+;; 対象ファイル一覧を取得
+(defun my-filer-target-files ()
+  (or (filer-get-mark-files)
+      (unless (filer-current-file-dot-dot-p)
+        (let ((cur (filer-get-current-file)))
+          (when cur (list cur))))))
+
+;; ------------------------------------------------------------
+;; 圧縮：マークしたファイル・フォルダ（単体含む）を .tar.zst に圧縮
+;; ------------------------------------------------------------
+(defun my-filer-tar-zstd-compress ()
+  (let* ((src-dir (filer-get-directory))
+         (dest-dir (my-filer-dest-dir))
+         (files (my-filer-target-files)))
+    (unless files
+      (message "圧縮対象のファイルがありません")
+      (return-from my-filer-tar-zstd-compress nil))
+    (let* ((first-name (file-namestring (remove-trail-slash (car files))))
+           (default-name (concat first-name ".tar.zst"))
+           (archive (my-filer-prompt-string "Zstandard 圧縮"
+                                            "アーカイブ名 (.tar.zst):"
+                                            default-name)))
+      (when (and archive (plusp (length archive)))
+        (let* ((out-path (merge-pathnames archive (append-trail-slash dest-dir)))
+               (names (mapcar #'(lambda (f)
+                                  (format nil "\"~A\"" (file-namestring (remove-trail-slash f))))
+                              files))
+               (targets (format nil "~{~A~^ ~}" names))
+               (opt (if *my-zstd-compression-level*
+                        (format nil "--options \"zstd:compression-level=~D\" "
+                                *my-zstd-compression-level*)
+                      ""))
+               (cmd (format nil "\"~A\" --zstd ~A-cf \"~A\" ~A"
+                            *my-win-tar-command* opt out-path targets))
+               (ret (call-process cmd :exec-directory src-dir :show :minimize :wait t)))
+          (filer-clear-all-marks)
+          (my-filer-reload-both)
+          (if (eql ret 0)
+              (message "圧縮完了: ~A" (file-namestring out-path))
+            (message "圧縮に失敗しました (終了コード ~A)" ret)))))))
+
+;; ------------------------------------------------------------
+;; 解凍：Windows 11 標準 tar.exe 対応の全形式を自動判定して展開
+;; ------------------------------------------------------------
+(defun my-filer-auto-extract ()
+  (let* ((dest-base (append-trail-slash (my-filer-dest-dir)))
+         (files (my-filer-target-files))
+         (ok-count 0)
+         (err-count 0))
+    (unless files
+      (message "展開対象のファイルがありません")
+      (return-from my-filer-auto-extract nil))
+    (dolist (f files)
+      (cond
+       ((file-directory-p f)
+        (message "ディレクトリはスキップしました: ~A" (file-namestring (remove-trail-slash f))))
+       ((string-matchp *my-tar-archive-regexp* (file-namestring f))
+        (let* ((name (file-namestring f))
+               (base (subseq name 0 (match-beginning 0)))
+               (out-dir (if *my-extract-create-subdir*
+                            (merge-pathnames base dest-base)
+                          dest-base)))
+          (unless (file-directory-p out-dir)
+            (create-directory out-dir))
+          (let* ((cmd (format nil "\"~A\" -xf \"~A\" -C \"~A\""
+                              *my-win-tar-command* f (my-normalize-dir-arg out-dir)))
+                 (ret (call-process cmd :show :minimize :wait t)))
+            (if (eql ret 0)
+                (incf ok-count)
+              (progn
+                (incf err-count)
+                (message "展開に失敗しました (終了コード ~A): ~A" ret name))))))
+       (t
+        (incf err-count)
+        (message "未対応の形式のためスキップ: ~A" (file-namestring f)))))
+    (filer-clear-all-marks)
+    (my-filer-reload-both)
+    (message "展開完了: 成功 ~D 件 / 失敗・スキップ ~D 件" ok-count err-count)))
+
+;; キーバインド設定
+(define-key filer-keymap #\O 'my-filer-tar-zstd-compress)
+(define-key filer-keymap #\U 'my-filer-auto-extract)
